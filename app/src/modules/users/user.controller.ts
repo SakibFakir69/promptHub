@@ -6,6 +6,9 @@ import { Request , Response } from 'express';
 import { userServices } from './user.service';
 import { User } from './user.model';
 
+
+
+// jwt, cookies  , access , refressh token 
 const createUser = async (req: Request, res: Response) => {
   console.log('create user    ');
   console.log(req.body);

@@ -1,18 +1,12 @@
-// create user
-
-import { error } from 'console';
 import { IUser } from './user.interface';
 import { User } from './user.model';
 import bcrypt from 'bcryptjs';
-
+// create user
 const createUser = async (payload: Partial<IUser>) => {
   try {
     if (!payload) {
       throw new Error('Payload not founded');
     }
-
-  
-
 
     const password: string = payload.password as string;
 
