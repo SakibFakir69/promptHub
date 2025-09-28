@@ -1,22 +1,35 @@
+// create user
+
+import { error } from 'console';
+import { IUser } from './user.interface';
+import { User } from './user.model';
+import bcrypt from 'bcryptjs';
+
+const createUser = async (payload: Partial<IUser>) => {
+  try {
+    if (!payload) {
+      throw new Error('Payload not founded');
+    }
+
+  
 
 
+    const password: string = payload.password as string;
 
-// create user 
+    // eslint-disable-next-line no-undef, no-unused-vars
+    const saltRound: number = Number(process.env.SALT) || 10;
+    //   hashPassword
+    const hashPassword = await bcrypt.hash(password, saltRound);
+    payload.password = hashPassword;
 
-import { IUser } from "./user.interface";
-import { User } from "./user.model";
-
-
-const createUser =async (payload:Partial<IUser>)=>{
-
-    const  result = await User.create(payload);
+    const result = await User.create(payload);
 
     return result;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-
-
-}
-
-export const userServices ={
-    createUser
-}
+export const userServices = {
+  createUser,
+};
