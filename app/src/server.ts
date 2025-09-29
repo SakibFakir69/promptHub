@@ -37,6 +37,7 @@ console.log(URI);
 
     
   } catch (error) {
+    console.log(error);
     
   }
 

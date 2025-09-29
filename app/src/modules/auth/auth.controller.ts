@@ -3,14 +3,19 @@
 import { Request, Response } from 'express';
 import { User } from '../users/user.model';
 import bcrypt from 'bcryptjs';
-import jwt, { JwtPayload } from 'jsonwebtoken'
 
+import { authServices } from './auth.services';
+// add to cookies , 
+// verify token store req.body = req.user
 const loginUser = async (req: Request, res: Response) => {
   try {
-    const { email , password } = req.body;
+    console.log("login user")
+    const { email, password } = req.body;
 
     const isUserExits = await User.findOne({ email: email });
+   
 
+    // find user
     if (!isUserExits) {
       return res.status(401).json({
         status: false,
@@ -19,49 +24,26 @@ const loginUser = async (req: Request, res: Response) => {
       });
     }
 
-    // compare password , create jwt
+    // compare password 
     const hashPassword = isUserExits.password as string;
 
-    const isMatchPassword= await bcrypt.compare(password, hashPassword);
+    const isMatchPassword = await bcrypt.compare(password, hashPassword);
 
-    if(!isMatchPassword)
-    {
-        return res.status(404).json({
-             status: false,
-        message: "Invalid credentials",
+    if (!isMatchPassword) {
+      return res.status(404).json({
+        status: false,
+        message: 'Invalid credentials',
         data: null,
-        })
+      });
     }
 
-    // create payload
-
-
-
-    const payload:{
-        id:number,
-        email:string,
-        name:string
-    } = {
-        id:isUserExits._id,
-        email:isUserExits.email,
-        name:isUserExits.name
-
-    }
-    // make token on jwt
-    const jwtToken = await jwt.sign(password,process.env.BCRYPT_SECRECT_KEY , {
-        expiresIn:"7d"
-    }) as JwtPayload;
-
+    // cdata 
+    const result = await authServices.loginUser(isUserExits);
+    console.log(result);
 
     return res.status(200).json({
-        status:true,
-        message:"User Successfully login",
-        token:{
-            token:jwtToken
-            
-        }
-    })
-
+      token: result,
+    });
 
   } catch (error) {
     console.log(error);
