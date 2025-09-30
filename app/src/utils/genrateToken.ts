@@ -16,7 +16,7 @@ export const generateJwtToken = (
 
   const options: SignOptions = {
     expiresIn: expiresIn as unknown as import("ms").StringValue, 
-    algorithm: "HS256" as Algorithm        // cast to Algorithm literal
+    algorithm: "HS256" as Algorithm        
   };
 
   // synchronous call

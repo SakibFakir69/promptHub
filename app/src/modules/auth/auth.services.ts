@@ -14,7 +14,8 @@ const loginUser = async (payload: Partial<IUser>) => {
       email: payload?.email,
       name: payload?.name,
     };
-    console.log(jwtPayload , " payload")
+   
+    
 
     // create jwt token
     // eslint-disable-next-line no-undef
@@ -26,7 +27,7 @@ const loginUser = async (payload: Partial<IUser>) => {
       | 'refresh';
      
       // accessToken
-    const accesssToken = await generateJwtToken(
+    const accessToken = await generateJwtToken(
       jwtPayload,
       acccesScerect,
       '15m',
@@ -41,12 +42,12 @@ const loginUser = async (payload: Partial<IUser>) => {
     // token
     const token = await generateJwtToken(jwtPayload, secretKey, '5d');
 
-    console.log(refreshToken ,accesssToken,payload)
+    console.log(refreshToken ,accessToken,payload)
 
     const result = {
       data: payload,
       token: {
-        accesssToken: accesssToken,
+        accessToken: accessToken,
         refreshToken: refreshToken,
         token: token,
       },

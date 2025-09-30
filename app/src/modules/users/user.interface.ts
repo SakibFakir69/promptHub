@@ -11,4 +11,8 @@ export interface IUser {
   tags: string[];
   follower: string[];
   following: string[];
+  isVerify:boolean,
+  isBlock:boolean,
+  isDelete:boolean,
+  
 }

@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { IUser } from './user.interface';
 
+
 const userSchema = new mongoose.Schema<IUser>(
   {
     name: { type: String, required: true },
@@ -12,6 +13,9 @@ const userSchema = new mongoose.Schema<IUser>(
     tags: { type: [String], default: [] },
     follower: { type: [String], default: [] },
     following: { type: [String], default: [] },
+    isBlock:{type:Boolean , default:false},
+    isDelete:{type:Boolean , default:false},
+    isVerify:{type:Boolean,default:false}
   },
   { timestamps: true },
 );

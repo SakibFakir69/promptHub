@@ -2,7 +2,7 @@
 
 import dotenv from 'dotenv'
 dotenv.config();
-
+import cookieParser from 'cookie-parser';
 
 // eslint-disable-next-line no-unused-vars
 import express, { Application, NextFunction, Request, Response } from 'express';
@@ -17,7 +17,7 @@ const app: Application = express();
 // middleware 
 
 app.use(express.json()); /// convert to all json 
-
+app.use(cookieParser()); //// enable cookies parser
 
 // api 
 
