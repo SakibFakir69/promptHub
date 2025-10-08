@@ -1,6 +1,13 @@
 import { IUser } from '../users/user.interface';
 import { generateJwtToken } from '../../utils/genrateToken';
 
+
+
+interface IPasswordPayload {
+  newPassword?:string,
+  oldPassword?:string
+}
+
 const loginUser = async (payload: Partial<IUser>) => {
   try {
     // compare password , payload , jwt token ,
@@ -19,18 +26,17 @@ const loginUser = async (payload: Partial<IUser>) => {
 
     // create jwt token
     // eslint-disable-next-line no-undef
-    const secretKey: string =
-      process.env.BCRYPT_SECRECT_KEY || 'oidhfiudshiufhndsiuf';
-    const acccesScerect: string = process.env.accessToken as string | 'access';
-    const refreshScerect: string = process.env.refreshToken as
+    
+    const accesScerect: string = process.env.BCRYPT_SECRECT_KEY as string | 'token';
+    const refreshScerect: string = process.env.BCRYPT_SECRECT_KEY as
       | string
-      | 'refresh';
+      | 'token';
      
       // accessToken
     const accessToken = await generateJwtToken(
       jwtPayload,
-      acccesScerect,
-      '15m',
+      accesScerect,
+      '15d',
     );
 
     // refreshToken
@@ -39,18 +45,15 @@ const loginUser = async (payload: Partial<IUser>) => {
       refreshScerect,
       '15d',
     );
-    // token
-    const token = await generateJwtToken(jwtPayload, secretKey, '5d');
-
+    
     console.log(refreshToken ,accessToken,payload)
 
     const result = {
-      data: payload,
-      token: {
+    
+    
         accessToken: accessToken,
         refreshToken: refreshToken,
-        token: token,
-      },
+     
     };
 
     return result;
@@ -59,6 +62,21 @@ const loginUser = async (payload: Partial<IUser>) => {
   }
 };
 
+
+
+/// password change 
+
+
+const passwordChange = (payload: IPasswordPayload )=>{
+
+  const {newPassword,oldPassword} = payload;
+
+
+
+  return payload;
+
+}
+
 export const authServices = {
-  loginUser,
+  loginUser,passwordChange
 };

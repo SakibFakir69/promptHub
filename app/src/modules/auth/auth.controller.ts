@@ -5,15 +5,18 @@ import { User } from '../users/user.model';
 import bcrypt from 'bcryptjs';
 
 import { authServices } from './auth.services';
+
 // add to cookies ,
 // verify token store req.body = req.user
 // login , and logout test
+
 const loginUser = async (req: Request, res: Response) => {
   try {
     console.log('login user');
     const { email, password } = req.body;
 
     const isUserExits = await User.findOne({ email: email });
+    console.log(email , password)
 
     // find user
     if (!isUserExits) {
@@ -41,8 +44,9 @@ const loginUser = async (req: Request, res: Response) => {
     const result = await authServices.loginUser(isUserExits);
   
 
-    const accessToken = result?.token.accessToken;
-    const refreshToken = result?.token.refreshToken;
+    const accessToken = result?.accessToken;
+    const refreshToken = result?.refreshToken;
+
     if (!accessToken || !refreshToken) {
       return res
         .status(500)
@@ -54,28 +58,109 @@ const loginUser = async (req: Request, res: Response) => {
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: false,
-      sameSite: 'none',
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      sameSite: 'lax',
+      maxAge:24 * 60 * 60 * 1000, 
     });
     // refresh token
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
 
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      maxAge: 15 * 60 * 60 * 1000,
     });
+    console.log("cookies set")
 
     return res.status(200).json({
-      token: result,
+      message:"User Login Successfully",
+      accessToken:accessToken,
+      refreshToken:refreshToken
     });
   } catch (error) {
     console.log(error);
   }
 };
 
-// export
 
+
+// password change
+
+const passwordChange  =async (req:Request, res:Response)=>{
+
+
+  try {
+    const {password,newPassword} = req.body;
+
+    // old and new pass take then verify
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+    // eslint-disable-next-line no-unsafe-optional-chaining
+    const email = req?.user?.email;
+
+   
+
+    const isUser = await User.findOne({email:email});
+    // 
+    if (!isUser) {
+  return res.status(404).json({
+    status: false,
+    message: "User not found",
+  });
+}
+   
+    const isMatchPassword = await bcrypt.compare(password, isUser.password);
+
+    if(!isMatchPassword)
+    {
+      return res.status(200).json({
+        status:false,
+        message:"Password not match",
+        data:null
+      })
+    }
+    const hashNewPassword  =await  bcrypt.hash(newPassword, 10);
+    isUser.password=hashNewPassword;
+
+
+    await isUser?.save();
+
+
+
+   
+
+   
+    
+
+  
+
+
+    return res.status(200).json({
+      status:true,
+      message:"password change successfully",
+      data:isUser
+      
+     
+  
+    })
+    
+
+
+    
+  } catch (error) {
+
+    console.log(error);
+  }
+
+
+}
+
+
+
+
+
+
+// export
 export const authController = {
-  loginUser,
+  loginUser,passwordChange
 };

@@ -17,6 +17,7 @@ const app: Application = express();
 // middleware 
 
 app.use(express.json()); /// convert to all json 
+app.use(express.urlencoded({ extended: true })); // parse URL-encoded body
 app.use(cookieParser()); //// enable cookies parser
 
 // api 

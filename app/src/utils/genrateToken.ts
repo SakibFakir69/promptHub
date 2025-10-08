@@ -15,7 +15,7 @@ export const generateJwtToken = (
   if (!payload) throw new Error("JWT payload missing");
 
   const options: SignOptions = {
-    expiresIn: expiresIn as unknown as import("ms").StringValue, 
+    expiresIn: "30d" ,
     algorithm: "HS256" as Algorithm        
   };
 
