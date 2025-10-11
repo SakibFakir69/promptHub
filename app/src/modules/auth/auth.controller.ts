@@ -6,9 +6,7 @@ import bcrypt from 'bcryptjs';
 
 import { authServices } from './auth.services';
 
-// add to cookies ,
-// verify token store req.body = req.user
-// login , and logout test
+// log out based time , email send , get user  , logout , test 
 
 const loginUser = async (req: Request, res: Response) => {
   try {
@@ -85,7 +83,7 @@ const loginUser = async (req: Request, res: Response) => {
 
 // password change
 
-const passwordChange  =async (req:Request, res:Response)=>{
+const ResetPassword  =async (req:Request, res:Response)=>{
 
 
   try {
@@ -138,7 +136,78 @@ const passwordChange  =async (req:Request, res:Response)=>{
     return res.status(200).json({
       status:true,
       message:"password change successfully",
-      data:isUser
+     
+      
+     
+  
+    })
+    
+
+
+    
+  } catch (error) {
+
+    console.log(error);
+  }
+
+
+}
+
+
+const changePassword  =async (req:Request, res:Response)=>{
+
+
+  try {
+    const {password,newPassword} = req.body;
+
+    // old and new pass take then verify
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+    // eslint-disable-next-line no-unsafe-optional-chaining
+    const email = req?.user?.email;
+
+   
+
+    const isUser = await User.findOne({email:email});
+    // 
+    if (!isUser) {
+  return res.status(404).json({
+    status: false,
+    message: "User not found",
+  });
+}
+   
+    const isMatchPassword = await bcrypt.compare(password, isUser.password);
+
+    if(!isMatchPassword)
+    {
+      return res.status(200).json({
+        status:false,
+        message:"Password not match",
+        data:null
+      })
+    }
+    const hashNewPassword  =await  bcrypt.hash(newPassword, 10);
+    isUser.password=hashNewPassword;
+
+
+    await isUser?.save();
+
+
+
+   
+
+   
+    
+
+  
+
+
+    return res.status(200).json({
+      status:true,
+      message:"password change successfully",
+     
       
      
   
@@ -162,5 +231,5 @@ const passwordChange  =async (req:Request, res:Response)=>{
 
 // export
 export const authController = {
-  loginUser,passwordChange
+  loginUser,ResetPassword , changePassword
 };

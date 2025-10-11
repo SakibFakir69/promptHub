@@ -11,8 +11,8 @@ const router = Router();
 
 
 router.post('/login-user',authController.loginUser);
-router.post('/reset-password',verifyToken, authController.passwordChange);
-
+router.post('/reset-password',verifyToken, authController.ResetPassword);
+router.post('/change-password');
 
 
 export const AuthRouter = router;
