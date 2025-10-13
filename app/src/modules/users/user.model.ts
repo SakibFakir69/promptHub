@@ -4,9 +4,13 @@ import { IUser } from './user.interface';
 
 const userSchema = new mongoose.Schema<IUser>(
   {
-    name: { type: String, required: true },
+    name: { type: String },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    // google
+    googleId:{type:String},
+    avatar:{type:String},
+
     bio: { type: String, default: '' },
     gender: { type: String, default: '' },
     totalPost: { type: Number, default: 0 },
@@ -15,7 +19,8 @@ const userSchema = new mongoose.Schema<IUser>(
     following: { type: [String], default: [] },
     isBlock:{type:Boolean , default:false},
     isDelete:{type:Boolean , default:false},
-    isVerify:{type:Boolean,default:false}
+    isVerify:{type:Boolean,default:false},
+    isLoggedIn:{type:Boolean, default:false}
   },
   { timestamps: true },
 );

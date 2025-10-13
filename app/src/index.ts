@@ -3,7 +3,7 @@
 import dotenv from 'dotenv'
 dotenv.config();
 import cookieParser from 'cookie-parser';
-
+import passport from 'passport';
 // eslint-disable-next-line no-unused-vars
 import express, { Application, NextFunction, Request, Response } from 'express';
 import { userRouter } from './modules/users/user.route';
@@ -16,6 +16,11 @@ const app: Application = express();
 
 // middleware 
 
+
+// passport
+app.use(passport.initialize())
+
+// express
 app.use(express.json()); /// convert to all json 
 app.use(express.urlencoded({ extended: true })); // parse URL-encoded body
 app.use(cookieParser()); //// enable cookies parser

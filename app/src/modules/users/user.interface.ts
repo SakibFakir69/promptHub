@@ -6,6 +6,8 @@ export interface IUser {
   email: string;
   password: string;
   bio: string;
+  avatar:string,
+  googleId:string,
   gender: string;
   totalPost: number;
   tags: string[];
@@ -14,5 +16,6 @@ export interface IUser {
   isVerify:boolean,
   isBlock:boolean,
   isDelete:boolean,
+  isLoggedIn:boolean
   
 }
