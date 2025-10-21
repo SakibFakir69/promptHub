@@ -11,35 +11,34 @@ import { AuthRouter } from './modules/auth/auth.route';
 
 
 
-
+// app
 const app: Application = express();
+
 
 // middleware 
 
 
 // passport
 app.use(passport.initialize())
+app.use(passport.session());
 
-// express
+// express ( middleware)
 app.use(express.json()); /// convert to all json 
 app.use(express.urlencoded({ extended: true })); // parse URL-encoded body
 app.use(cookieParser()); //// enable cookies parser
 
-// api 
-
+// route 
 app.use('/api/v1', userRouter);
 // auth
 app.use('/api/v1/auth', AuthRouter);
 
-
+// api test
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, World!');
 });
 
 
 // Catch-all route for 404
-
-
 app.use((req:Request, res:Response,next:NextFunction)=>{
 
   res.status(404).json({

@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import { authController } from "./auth.controller";
 import { verifyToken } from "../../middleware/verifyToken";
 import passport from "passport";
@@ -16,8 +16,17 @@ router.post('/reset-password',verifyToken, authController.ResetPassword);
 router.post('/change-password', verifyToken, authController.changePassword);
 
 // google
+router.get('/auth/google', passport.authenticate('google',{scope:['profile','email']}));
+router.get('/auth/google/callback', passport.authenticate("google",{
+    failureRedirect:"/"
+    // if failed to login gave route to redriect
+}), (req:Request,res:Response)=>{
 
-router.get('/auth/google', passport.authenticate('google',{scope:['profile']}))
+    res.redirect('/home')
+
+})
+
+
 
 
 export const AuthRouter = router;
