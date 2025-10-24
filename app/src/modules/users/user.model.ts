@@ -1,13 +1,27 @@
+
 import mongoose from 'mongoose';
 import { IUser } from './user.interface';
 
 
 const userSchema = new mongoose.Schema<IUser>(
   {
+   
     name: { type: String },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    // google
+
+    password: {
+    type: String,
+    validate: {
+      validator: function(this: IUser, value: string) {
+        // return true if password is valid, false if invalid
+        // We want password required only if googleId is not set
+        return !!this.googleId || (!!value && value.length > 0);
+      },
+      message: 'Password is required if Google ID is not provided',
+    },
+  },
+
+    
     googleId:{type:String},
     avatar:{type:String},
 
@@ -24,5 +38,10 @@ const userSchema = new mongoose.Schema<IUser>(
   },
   { timestamps: true },
 );
+
+// Add virtual id field
+userSchema.virtual("id").get(function (this: IUser) {
+  return this._id.toString();
+});
 
 export const User = mongoose.model<IUser>('user', userSchema);

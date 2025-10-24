@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { IUser } from '../users/user.interface';
 import { generateJwtToken } from '../../utils/genrateToken';
 
@@ -8,7 +9,8 @@ interface IPasswordPayload {
   oldPassword?:string
 }
 
-const loginUser = async (payload: Partial<IUser>) => {
+
+const loginUser = async (payload:Partial<IUser>) => {
   try {
     // compare password , payload , jwt token ,
 
@@ -16,7 +18,7 @@ const loginUser = async (payload: Partial<IUser>) => {
 
     const jwtPayload = {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      id: (payload as any)?._id?.toString(),
+      id:payload?._id , 
 
       email: payload?.email,
       name: payload?.name,
@@ -69,13 +71,29 @@ const loginUser = async (payload: Partial<IUser>) => {
 
 const passwordChange = (payload: IPasswordPayload )=>{
 
+ 
   const {newPassword,oldPassword} = payload;
+  console.log(newPassword, oldPassword)
 
 
 
   return payload;
 
 }
+
+
+// getMe 
+
+// const getMe = ()=>{
+
+//   try {
+    
+//   } catch (error) {
+    
+//   }
+
+
+// }
 
 export const authServices = {
   loginUser,passwordChange

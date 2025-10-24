@@ -8,6 +8,25 @@ import { authServices } from './auth.services';
 
 // log out based time , email send , get user  , logout , test 
 
+// step for auth
+// login , reg  => complete
+// verify user  => complete
+// password resset and change => complete  
+// email send 
+// access and refress token 
+// test
+
+
+
+// logic for google id
+// if user have not password then gave user to set password 
+// google id send viva me route 
+
+
+// working on getMe => logOutuser 
+
+
+
 const loginUser = async (req: Request, res: Response) => {
   try {
     console.log('login user');
@@ -94,8 +113,9 @@ const ResetPassword  =async (req:Request, res:Response)=>{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
     // eslint-disable-next-line no-unsafe-optional-chaining
-    const email = req?.user?.email;
-
+    const email = req?.user?.id;
+    console.log(email);
+   
    
 
     const isUser = await User.findOne({email:email});
@@ -165,7 +185,7 @@ const changePassword  =async (req:Request, res:Response)=>{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
     // eslint-disable-next-line no-unsafe-optional-chaining
-    const email = req?.user?.email;
+    const email = req?.user;
 
    
 
@@ -225,11 +245,39 @@ const changePassword  =async (req:Request, res:Response)=>{
 }
 
 
+// logout user 
+// const logOutUser = (req:Request, res:Response)=>{
+
+// }
+
+
+// get me 
+
+
+
+// const getMe = async (req:Request, res:Response)=>{
+
+
+//   try {
+
+    
+    
+
+  
+    
+
+    
+//   } catch (error) {
+//     console.log(error);
+    
+//   }
+
+// }
 
 
 
 
 // export
 export const authController = {
-  loginUser,ResetPassword , changePassword
+  loginUser,ResetPassword , changePassword 
 };

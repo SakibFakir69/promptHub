@@ -1,14 +1,17 @@
+/* eslint-disable no-undef */
 
 
 
-
+import dotenv from 'dotenv'
+dotenv.config();
 
 import passport from 'passport';
+
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import { User } from '../../modules/users/user.model';
-import { IUser } from '../../modules/users/user.interface';
 
-
+console.log(process.env.GOOGLE_CLIENT_SECRET)
+console.log(process.env.GOOGLE_CLIENT_ID)
 
 passport.use(new GoogleStrategy({
 
@@ -18,7 +21,8 @@ passport.use(new GoogleStrategy({
     clientID:process.env.GOOGLE_CLIENT_ID as string,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
 
-    callbackURL: "/auth/google/callback"
+    callbackURL: "http://localhost:5000/api/v1/auth/google/callback"
+
   },
 
   // handel user 
@@ -40,11 +44,13 @@ passport.use(new GoogleStrategy({
       const userEmail = profile?.emails[0]?.value;
 
       const exitingUsers = await User.findOne({email:userEmail});
+      console.log(exitingUsers ," user ")
 
       // if user exit with email 
       if(exitingUsers)
       {
-        return done(null, exitingUsers);
+        return done(null, exitingUsers.toObject({virtuals:true}));
+        // virtual true add for req.user , create vitula ( id )
       }
 
       // if user not have in db
@@ -52,12 +58,14 @@ passport.use(new GoogleStrategy({
 
       // create user 
 
-        const newUser =   User.create({
+        const newUser = await  User.create({
           name: profile.displayName,
           email: userEmail,
           avatar: profile.photos?.[0]?.value || null, // optional
           // provider: "google", // optional
+          googleId:profile.id
         });
+        console.log(newUser , " new user")
 
        
        return done(null, newUser);
@@ -73,8 +81,9 @@ passport.use(new GoogleStrategy({
 ));
 
 
-  passport.serializeUser((user, done) => {
-    done(null, (user as IUser)._id);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  passport.serializeUser((user:any, done) => {
+    done(null, user?._id );
   });
 
   passport.deserializeUser(async (id, done) => {

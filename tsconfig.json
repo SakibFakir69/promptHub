@@ -113,5 +113,5 @@
    ,
    
    
-    "include": ["app/src/**/*", "app/src/types/express.d.ts"]
+    "include": ["app/src/**/*", "app/src/types/express.d.ts", "types/**/*"]
 }

@@ -14,9 +14,10 @@
   "type": "commonjs",
   "devDependencies": {
     "@eslint/js": "^9.36.0",
-    "@types/express": "^5.0.3",
+    "@types/express": "^5.0.4",
+    "@types/express-session": "^1.18.2",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^24.5.2",
+    "@types/node": "^24.9.1",
     "@types/nodemailer": "^7.0.2",
     "@types/passport-google-oauth20": "^2.0.16",
     "eslint": "^9.36.0",

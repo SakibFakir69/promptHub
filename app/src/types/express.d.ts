@@ -1,22 +1,12 @@
-
-
-
-// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-import  express from "express"
-
-
-interface IReqUser{
-    id:number | string,
-    name:string,
-    email:string
-}
+// app/src/types/express.d.ts
+import { IUser } from "../modules/users/user.interface";
 
 declare global {
-    namespace Express {
-        interface Request {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            user? :IReqUser
-        }
+  namespace Express {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface User extends IUser {} // Extend Mongoose's IUser
+    interface Request {
+      user?: User; // Use the augmented Express.User
     }
+  }
 }
-export {};

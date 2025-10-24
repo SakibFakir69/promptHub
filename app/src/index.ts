@@ -4,8 +4,15 @@ import dotenv from 'dotenv'
 dotenv.config();
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
+
 // eslint-disable-next-line no-unused-vars
 import express, { Application, NextFunction, Request, Response } from 'express';
+
+import session, { SessionOptions as ExpressSessionOptions } from "express-session";
+
+import "./config/passport/passport"
+
+
 import { userRouter } from './modules/users/user.route';
 import { AuthRouter } from './modules/auth/auth.route';
 
@@ -16,6 +23,18 @@ const app: Application = express();
 
 
 // middleware 
+// session middlweare
+
+
+const sessionOptions:ExpressSessionOptions={
+    secret: process.env.SESSION_SECRET || "defaultsecret", 
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false }, // secure: true requires HTTPS
+}
+
+app.use(session(sessionOptions))
+
 
 
 // passport
@@ -44,6 +63,7 @@ app.use((req:Request, res:Response,next:NextFunction)=>{
   res.status(404).json({
     status:false,
     message:`Route not found: ${req.originalUrl}`
+  
   })
 })
 
