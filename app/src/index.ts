@@ -4,6 +4,8 @@ import dotenv from 'dotenv'
 dotenv.config();
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJSDoc from 'swagger-jsdoc';
 
 // eslint-disable-next-line no-unused-vars
 import express, { Application, NextFunction, Request, Response } from 'express';
@@ -20,6 +22,31 @@ import { AuthRouter } from './modules/auth/auth.route';
 
 // app
 const app: Application = express();
+
+
+
+// swagger ui
+// Swagger Code
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'API documentation for Prompt Hub',
+      version: '1.0.0'
+    },
+    servers: [
+      {
+        url: 'http://localhost:5000'
+      }
+    ]
+  },
+  apis: ['./server.js']
+}
+
+
+const swaggerSpec = swaggerJSDoc(options);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 
 // middleware 
