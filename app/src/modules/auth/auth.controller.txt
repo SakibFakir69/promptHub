@@ -1,0 +1,10 @@
+
+
+
+1. test all complete api 
+2.check oauth 
+3.develop access and refress token 
+4.email send 
+4.make production ready code and follow best pratics 
+5. last test and make api documentation ( swagger );
+

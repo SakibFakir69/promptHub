@@ -5,16 +5,7 @@ import { User } from '../users/user.model';
 import bcrypt from 'bcryptjs';
 
 import { authServices } from './auth.services';
-
-// log out based time , email send , get user  , logout , test 
-
-// step for auth
-// login , reg  => complete
-// verify user  => complete
-// password resset and change => complete  
-// email send 
-// access and refress token 
-// test
+import SetCookies from '../../utils/SetCookies';
 
 
 
@@ -72,21 +63,12 @@ const loginUser = async (req: Request, res: Response) => {
     console.log(accessToken, refreshToken, ' token ');
 
     // setcookies
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      maxAge:24 * 60 * 60 * 1000, 
-    });
+    /// access token
+    SetCookies(res,'accessToken',accessToken , 24 * 60 * 60 * 1000)
     // refresh token
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-
-      maxAge: 15 * 60 * 60 * 1000,
-    });
+    SetCookies(res, "refreshToke",refreshToken, 24 * 60 * 60 * 1000);
     console.log("cookies set")
+
 
     return res.status(200).json({
       message:"User Login Successfully",
