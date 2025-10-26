@@ -11,7 +11,7 @@ import { User } from "../users/user.model";
 const router = Router();
 
 
-
+router.post('/me', verifyToken,authController.getMe);
 router.post('/login-user',authController.loginUser);
 router.post('/reset-password',verifyToken, authController.ResetPassword);
 router.post('/change-password', verifyToken, authController.changePassword);

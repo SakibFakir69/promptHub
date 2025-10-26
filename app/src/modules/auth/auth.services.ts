@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import { IUser } from '../users/user.interface';
 import { generateJwtToken } from '../../utils/genrateToken';
+import { User } from '../users/user.model';
 
 
 
@@ -83,18 +84,22 @@ const passwordChange = (payload: IPasswordPayload )=>{
 
 
 // getMe 
+// 
+const getMe =async  (id:string)=>{
 
-// const getMe = ()=>{
+  try {
+    const result = await User.findById(id).select("-password");
+    // user do not see password filed
 
-//   try {
+    return result;
     
-//   } catch (error) {
-    
-//   }
+  } catch (error) {
+    console.log(error);
+  }
 
 
-// }
+}
 
 export const authServices = {
-  loginUser,passwordChange
+  loginUser,passwordChange,getMe
 };

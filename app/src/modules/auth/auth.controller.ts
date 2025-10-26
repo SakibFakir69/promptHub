@@ -237,29 +237,48 @@ const changePassword  =async (req:Request, res:Response)=>{
 
 
 
-// const getMe = async (req:Request, res:Response)=>{
+const getMe = async (req:Request, res:Response)=>{
 
 
-//   try {
+  try {
+
+    const user_id = req.user?.id;
+
+    if(!user_id)
+    {
+      return res.status(404).json({
+        status:false,
+        message:"User not founded"
+      })
+    }
+
+    const users = await authServices.getMe(user_id);
+
+    return res.status(200).json({
+      status:true,
+      message:"User login successfull",
+      data:users
+    })
 
     
-    
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error:any) {
+    console.log(error);
 
-  
+    return res.status(500).json({
+      status:false,
+      message :`${error.name} -> ${error.message}`,
+      stack:error.stack
+    })
     
+  }
 
-    
-//   } catch (error) {
-//     console.log(error);
-    
-//   }
-
-// }
+}
 
 
 
 
 // export
 export const authController = {
-  loginUser,ResetPassword , changePassword 
+  loginUser,ResetPassword , changePassword , getMe
 };
