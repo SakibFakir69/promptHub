@@ -15,7 +15,7 @@ router.post('/me', verifyToken,authController.getMe);
 router.post('/login-user',authController.loginUser);
 router.post('/reset-password',verifyToken, authController.ResetPassword);
 router.post('/change-password', verifyToken, authController.changePassword);
-
+router.post('/logout')
 // google
 router.get('/google', passport.authenticate('google',{scope:['profile','email']}));
 

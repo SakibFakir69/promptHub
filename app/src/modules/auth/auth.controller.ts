@@ -228,9 +228,45 @@ const changePassword  =async (req:Request, res:Response)=>{
 
 
 // logout user 
-// const logOutUser = (req:Request, res:Response)=>{
+const logOutUser = async (req:Request, res:Response)=>{
 
-// }
+  try {
+
+    const user_id =req.user?.id;
+    const user = await User.findById(user_id);
+
+    if(!user)
+    {
+      return res.status(404).json({
+        status:false,
+        message:'User Not Founded'
+      })
+    }
+
+    res.clearCookie("accessToken",{
+      httpOnly:true,
+      secure: process.env.NODE_ENV==='production',
+      sameSite:"none"
+    });
+    res.clearCookie("refreshToken",{
+      httpOnly:true,
+      secure:process.env.NODE_ENV==='production',
+      sameSite:"none"
+    })
+
+
+    return res.status(200).json({
+      status:true,
+      message:"User Log Out Successfully",
+      data:null
+    })
+    
+  } catch (error) {
+    console.log(error)
+    
+  }
+
+}
 
 
 // get me 
@@ -280,5 +316,5 @@ const getMe = async (req:Request, res:Response)=>{
 
 // export
 export const authController = {
-  loginUser,ResetPassword , changePassword , getMe
+  loginUser,ResetPassword , changePassword , getMe,logOutUser
 };

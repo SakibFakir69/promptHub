@@ -40,7 +40,7 @@ const options = {
       }
     ]
   },
-  apis: ['./server.js']
+  apis: ['./app/src/modules/**/*.ts']
 }
 
 
