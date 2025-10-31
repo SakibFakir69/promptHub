@@ -3,6 +3,7 @@ import { authController } from "./auth.controller";
 import { verifyToken } from "../../middleware/verifyToken";
 import passport from "passport";
 import { User } from "../users/user.model";
+import { createPublicKey } from "crypto";
 
 
 
@@ -11,11 +12,36 @@ import { User } from "../users/user.model";
 const router = Router();
 
 
-router.post('/me', verifyToken,authController.getMe);
+/**
+ * @swagger
+ * api/v1/auth/me
+ *   get:
+ *   summary:User Retrieve Successfully
+ *   description:User Retrieve Successfully
+ *        response:
+ *             200:
+ *                content:
+ *                     application/json:
+ *                          schema:
+ *                            status:boolean
+ *                                 message:string
+ *                                     data:object
+ *     404:
+ *        description: User Not Founded
+ *     405:
+ *        description: Internal server Error                             
+ */
+
+router.get('/me', verifyToken,authController.getMe);
+
+
+
 router.post('/login-user',authController.loginUser);
 router.post('/reset-password',verifyToken, authController.ResetPassword);
 router.post('/change-password', verifyToken, authController.changePassword);
-router.post('/logout')
+
+
+router.post('/logout',authController.loginUser )
 // google
 router.get('/google', passport.authenticate('google',{scope:['profile','email']}));
 

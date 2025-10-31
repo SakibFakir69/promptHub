@@ -1,4 +1,8 @@
 
+resource ( swagger api doc): [ https://dev.to/desmondsanctity/documenting-nodejs-api-using-swagger-4klp , https://blog.tericcabrel.com/document-a-node-js-rest-api-with-swagger-and-open-api/ , https://dev.to/cuongnp/swagger-nodejs-express-a-step-by-step-guide-4ob ]
+
+
+
 
 
 1. test all complete api 
@@ -7,4 +11,5 @@
 4.email send 
 4.make production ready code and follow best pratics 
 5. last test and make api documentation ( swagger );
+6.zod ( input ) validation 
 

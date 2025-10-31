@@ -38,7 +38,8 @@ const options = {
       {
         url: 'http://localhost:5000'
       }
-    ]
+    ],
+    // tags
   },
   apis: ['./app/src/modules/**/*.ts']
 }

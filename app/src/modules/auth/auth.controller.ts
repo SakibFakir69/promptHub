@@ -6,6 +6,8 @@ import bcrypt from 'bcryptjs';
 
 import { authServices } from './auth.services';
 import SetCookies from '../../utils/SetCookies';
+import jwt from 'jsonwebtoken';
+
 
 
 
@@ -311,6 +313,38 @@ const getMe = async (req:Request, res:Response)=>{
 
 }
 
+
+// refresh token 
+
+const refreshToken = (req:Request, res:Response)=>{
+
+  try {
+
+    const refresh = req.cookies.refreshToken;
+    //// verify refreshToken
+    jwt.verify(refresh, process.env.refreshToken ,(err, decode)=>{
+
+
+      if(err)
+      {
+        return res.status(406).json({status:false, message:'Unauthorized' })
+      }else{
+        // genrate access token
+      }
+
+
+
+    } )
+  
+
+
+    
+  } catch (error) {
+    console.log(error)
+    
+  }
+
+}
 
 
 
