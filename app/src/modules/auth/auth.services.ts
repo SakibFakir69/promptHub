@@ -31,19 +31,19 @@ const loginUser = async (payload:Partial<IUser>) => {
     // eslint-disable-next-line no-undef
     
     const accesScerect: string = process.env.BCRYPT_SECRECT_KEY as string | 'token';
-    const refreshScerect: string = process.env.refreshToken_SECRECT_KEY as
+    const refreshScerect: string = process.env.REFRESH_TOKEN_SECRET_KEY as
       | string
       | 'token';
      
       // accessToken
-    const accessToken = await generateJwtToken(
+    const accessToken =  generateJwtToken(
       jwtPayload,
       accesScerect,
-      '15d',
+      '30m',
     );
 
     // refreshToken
-    const refreshToken = await generateJwtToken(
+    const refreshToken =  generateJwtToken(
       jwtPayload,
       refreshScerect,
       '15d',
