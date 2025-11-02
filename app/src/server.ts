@@ -5,12 +5,13 @@ dotenv.config();
 import mongoose from "mongoose";
 
 import { myApp } from ".";
+import { Server } from 'http';
 // import from server
 
 const port: number = Number(process.env.PORT) || 5000;
 const URI =process.env.DATABASE_URL;
 
-let server;
+let server:Server
 
 
 // port

@@ -74,6 +74,10 @@ app.use(express.json()); /// convert to all json
 app.use(express.urlencoded({ extended: true })); // parse URL-encoded body
 app.use(cookieParser()); //// enable cookies parser
 
+// ejs
+app.set("view engine","ejs")
+
+
 // route 
 app.use('/api/v1', userRouter);
 // auth
