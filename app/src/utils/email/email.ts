@@ -1,30 +1,43 @@
 import nodemailer from 'nodemailer';
 
+
+
+
+// normal email send
+/// use ejs 
+// use redish
+
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: '',
-    pass: '',
+    user: 'fakirsakib22232@gmail.com',
+    pass: 'egra xurx aebz uhmp',
   },
 });
 
 // send email
 
-const sendEmail = async (toEmail , otp) => {
+
+export const sendEmail = async (toEmail:string , name:string,otp:number) => {
+  console.log(toEmail, name,otp , " email ");
+
   const mailOptions = {
-    from: 'me',
+    from: 'fakirsakib22232@gmail.com',
     to: toEmail,
-    subject: `You reset password otp ${ otp}`,
+    subject: ` Hi ${name}   reset password otp ${ otp}`,
   };
+  console.log(mailOptions)
 
   // Send the email
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error('Error occurred:', error);
-      // res.status(500).send('Error in sending email. Please try again later.');
-    } else {
-      console.log('Email sent:', info.response);
-      // res.send('Email sent successfully!');
-    }
-  });
+    try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent successfully:", info.response);
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
+
+
 };
+console.log("send email")
+

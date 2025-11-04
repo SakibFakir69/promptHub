@@ -17,6 +17,7 @@ import "./config/passport/passport"
 
 import { userRouter } from './modules/users/user.route';
 import { AuthRouter } from './modules/auth/auth.route';
+import { sendEmail } from './utils/email/email';
 
 
 
@@ -85,6 +86,8 @@ app.use('/api/v1/auth', AuthRouter);
 
 // api test
 app.get('/', (req: Request, res: Response) => {
+  sendEmail("sakibfakir749@gmail.com",'sakibfakir',1234);
+  
   res.send('Hello, World!');
 });
 

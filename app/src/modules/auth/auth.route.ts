@@ -11,26 +11,6 @@ import { User } from "../users/user.model";
 const router = Router();
 
 
-/**
- * @swagger
- * api/v1/auth/me
- *   get:
- *   summary:User Retrieve Successfully
- *   description:User Retrieve Successfully
- *        response:
- *             200:
- *                content:
- *                     application/json:
- *                          schema:
- *                            status:boolean
- *                                 message:string
- *                                     data:object
- *     404:
- *        description: User Not Founded
- *     405:
- *        description: Internal server Error                             
- */
-
 router.get('/me', verifyToken,authController.getMe);
 
 
