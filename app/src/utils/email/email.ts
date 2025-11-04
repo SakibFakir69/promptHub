@@ -1,12 +1,11 @@
 import nodemailer from 'nodemailer';
-
-
-
+import path from 'path';
+import ejs from 'ejs'
+import { email } from 'zod';
 
 // normal email send
-/// use ejs 
+/// use ejs
 // use redish
-
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -18,26 +17,30 @@ const transporter = nodemailer.createTransport({
 
 // send email
 
+export const sendEmail = async (toEmail: string, name: string, otp: number) => {
+  console.log(toEmail, name, otp, ' email ');
 
-export const sendEmail = async (toEmail:string , name:string,otp:number) => {
-  console.log(toEmail, name,otp , " email ");
+
+
+  const templatePath = path.join(process.cwd() ,"template","otpEmail.ejs");
+  const html =await ejs.renderFile(templatePath, {name,otp});
+
+
 
   const mailOptions = {
     from: 'fakirsakib22232@gmail.com',
     to: toEmail,
-    subject: ` Hi ${name}   reset password otp ${ otp}`,
+    subject: `Yout OTP Code`,
+    html
   };
-  console.log(mailOptions)
+  console.log(mailOptions);
 
   // Send the email
-    try {
+  try {
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully:", info.response);
+    console.log('Email sent successfully:', info.response);
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error('Error sending email:', error);
   }
-
-
 };
-console.log("send email")
-
+console.log('send email');
