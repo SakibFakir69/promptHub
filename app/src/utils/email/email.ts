@@ -23,6 +23,8 @@ export const sendEmail = async (toEmail: string, name: string, otp: number) => {
 
 
   const templatePath = path.join(process.cwd() ,"template","otpEmail.ejs");
+  // __dir , folder , file 
+   
   const html =await ejs.renderFile(templatePath, {name,otp});
 
 

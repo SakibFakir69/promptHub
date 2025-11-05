@@ -46,6 +46,7 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-google-oidc": "^0.1.0",
     "passport-local": "^1.0.0",
+    "redis": "^5.9.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui": "^5.29.5",
     "swagger-ui-express": "^5.0.1",
