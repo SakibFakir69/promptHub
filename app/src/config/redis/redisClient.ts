@@ -1,21 +1,27 @@
+import  { createClient } from "redis";
 
+export const redisClient = createClient({
+  // eslint-disable-next-line no-undef
+  url: process.env.REDIS_URL
+});
 
-import redis from 'redis'
+redisClient.on("connect", () => {
+  console.log("✅ Redis Client connected");
+});
 
+redisClient.on("ready", () => {
+  console.log("🚀 Redis ready to use");
+});
 
+redisClient.on("error", (err) => {
+  console.error("❌ Redis Error:", err);
+});
 
-export const redisConnect =  redis.createClient({
-
-    url:"gave url",
-    port:"23",
-    username:"sakib",
-    password:""
-
-})
-
-redisConnect.connect();
-
-// set 
-redisConnect.SETEX("gmail", 120,45677)
-// get
-const isMatchPassword = redisConnect.get("gmail");
+// ✅ Connect once at startup
+(async () => {
+  try {
+    await redisClient.connect();
+  } catch (error) {
+    console.error("❌ Failed to connect to Redis:", error);
+  }
+})();

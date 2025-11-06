@@ -2,16 +2,17 @@
 
 // create user
 
-import { Request , Response } from 'express';
+import { NextFunction, Request , Response } from 'express';
 import { userServices } from './user.service';
 import { User } from './user.model';
 
 
 
 // jwt, cookies  , access , refressh token 
-const createUser = async (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response, next:NextFunction) => {
   console.log('create user    ');
   console.log(req.body);
+
 
 
 
@@ -35,6 +36,7 @@ const createUser = async (req: Request, res: Response) => {
 
     const result = await userServices.createUser(req.body);
     console.log(result);
+      
 
     res.status(201).json({
       status: true,
@@ -43,10 +45,42 @@ const createUser = async (req: Request, res: Response) => {
     });
 
   } catch (error) {
-    console.log(error);
+    next(error);
+
   }
 };
 
+
+
+// delete user 
+
+const deleteUser = async (req:Request, res:Response,next:NextFunction)=>{
+
+
+  try {
+    const userId = req.user?.id as string;
+
+    const result = await userServices.deleteUser(userId);
+
+    return res.status(200).json({
+      status:true,
+      message:"User Deleted Successfully"
+    })
+
+
+    
+  } catch (error) {
+
+    next(error);
+
+   
+    
+  }
+
+
+}
+
+
 export const userController = {
-  createUser,
+  createUser,deleteUser
 };

@@ -17,7 +17,8 @@ import "./config/passport/passport"
 
 import { userRouter } from './modules/users/user.route';
 import { AuthRouter } from './modules/auth/auth.route';
-import { sendEmail } from './utils/email/email';
+import { otpRouter } from './modules/otp/otp.route';
+import { ErrorHandler } from './middleware/ErrorHandler';
 
 
 
@@ -80,17 +81,26 @@ app.set("view engine","ejs")
 
 
 // route 
-app.use('/api/v1', userRouter);
+app.use('/api/v1/user', userRouter);
 // auth
 app.use('/api/v1/auth', AuthRouter);
+// otp
+app.use('/api/v1/otp',otpRouter)
 
 // api test
-app.get('/', (req: Request, res: Response) => {
-  sendEmail("sakibfakir749@gmail.com",'sakibfakir',1234);
+app.get('/', async (req: Request, res: Response) => {
+  // sendEmail("sakibfakir749@gmail.com",'sakibfakir',1234);
+
+
+
   
   res.send('Hello, World!');
 });
 
+
+
+// handel error
+app.use(ErrorHandler);
 
 // Catch-all route for 404
 app.use((req:Request, res:Response,next:NextFunction)=>{

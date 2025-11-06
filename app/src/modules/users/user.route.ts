@@ -10,5 +10,7 @@ const router = Router();
 
 
 router.post('/create-user',userController.createUser )
+// delete update
+
 
 export const userRouter = router;

@@ -9,7 +9,7 @@ const router = Router();
 
 
 router.post('/send-otp', verifyToken,otpController.sendOtp);
-router.post('/verify-otp', verifyToken, otpController.sendOtp);
+router.post('/verify-otp', verifyToken, otpController.verifyOtp);
 
 
 

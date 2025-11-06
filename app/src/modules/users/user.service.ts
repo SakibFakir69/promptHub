@@ -24,6 +24,19 @@ const createUser = async (payload: Partial<IUser>) => {
   }
 };
 
+
+// delete user
+
+const deleteUser = async (id:string)=>{
+
+  const result = await User.findByIdAndUpdate(id, {
+    isDelete:false,
+
+  },{upsert:true});
+  return result;
+
+}
+
 export const userServices = {
-  createUser,
+  createUser,deleteUser
 };

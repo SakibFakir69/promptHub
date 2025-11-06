@@ -1,6 +1,6 @@
 // login-user
 
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { User } from '../users/user.model';
 import bcrypt from 'bcryptjs';
 import { authServices } from './auth.services';
@@ -15,7 +15,7 @@ import { generateJwtToken } from '../../utils/genrateToken';
 
 // working on getMe => logOutuser
 
-const loginUser = async (req: Request, res: Response) => {
+const loginUser = async (req: Request, res: Response , next:NextFunction) => {
   try {
     console.log('login user');
     const { email, password } = req.body;
@@ -71,13 +71,15 @@ const loginUser = async (req: Request, res: Response) => {
       refreshToken: refreshToken,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
+
+    
   }
 };
 
 // password change
 
-const ResetPassword = async (req: Request, res: Response) => {
+const ResetPassword = async (req: Request, res: Response , next:NextFunction) => {
   try {
     const { password, newPassword } = req.body;
 
@@ -117,11 +119,11 @@ const ResetPassword = async (req: Request, res: Response) => {
       message: 'password reset successfully',
     });
   } catch (error) {
-    console.log(error);
+       next(error);
   }
 };
 
-const changePassword = async (req: Request, res: Response) => {
+const changePassword = async (req: Request, res: Response,next:NextFunction) => {
   try {
     const { password, newPassword } = req.body;
 
@@ -160,12 +162,12 @@ const changePassword = async (req: Request, res: Response) => {
       message: 'password change successfully',
     });
   } catch (error) {
-    console.log(error);
+       next(error);
   }
 };
 
 // logout user
-const logOutUser = async (req: Request, res: Response) => {
+const logOutUser = async (req: Request, res: Response,next:NextFunction) => {
   try {
     const user_id = req.user?.id;
     const user = await User.findById(user_id);
@@ -194,13 +196,13 @@ const logOutUser = async (req: Request, res: Response) => {
       data: null,
     });
   } catch (error) {
-    console.log(error);
+       next(error);
   }
 };
 
 // get me
 
-const getMe = async (req: Request, res: Response) => {
+const getMe = async (req: Request, res: Response,next:NextFunction) => {
   try {
     const user_id = req.user?.id;
 
@@ -221,19 +223,13 @@ const getMe = async (req: Request, res: Response) => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.log(error);
-
-    return res.status(500).json({
-      status: false,
-      message: `${error.name} -> ${error.message}`,
-      stack: error.stack,
-    });
+       next(error);
   }
 };
 
 // refresh token
 
-const refreshToken = (req: Request, res: Response) => {
+const refreshToken = (req: Request, res: Response,next:NextFunction) => {
   try {
     const refresh_token = req.cookies.refreshToken;
     //// verify refreshToken
@@ -272,7 +268,7 @@ const refreshToken = (req: Request, res: Response) => {
 
     });
   } catch (error) {
-    console.log(error);
+       next(error);
   }
 };
 
