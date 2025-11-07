@@ -18,7 +18,7 @@ import "./config/passport/passport"
 import { userRouter } from './modules/users/user.route';
 import { AuthRouter } from './modules/auth/auth.route';
 import { otpRouter } from './modules/otp/otp.route';
-import { ErrorHandler } from './middleware/ErrorHandler';
+import { ErrorHandler } from './helper/ErrorHandler';
 
 
 

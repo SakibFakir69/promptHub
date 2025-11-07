@@ -1,7 +1,8 @@
-import { Request, Response } from "express";
+import { Request, Response,NextFunction } from "express";
 import otpGenerator from "otp-generator";
 import { sendEmail } from "../../utils/email/email";
 import { redisClient } from "../../config/redis/redisClient";
+import { ReturnResponse } from "../../helper/ReturnResponse";
 
 
 
@@ -15,19 +16,16 @@ const sendOtp = async (req: Request, res: Response,next:NextFunction) => {
 
     //  Validate input
     if (!email || !user_name) {
-      return res.status(400).json({
-        status: false,
-        message: "Email and username are required.",
-      });
+     
+
+    ReturnResponse(res, 400, false,"Email and username are required.")
     }
 
     //  Prevent multiple OTP requests
     const existingOtp = await redisClient.get(`otp:${email}`);
     if (existingOtp) {
-      return res.status(429).json({
-        status: false,
-        message: "Please wait before requesting another OTP.",
-      });
+      
+      ReturnResponse(res, 429,false,"Please wait before requesting another OTP.")
     }
 
     //  Generate OTP
@@ -42,18 +40,19 @@ const sendOtp = async (req: Request, res: Response,next:NextFunction) => {
     await redisClient.setEx(`otp:${email}`, 60 * 5, otp);
 
     //  Send email
-    await sendEmail(email, user_name,Number( otp));
+    await sendEmail(email, user_name as string,Number( otp));
 
-    return res.status(200).json({
-      status: true,
-      message: "OTP sent successfully",
-      otp:{
+   
+      const  otpDetails:{email:string,user_name:string,otp:string, time:number}={
         email:email,
-        user_name:user_name,
+        user_name:user_name as string,
         otp:otp,
         time:60*5
       }
-    });
+    
+
+    ReturnResponse(res, 200,true,"OTP sent successfully",otpDetails)
+
   } catch (error) {
        next(error);
   }
@@ -69,10 +68,8 @@ const verifyOtp = async (req: Request, res: Response,next:NextFunction) => {
     console.log(storedOtp)
 
     if (!storedOtp) {
-      return res.status(400).json({
-        status: false,
-        message: "OTP expired or not found.",
-      });
+     
+      ReturnResponse(res,400,false,"OTP expired or not found.")
     }
 
     //  Compare OTP
@@ -86,11 +83,10 @@ const verifyOtp = async (req: Request, res: Response,next:NextFunction) => {
     //  Delete OTP after verification
     await redisClient.del(`otp:${email}`);
 
-    return res.status(200).json({
-      status: true,
-      message: "OTP verified successfully.",
-      otp:storedOtp
-    });
+   
+
+    ReturnResponse(res, 200,true,"OTP verified successfully.")
+
   } catch (error) {
        next(error);
   }

@@ -5,6 +5,7 @@
 import { NextFunction, Request , Response } from 'express';
 import { userServices } from './user.service';
 import { User } from './user.model';
+import { ReturnResponse } from '../../helper/ReturnResponse';
 
 
 
@@ -22,14 +23,11 @@ const createUser = async (req: Request, res: Response, next:NextFunction) => {
 
     const isUserExits = await User.findOne({email:email});
 
-    if(isUserExits)
+    if(isUserExits) 
     {
-        return res.status(401).json({
-            status:false,
-            message:"User Already Exits",
-            data:isUserExits.email
+     
 
-        })
+        ReturnResponse(res,401, false,'User Already Exits')
         
     }
 
@@ -38,11 +36,8 @@ const createUser = async (req: Request, res: Response, next:NextFunction) => {
     console.log(result);
       
 
-    res.status(201).json({
-      status: true,
-      message: 'User created Successfully',
-      data: result,
-    });
+
+    ReturnResponse(res,201,true,'User created Successfully',result);
 
   } catch (error) {
     next(error);
@@ -62,11 +57,8 @@ const deleteUser = async (req:Request, res:Response,next:NextFunction)=>{
 
     const result = await userServices.deleteUser(userId);
 
-    return res.status(200).json({
-      status:true,
-      message:"User Deleted Successfully"
-    })
 
+    ReturnResponse(res, 200, true,'User Deleted Successfully')
 
     
   } catch (error) {

@@ -7,6 +7,7 @@ import { authServices } from './auth.services';
 import SetCookies from '../../utils/SetCookies';
 import jwt from 'jsonwebtoken';
 import { generateJwtToken } from '../../utils/genrateToken';
+import { ReturnResponse } from '../../helper/ReturnResponse';
 
 
 // logic for google id
@@ -25,24 +26,23 @@ const loginUser = async (req: Request, res: Response , next:NextFunction) => {
 
     // find user
     if (!isUserExits) {
-      return res.status(401).json({
-        status: false,
-        message: 'User not founded',
-        data: null,
-      });
+
+     
+
+      ReturnResponse(res, 401, false,'User not founded');
+      return;
     }
 
     // compare password
-    const hashPassword = isUserExits.password as string;
+    const hashPassword = isUserExits?.password as string;
 
     const isMatchPassword = await bcrypt.compare(password, hashPassword);
 
     if (!isMatchPassword) {
-      return res.status(404).json({
-        status: false,
-        message: 'Invalid credentials',
-        data: null,
-      });
+
+     
+      ReturnResponse(res,404,false, 'Invalid credentials')
+      return;
     }
 
     // cdata
@@ -52,9 +52,10 @@ const loginUser = async (req: Request, res: Response , next:NextFunction) => {
     const refreshToken = result?.refreshToken;
 
     if (!accessToken || !refreshToken) {
-      return res
-        .status(500)
-        .json({ status: false, message: 'Token generation failed' });
+      
+
+        ReturnResponse(res,500,false,'Token generation failed')
+        return;
     }
     console.log(accessToken, refreshToken, ' token ');
 
@@ -94,30 +95,31 @@ const ResetPassword = async (req: Request, res: Response , next:NextFunction) =>
     const isUser = await User.findOne({ email: email });
     //
     if (!isUser) {
-      return res.status(404).json({
-        status: false,
-        message: 'User not found',
-      });
+      
+
+      ReturnResponse(res,404,false,'User not found');
+      return;
     }
 
+    
     const isMatchPassword = await bcrypt.compare(password, isUser.password);
 
     if (!isMatchPassword) {
-      return res.status(200).json({
-        status: false,
-        message: 'Password not match',
-        data: null,
-      });
+
+      
+      ReturnResponse(res,200,false,'Password not match');
+      return;
     }
     const hashNewPassword = await bcrypt.hash(newPassword, 10);
     isUser.password = hashNewPassword;
 
     await isUser?.save();
 
-    return res.status(200).json({
-      status: true,
-      message: 'password reset successfully',
-    });
+   
+
+    ReturnResponse(res, 200, false,'password reset successfully');
+    return;
+
   } catch (error) {
        next(error);
   }
@@ -137,30 +139,31 @@ const changePassword = async (req: Request, res: Response,next:NextFunction) => 
     const isUser = await User.findOne({ email: email });
     //
     if (!isUser) {
-      return res.status(404).json({
-        status: false,
-        message: 'User not found',
-      });
+
+      
+      ReturnResponse(res,404,false,'User not found');
+      return;
     }
 
     const isMatchPassword = await bcrypt.compare(password, isUser.password);
 
     if (!isMatchPassword) {
-      return res.status(200).json({
-        status: false,
-        message: 'Password not match',
-        data: null,
-      });
+
+     
+
+      ReturnResponse(res,200,false,'Password not match');
+      return;
     }
+
+
     const hashNewPassword = await bcrypt.hash(newPassword, 10);
     isUser.password = hashNewPassword;
 
     await isUser?.save();
 
-    return res.status(200).json({
-      status: true,
-      message: 'password change successfully',
-    });
+    ReturnResponse(res,200,false,'password change successfully');
+    return;
+
   } catch (error) {
        next(error);
   }
@@ -173,10 +176,9 @@ const logOutUser = async (req: Request, res: Response,next:NextFunction) => {
     const user = await User.findById(user_id);
 
     if (!user) {
-      return res.status(404).json({
-        status: false,
-        message: 'User Not Founded',
-      });
+;
+      ReturnResponse(res,404,false,'User Not Founded');
+      return;
     }
 
     res.clearCookie('accessToken', {
@@ -190,11 +192,9 @@ const logOutUser = async (req: Request, res: Response,next:NextFunction) => {
       sameSite: 'none',
     });
 
-    return res.status(200).json({
-      status: true,
-      message: 'User Log Out Successfully',
-      data: null,
-    });
+  
+    ReturnResponse(res,200,true,'User Log Out Successfully');
+
   } catch (error) {
        next(error);
   }
@@ -207,19 +207,16 @@ const getMe = async (req: Request, res: Response,next:NextFunction) => {
     const user_id = req.user?.id;
 
     if (!user_id) {
-      return res.status(404).json({
-        status: false,
-        message: 'User not founded',
-      });
+
+      
+      ReturnResponse(res,404,false,'User not founded');
+      return;
     }
 
     const users = await authServices.getMe(user_id);
 
-    return res.status(200).json({
-      status: true,
-      message: 'User login successfull',
-      data: users,
-    });
+   
+    ReturnResponse(res,200,true, 'User login successfull',users)
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -234,19 +231,20 @@ const refreshToken = (req: Request, res: Response,next:NextFunction) => {
     const refresh_token = req.cookies.refreshToken;
     //// verify refreshToken
     if (!refresh_token) {
-      return res.status(401).json({
-        status: false,
-        message: 'Token expired'
-      });
+
+      
+      ReturnResponse(res,401,false,'Token expired');
+      return;
     }
+
     const refresh_secrect = process.env?.REFRESH_TOKEN_SECRET_KEY as string || 'token'
    
     jwt.verify(refresh_token,refresh_secrect , (error:any) => {
       if (error) {
-        return res.status(403).json({
-          status: false,
-          message: 'You are not allowed to perform this action',
-        });
+
+        
+        ReturnResponse(res,403,false,'You are not allowed to perform this action');
+        return;
       }
 
       const user = req.user;
