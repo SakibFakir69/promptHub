@@ -10,11 +10,6 @@ import { generateJwtToken } from '../../utils/genrateToken';
 import { ReturnResponse } from '../../helper/ReturnResponse';
 
 
-// logic for google id
-// if user have not password then gave user to set password
-// google id send viva me route
-
-// working on getMe => logOutuser
 
 const loginUser = async (req: Request, res: Response , next:NextFunction) => {
   try {
@@ -63,7 +58,7 @@ const loginUser = async (req: Request, res: Response , next:NextFunction) => {
     /// access token
     SetCookies(res, 'accessToken', accessToken, 24 * 60 * 60 * 1000);
     // refresh token
-    SetCookies(res, 'refreshToke', refreshToken, 24 * 60 * 60 * 1000);
+    SetCookies(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000);
     console.log('cookies set');
 
     return res.status(200).json({
@@ -117,8 +112,8 @@ const ResetPassword = async (req: Request, res: Response , next:NextFunction) =>
 
    
 
-    ReturnResponse(res, 200, false,'password reset successfully');
-    return;
+    return ReturnResponse(res, 200, true,'password reset successfully');
+    
 
   } catch (error) {
        next(error);

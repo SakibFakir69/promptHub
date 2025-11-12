@@ -37,6 +37,12 @@ const deleteUser = async (id:string)=>{
 
 }
 
+// update user 
+
+const updateUser =<T> (id:string , data?:T)=>{
+
+}
+
 export const userServices = {
-  createUser,deleteUser
+  createUser,deleteUser , updateUser
 };

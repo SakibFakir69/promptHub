@@ -8,6 +8,7 @@ export interface IUser {
   email: string;
   password: string;
   bio: string;
+  photo?:string,
   avatar:string,
   googleId:string,
   gender: string;
@@ -21,4 +22,10 @@ export interface IUser {
   isLoggedIn:boolean,
   id:string, /// virtual id
   
+}
+
+export enum  GenderEnum{
+  MALE="MALE",
+  FEMALE="FEMALE",
+  OTHERS="OTHERS"
 }

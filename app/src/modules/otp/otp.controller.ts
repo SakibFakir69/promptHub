@@ -3,6 +3,7 @@ import otpGenerator from "otp-generator";
 import { sendEmail } from "../../utils/email/email";
 import { redisClient } from "../../config/redis/redisClient";
 import { ReturnResponse } from "../../helper/ReturnResponse";
+import { zodOtpValidationSchema } from "./otp.validation";
 
 
 
@@ -11,14 +12,14 @@ import { ReturnResponse } from "../../helper/ReturnResponse";
 
 const sendOtp = async (req: Request, res: Response,next:NextFunction) => {
   try {
-    const { email } = req.body;
+     const email = req.user?.email;
     const user_name = req.user?.name;
 
     //  Validate input
     if (!email || !user_name) {
      
 
-    ReturnResponse(res, 400, false,"Email and username are required.")
+   return ReturnResponse(res, 400, false,"Email and username are required")
     }
 
     //  Prevent multiple OTP requests
@@ -51,7 +52,7 @@ const sendOtp = async (req: Request, res: Response,next:NextFunction) => {
       }
     
 
-    ReturnResponse(res, 200,true,"OTP sent successfully",otpDetails)
+   return  ReturnResponse(res, 200,true,"OTP sent successfully",otpDetails)
 
   } catch (error) {
        next(error);
@@ -60,7 +61,12 @@ const sendOtp = async (req: Request, res: Response,next:NextFunction) => {
 
 const verifyOtp = async (req: Request, res: Response,next:NextFunction) => {
   try {
-    const { email, otp } = req.body;
+    const { otp } = req.body;
+
+    const otpValidationSchema = zodOtpValidationSchema.safeParse(otp);
+
+
+    const email = req.user?.email;
 
     //  Get OTP from Redis
     const storedOtp = await redisClient.get(`otp:${email}`);

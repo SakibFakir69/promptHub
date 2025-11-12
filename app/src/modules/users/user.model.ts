@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema<IUser>(
 
     
     googleId:{type:String},
+    photo:{type:String},
     avatar:{type:String},
 
     bio: { type: String, default: '' },
