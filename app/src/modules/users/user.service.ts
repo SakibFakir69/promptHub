@@ -39,7 +39,14 @@ const deleteUser = async (id:string)=>{
 
 // update user 
 
-const updateUser =<T> (id:string , data?:T)=>{
+const updateUser = async <T>(id:string , data?:Partial<IUser | T>)=>{
+
+  const result = await User.findByIdAndUpdate(id, {$set:data}, {
+    new:true, /// return new data 
+    runValidators:true /// return mongos validator
+  })
+
+  return result;
 
 }
 

@@ -1,138 +1,116 @@
-
 /* eslint-disable no-unused-vars */
 
 // create user
 
-import { NextFunction, Request , Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { userServices } from './user.service';
 import { User } from './user.model';
 import { ReturnResponse } from '../../helper/ReturnResponse';
 import { userValidation } from './user.validation';
 
-
-
-const createUser = async (req: Request, res: Response, next:NextFunction) => {
+const createUser = async (req: Request, res: Response, next: NextFunction) => {
   console.log('create user    ');
   console.log(req.body);
 
-
-
-
   try {
+    const { email } = req.body;
 
-  const {email} = req.body;
+    const isUserExits = await User.findOne({ email: email });
 
-    const isUserExits = await User.findOne({email:email});
-
-    if(isUserExits) 
-    {
-     
-
-      return  ReturnResponse(res,401, false,'User Already Exits')
-        
+    if (isUserExits) {
+      return ReturnResponse(res, 401, false, 'User Already Exits');
     }
 
-    const  validationResult  = userValidation.createUserSchema.safeParse(req.body);
+    const validationResult = userValidation.createUserSchema.safeParse(
+      req.body,
+    );
 
-    if(! validationResult?.success)
-    {
+    if (!validationResult?.success) {
       const validationError = validationResult?.error.format();
-       return ReturnResponse<typeof validationError>(res , 400, false , 'Zod Validation Error', validationError);
+      return ReturnResponse<typeof validationError>(
+        res,
+        400,
+        false,
+        'Zod Validation Error',
+        validationError,
+      );
     }
 
-    const createUserData =  validationResult.data;
-
-
-
+    const createUserData = validationResult.data;
 
     const result = await userServices.createUser(createUserData);
     console.log(result);
-      
 
-
-    ReturnResponse(res,201,true,'User created Successfully',result);
-
+    ReturnResponse(res, 201, true, 'User created Successfully', result);
   } catch (error) {
     next(error);
-
   }
 };
 
+// delete user
 
-
-// delete user 
-
-const deleteUser = async (req:Request, res:Response,next:NextFunction)=>{
-
-
+const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user?.id as string;
 
     await userServices.deleteUser(userId);
 
-
-    ReturnResponse(res, 200, true,'User Deleted Successfully')
-
-    
+    ReturnResponse(res, 200, true, 'User Deleted Successfully');
   } catch (error) {
-
     next(error);
-
-   
-    
   }
+};
 
-
-}
-
-
-
-const updateUser = async(req:Request , res:Response, next:NextFunction)=>{
-
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-
     const user_id = req.user?.id as string;
 
     const updateData = {
-         name:req.body.name ,
-         bio:req.body.bio,
-         photo:req.body.photo,
-         avatar:req.body.avatar,
-         tags:req.body.tags
-         
-
-    }
+      name: req.body.name,
+      bio: req.body.bio,
+      photo: req.body.photo,
+      avatar: req.body.avatar,
+      tags: req.body.tags,
+    };
 
     // zod validation
-    const updateDataValidation =await userValidation.updateUserSchema.safeParse(updateData);
+    const updateDataValidation =
+     userValidation.updateUserSchema.safeParse(updateData);
 
-
-    if(!updateDataValidation?.success)
-    {
+    if (!updateDataValidation?.success) {
       const updateError = updateDataValidation?.error.format();
-      return ReturnResponse(res,400,false, 'Zod Update Validation Error' , updateError)
+      return ReturnResponse(
+        res,
+        400,
+        false,
+        'Zod Update Validation Error',
+        updateError,
+      );
     }
-    
+
     const updatedData = updateDataValidation?.data;
- 
 
     // update services
-      
-    const result = userServices.updateUser<typeof updatedData>(user_id, updatedData);
 
-    return ReturnResponse(res , 200,true, 'User Data Update Successfully', result);
+    const result =await userServices.updateUser<typeof updatedData>(
+      user_id,
+      updatedData,
+    );
 
-
-    
-    
+    return ReturnResponse(
+      res,
+      200,
+      true,
+      'User Data Update Successfully',
+      result,
+    );
   } catch (error) {
     next(error);
-    
   }
-
-
-}
+};
 
 export const userController = {
-  createUser,deleteUser , updateUser
+  createUser,
+  deleteUser,
+  updateUser,
 };
