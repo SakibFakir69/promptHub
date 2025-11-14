@@ -27,7 +27,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
 
     if (!validationResult?.success) {
       const validationError = validationResult?.error.format();
-      return ReturnResponse<typeof validationError>(
+      return ReturnResponse(
         res,
         400,
         false,
