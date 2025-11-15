@@ -8,13 +8,23 @@ import SetCookies from '../../utils/SetCookies';
 import jwt from 'jsonwebtoken';
 import { generateJwtToken } from '../../utils/genrateToken';
 import { ReturnResponse } from '../../helper/ReturnResponse';
-
+import { authValidator } from './auth.validation';
 
 
 const loginUser = async (req: Request, res: Response , next:NextFunction) => {
   try {
     console.log('login user');
     const { email, password } = req.body;
+
+    const zodValidation = authValidator.loginUserValidationSchema.safeParse(req.body);
+
+    if(!zodValidation.success)
+    {
+      const errors = zodValidation?.error.format();
+      return ReturnResponse <typeof errors>(res, 400, false, 'Validation failed', errors )
+    }
+
+
 
     const isUserExits = await User.findOne({ email: email });
     console.log(email, password);
@@ -41,6 +51,7 @@ const loginUser = async (req: Request, res: Response , next:NextFunction) => {
     }
 
     // cdata
+    
     const result = await authServices.loginUser(isUserExits);
 
     const accessToken = result?.accessToken;
@@ -78,6 +89,9 @@ const loginUser = async (req: Request, res: Response , next:NextFunction) => {
 const ResetPassword = async (req: Request, res: Response , next:NextFunction) => {
   try {
     const { password, newPassword } = req.body;
+
+
+    
 
     // old and new pass take then verify
 

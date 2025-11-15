@@ -2,6 +2,7 @@
 import { IUser } from '../users/user.interface';
 import { generateJwtToken } from '../../utils/genrateToken';
 import { User } from '../users/user.model';
+import { authValidator } from './auth.validation';
 
 
 
@@ -24,6 +25,8 @@ const loginUser = async (payload:Partial<IUser>) => {
       email: payload?.email,
       name: payload?.name,
     };
+
+   
    
     
 
