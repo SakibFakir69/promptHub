@@ -90,6 +90,17 @@ const ResetPassword = async (req: Request, res: Response , next:NextFunction) =>
   try {
     const { password, newPassword } = req.body;
 
+        // zod validation 
+    const zodValidation =authValidator.changePasswordSchema.safeParse(req.body);
+
+
+    if(!zodValidation?.success)
+    {
+      const errors = zodValidation.error.format();
+      return ReturnResponse(res, 400, false, 'Validation failed',errors );
+
+    }
+
 
     
 
