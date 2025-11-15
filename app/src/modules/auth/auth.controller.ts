@@ -88,10 +88,10 @@ const loginUser = async (req: Request, res: Response , next:NextFunction) => {
 
 const ResetPassword = async (req: Request, res: Response , next:NextFunction) => {
   try {
-    const { password, newPassword } = req.body;
+    const { newPassword } = req.body;
 
         // zod validation 
-    const zodValidation =authValidator.changePasswordSchema.safeParse(req.body);
+    const zodValidation =authValidator.resetPasswordSchema.safeParse(req.body);
 
 
     if(!zodValidation?.success)
@@ -122,14 +122,7 @@ const ResetPassword = async (req: Request, res: Response , next:NextFunction) =>
     }
 
     
-    const isMatchPassword = await bcrypt.compare(password, isUser.password);
-
-    if (!isMatchPassword) {
-
-      
-      ReturnResponse(res,200,false,'Password not match');
-      return;
-    }
+   
     const hashNewPassword = await bcrypt.hash(newPassword, 10);
     isUser.password = hashNewPassword;
 
@@ -148,6 +141,17 @@ const ResetPassword = async (req: Request, res: Response , next:NextFunction) =>
 const changePassword = async (req: Request, res: Response,next:NextFunction) => {
   try {
     const { password, newPassword } = req.body;
+
+
+
+    // zod validation 
+    const zodValidation = authValidator.changePasswordSchema.safeParse(req.body);
+
+    if(!zodValidation?.success)
+    {
+      const errors = zodValidation?.error.format();
+      return ReturnResponse(res, 400, false, "Validation Failed",errors )
+    }
 
     // old and new pass take then verify
 

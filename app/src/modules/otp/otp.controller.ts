@@ -65,6 +65,12 @@ const verifyOtp = async (req: Request, res: Response,next:NextFunction) => {
 
     const otpValidationSchema = zodOtpValidationSchema.safeParse(otp);
 
+    if(!otpValidationSchema.success)
+    {
+      const errors = otpValidationSchema.error.format();
+      return ReturnResponse(res, 400, false, 'Validation Failed',errors )
+    }
+
 
     const email = req.user?.email;
 
