@@ -34,16 +34,23 @@ const options = {
     openapi: '3.0.0',
     info: {
       title: 'API documentation for Prompt Hub',
-      version: '1.0.0'
+      version: '1.0.0',
+      // contact
+      
     },
     servers: [
       {
-        url: 'http://localhost:5000'
+        url: 'http://localhost:5000',
+        description:"Local Server"
       }
+      // online server
     ],
     // tags
   },
-  apis: ['./app/src/modules/**/*.ts']
+ apis: ['./app/src/modules/**/*.ts']
+
+
+
 }
 
 

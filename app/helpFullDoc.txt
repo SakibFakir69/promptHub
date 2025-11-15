@@ -2,3 +2,5 @@
 
 
 oauth => https://eddy.hashnode.dev/mastering-user-authentication-a-step-by-step-guide-to-using-google-oauth-20-in-nodejs-with-passportjs
+
+swager:https://dev.to/desmondsanctity/documenting-nodejs-api-using-swagger-4klp
