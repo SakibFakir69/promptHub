@@ -13,7 +13,7 @@ resource ( swagger api doc): [ https://dev.to/desmondsanctity/documenting-nodejs
 5. last test and make api documentation ( swagger );
 6.zod ( input ) validation 
 
-(  swagger -> best pratices -> code review => api test (user,otp,auth) )
+(  swagger -> verify swagger  -> best pratices -> code review => api test (user,otp,auth) )
 
 
 

@@ -6,9 +6,6 @@ import { verifyToken } from "../../middleware/verifyToken";
 
 const router = Router();
 
-// create user
-
-
 
 
 /**
@@ -27,21 +24,27 @@ const router = Router();
  *             required:
  *               - name
  *               - email
- *               - password
  *             properties:
  *               name:
  *                 type: string
+ *                 example: John Doe
  *               email:
  *                 type: string
+ *                 example: johndoe@example.com
  *               password:
  *                 type: string
+ *                 example: MyStrongPassword123
+ *               googleId:
+ *                 type: string
+ *                 example: google123id
+ *               photo:
+ *                 type: string
+ *                 example: https://example.com/photo.jpg
  *     responses:
  *       201:
  *         description: User created successfully
- *       404:
- *         description: Not found
  *       409:
- *         description: Conflict
+ *         description: User already exists
  *       500:
  *         description: Server error
  */
