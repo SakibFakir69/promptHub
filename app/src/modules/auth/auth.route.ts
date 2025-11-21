@@ -358,8 +358,22 @@ router.post('/refresh',authController.refreshToken);
 
 router.post('/logout',authController.loginUser )
 // google
-router.get('/google', passport.authenticate('google',{scope:['profile','email']}));
 
+
+router.get('/google', passport.authenticate('google',{scope:['profile','email']}));
+/**
+ * @swagger
+ * /google/callback:
+ *   get:
+ *     summary: Google OAuth callback
+ *     description: Handles Google OAuth callback.
+ *       Redirects to /dashboard on success or / on failure.
+ *     tags:
+ *       - Auth
+ *     responses:
+ *       302:
+ *         description: Redirect to dashboard on success OR redirect to homepage on failure.
+ */
 router.get('/google/callback', passport.authenticate("google",{
     failureRedirect:"/"
     // if failed to login gave route to redriect
@@ -367,6 +381,7 @@ router.get('/google/callback', passport.authenticate("google",{
      res.redirect('/dashboard');
 
 })
+
 
 router.get('/dashboard', async (req, res) => {
   if (!req.user) {
