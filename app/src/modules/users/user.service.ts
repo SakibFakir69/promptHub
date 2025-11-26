@@ -24,32 +24,36 @@ const createUser = async (payload: Partial<IUser>) => {
   }
 };
 
-
 // delete user
 
-const deleteUser = async (id:string)=>{
-
-  const result = await User.findByIdAndUpdate(id, {
-    isDelete:false,
-
-  },{upsert:true});
+const deleteUser = async (id: string) => {
+  const result = await User.findByIdAndUpdate(
+    id,
+    {
+      isDelete: false,
+    },
+    { upsert: true },
+  );
   return result;
+};
 
-}
+// update user
 
-// update user 
-
-const updateUser = async <T>(id:string , data?:Partial<IUser | T>)=>{
-
-  const result = await User.findByIdAndUpdate(id, {$set:data}, {
-    new:true, /// return new data 
-    runValidators:true /// return mongos validator
-  })
+const updateUser = async <T>(id: string, data?: Partial<IUser | T>) => {
+  const result = await User.findByIdAndUpdate(
+    id,
+    { $set: data },
+    {
+      new: true, /// return new data
+      runValidators: true, /// return mongos validator
+    },
+  );
 
   return result;
-
-}
+};
 
 export const userServices = {
-  createUser,deleteUser , updateUser
+  createUser,
+  deleteUser,
+  updateUser,
 };

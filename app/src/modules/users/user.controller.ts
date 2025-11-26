@@ -61,6 +61,9 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+
+
+
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user_id = req.user?.id as string;
@@ -71,11 +74,12 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
       photo: req.body.photo,
       avatar: req.body.avatar,
       tags: req.body.tags,
+      // extend as need
     };
 
     // zod validation
     const updateDataValidation =
-     userValidation.updateUserSchema.safeParse(updateData);
+      userValidation.updateUserSchema.safeParse(updateData);
 
     if (!updateDataValidation?.success) {
       const updateError = updateDataValidation?.error.format();
@@ -92,7 +96,7 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 
     // update services
 
-    const result =await userServices.updateUser<typeof updatedData>(
+    const result = await userServices.updateUser<typeof updatedData>(
       user_id,
       updatedData,
     );

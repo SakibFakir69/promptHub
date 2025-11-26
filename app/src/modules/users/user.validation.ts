@@ -26,38 +26,32 @@ const createUserSchema = z.object({
   name: z.string().min(4, { message: 'Name must be 4 length' }),
   email: z.email().includes('@', { message: 'Please enter @' }),
   password: z.string().min(6, { message: 'Password must be 6 length' }),
-  bio: z.string().optional().default(""),
-  photo:z.string().optional(),
-  avatar: z.string().optional().default(""),
+  bio: z.string().optional().default(''),
+  photo: z.string().optional(),
+  avatar: z.string().optional().default(''),
   googleId: z.string().optional().default(''),
   totalPost: z.number().default(0),
   gender: z.enum(Object.values(GenderEnum), {
     message: 'Gender Must be male female or others',
-  }),
-  tags:z.array(z.string()).optional(),
+  }).optional(),
+  tags: z.array(z.string()).optional(),
 
-  isVerify: z.boolean(),
-  isBlock: z.boolean(),
-  isDelete: z.boolean(),
-  isLoggedIn: z.boolean(),
+  isVerify: z.boolean().optional(),
+  isBlock: z.boolean().optional(),
+  isDelete: z.boolean().optional(),
+  isLoggedIn: z.boolean().optional(),
 });
 
-// update user 
-
+// update user
 
 const updateUserSchema = z.object({
-   name: z.string().min(4, { message: 'Name must be 4 length' }),
-   bio: z.string().optional().default(""),
-   photo:z.string().optional(),
-  avatar: z.string().optional().default(""),
-    tags:z.array(z.string()).optional(),
-
-
-
-})
+  name: z.string().min(4, { message: 'Name must be 4 length' }),
+  bio: z.string().optional().default(''),
+  photo: z.string().optional(),
+  avatar: z.string().optional().default(''),
+  tags: z.array(z.string()).optional(),
+});
 export const userValidation = {
-  createUserSchema,updateUserSchema
+  createUserSchema,
+  updateUserSchema,
 };
-
-
-

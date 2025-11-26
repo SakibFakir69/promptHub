@@ -92,7 +92,7 @@ router.delete('/delete-user',verifyToken, userController.deleteUser);
 /**
  * @openapi
  * /api/v1/user/update-user:
- *   patch:
+ *   put:
  *     tags:
  *       - User
  *     summary: Update logged-in user information
