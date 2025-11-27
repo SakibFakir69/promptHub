@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import path from 'path';
 import ejs from 'ejs'
-import { email } from 'zod';
+
 
 // normal email send
 /// use ejs
@@ -32,7 +32,7 @@ export const sendEmail = async (toEmail: string, name: string, otp: number) => {
   const mailOptions = {
     from: 'fakirsakib22232@gmail.com',
     to: toEmail,
-    subject: `Yout OTP Code`,
+    subject: `Your OTP Code`,
     html
   };
   console.log(mailOptions);
