@@ -382,7 +382,6 @@ router.get('/google/callback', passport.authenticate("google",{
 
 })
 
-
 router.get('/dashboard', async (req, res) => {
   if (!req.user) {
     return res.redirect('/');
