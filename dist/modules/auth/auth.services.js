@@ -11,25 +11,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authServices = void 0;
 const genrateToken_1 = require("../../utils/genrateToken");
+const user_model_1 = require("../users/user.model");
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     try {
         // compare password , payload , jwt token ,
         // create payload
         const jwtPayload = {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            id: (_a = payload === null || payload === void 0 ? void 0 : payload._id) === null || _a === void 0 ? void 0 : _a.toString(),
+            id: payload === null || payload === void 0 ? void 0 : payload._id,
             email: payload === null || payload === void 0 ? void 0 : payload.email,
             name: payload === null || payload === void 0 ? void 0 : payload.name,
         };
         // create jwt token
-        // eslint-disable-next-line no-undef
         const accesScerect = process.env.BCRYPT_SECRECT_KEY;
-        const refreshScerect = process.env.BCRYPT_SECRECT_KEY;
+        const refreshScerect = process.env.REFRESH_TOKEN_SECRET_KEY;
         // accessToken
-        const accessToken = yield (0, genrateToken_1.generateJwtToken)(jwtPayload, accesScerect, '15d');
+        const accessToken = (0, genrateToken_1.generateJwtToken)(jwtPayload, accesScerect, '30m');
         // refreshToken
-        const refreshToken = yield (0, genrateToken_1.generateJwtToken)(jwtPayload, refreshScerect, '15d');
+        const refreshToken = (0, genrateToken_1.generateJwtToken)(jwtPayload, refreshScerect, '15d');
         console.log(refreshToken, accessToken, payload);
         const result = {
             accessToken: accessToken,
@@ -43,8 +41,22 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
 });
 /// password change 
 const passwordChange = (payload) => {
+    const { newPassword, oldPassword } = payload;
+    console.log(newPassword, oldPassword);
     return payload;
 };
+// getMe 
+// 
+const getMe = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield user_model_1.User.findById(id).select("-password");
+        // user do not see password filed
+        return result;
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
 exports.authServices = {
-    loginUser, passwordChange
+    loginUser, passwordChange, getMe
 };

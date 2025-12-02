@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // create user
 // verify , isdelete, activity  , isBlock
 

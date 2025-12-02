@@ -106,9 +106,9 @@ const ResetPassword = async (req: Request, res: Response , next:NextFunction) =>
 
     // old and new pass take then verify
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
 
-    // eslint-disable-next-line no-unsafe-optional-chaining
+     
     const email = req?.user?.id;
     console.log(email);
 
@@ -155,9 +155,9 @@ const changePassword = async (req: Request, res: Response,next:NextFunction) => 
 
     // old and new pass take then verify
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
 
-    // eslint-disable-next-line no-unsafe-optional-chaining
+     
     const email = req?.user;
 
     const isUser = await User.findOne({ email: email });
@@ -242,7 +242,7 @@ const getMe = async (req: Request, res: Response,next:NextFunction) => {
    
     ReturnResponse(res,200,true, 'User login successfull',users)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
   } catch (error: any) {
        next(error);
   }
@@ -273,7 +273,7 @@ const refreshToken = (req: Request, res: Response,next:NextFunction) => {
 
       const user = req.user;
       const jwtPayload = {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         id: user?._id,
 
         email: user?.email,

@@ -1,7 +1,7 @@
 import  { createClient } from "redis";
 
 export const redisClient = createClient({
-  // eslint-disable-next-line no-undef
+   
   url: process.env.REDIS_URL
 });
 

@@ -21,7 +21,7 @@ console.log(URI);
 
   if(!URI)
   {
-    throw new Error('Not founed Databse Url');
+    throw new Error('Not found Database Url');
 
   }
 
@@ -33,6 +33,7 @@ console.log(URI);
 
       console.log(`server running on this port ${port}`)
     })
+    console.log(server);
 
 
 

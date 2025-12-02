@@ -1,8 +1,8 @@
-/* eslint-disable no-undef */
+ 
 import { IUser } from '../users/user.interface';
 import { generateJwtToken } from '../../utils/genrateToken';
 import { User } from '../users/user.model';
-import { authValidator } from './auth.validation';
+// import { authValidator } from './auth.validation';
 
 
 
@@ -19,7 +19,7 @@ const loginUser = async (payload:Partial<IUser>) => {
     // create payload
 
     const jwtPayload = {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       id:payload?._id , 
 
       email: payload?.email,
@@ -31,7 +31,7 @@ const loginUser = async (payload:Partial<IUser>) => {
     
 
     // create jwt token
-    // eslint-disable-next-line no-undef
+     
     
     const accesScerect: string = process.env.BCRYPT_SECRECT_KEY as string | 'token';
     const refreshScerect: string = process.env.REFRESH_TOKEN_SECRET_KEY as

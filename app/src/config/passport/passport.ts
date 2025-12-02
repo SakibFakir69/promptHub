@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 
 
 
@@ -81,7 +81,7 @@ passport.use(new GoogleStrategy({
 ));
 
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   passport.serializeUser((user:any, done) => {
     done(null, user?._id );
   });

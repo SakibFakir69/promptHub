@@ -10,7 +10,7 @@ const createUser = async (payload: Partial<IUser>) => {
 
     const password: string = payload.password as string;
 
-    // eslint-disable-next-line no-undef, no-unused-vars
+     
     const saltRound: number = Number(process.env.SALT) || 10;
     //   hashPassword
     const hashPassword = await bcrypt.hash(password, saltRound);

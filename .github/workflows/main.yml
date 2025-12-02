@@ -5,8 +5,9 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-# cd
+
 jobs:
+  # 1️⃣ Build job (CI)
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -17,23 +18,49 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
 
       - name: Run ESLint
         run: npm run lint
 
-      - name: Run Tests
+      - name: Run tests
         run: npm test
 
-      - name: Build Project
+      - name: Build project
         run: npm run build --if-present
 
+      # ✅ Save build outputs if needed (optional)
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: .next # For Next.js
+          
+  # 2️⃣ Deploy job (CD)
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: prompt hub 
 
-        # DEVELOPMENT   hook -> https://api.render.com/deploy/srv-d4m8nakhg0os73bmgsi0?key=PM8ZTpxYsJY
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Optional: download build artifact if needed
+      # - name: Download build
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: build
+      #     path: .next
+
+      - name: Deploy to Render
+        if: github.ref == 'refs/heads/main'   # deploy only from main branch
+        run: |
+          curl -X POST "https://api.render.com/deploy/srv-d4m8nakhg0os73bmgsi0?key=PM8ZTpxYsJY"

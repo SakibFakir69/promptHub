@@ -7,8 +7,8 @@ import passport from 'passport';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 
-// eslint-disable-next-line no-unused-vars
-import express, { Application, NextFunction, Request, Response } from 'express';
+ 
+import express, { Application, Request, Response } from 'express';
 
 import session, { SessionOptions as ExpressSessionOptions } from "express-session";
 
@@ -113,7 +113,7 @@ app.get('/', async (req: Request, res: Response) => {
 app.use(ErrorHandler);
 
 // Catch-all route for 404
-app.use((req:Request, res:Response,next:NextFunction)=>{
+app.use((req:Request, res:Response)=>{
 
   res.status(404).json({
     status:false,

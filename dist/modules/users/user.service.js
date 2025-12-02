@@ -22,7 +22,7 @@ const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
             throw new Error('Payload not founded');
         }
         const password = payload.password;
-        // eslint-disable-next-line no-undef, no-unused-vars
+        // eslint-disable-next-line no-undef
         const saltRound = Number(process.env.SALT) || 10;
         //   hashPassword
         const hashPassword = yield bcryptjs_1.default.hash(password, saltRound);
@@ -34,6 +34,23 @@ const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         console.log(error);
     }
 });
+// delete user
+const deleteUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_model_1.User.findByIdAndUpdate(id, {
+        isDelete: false,
+    }, { upsert: true });
+    return result;
+});
+// update user
+const updateUser = (id, data) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_model_1.User.findByIdAndUpdate(id, { $set: data }, {
+        new: true, /// return new data
+        runValidators: true, /// return mongos validator
+    });
+    return result;
+});
 exports.userServices = {
     createUser,
+    deleteUser,
+    updateUser,
 };

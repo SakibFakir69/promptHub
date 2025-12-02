@@ -41,6 +41,7 @@ const userSchema = new mongoose.Schema<IUser>(
 );
 
 // Add virtual id field
+// eslint-disable-next-line no-unused-vars
 userSchema.virtual("id").get(function (this: IUser) {
   return this._id.toString();
 });
