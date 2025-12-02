@@ -36,11 +36,11 @@ jobs:
       - name: Build project
         run: npm run build --if-present
 
-      # ⬆️ Updated to version 4
+      # ✅ Upload build artifacts with a unique name per run
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build
+          name: build-${{ github.run_id }}   # unique per workflow run
           path: dist
 
   # 2️⃣ Deploy job (CD)
@@ -53,12 +53,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Optional if you ever need it
+      # Optional: download the artifact if needed
       # - name: Download build
       #   uses: actions/download-artifact@v4
       #   with:
-      #     name: build
-      #     path: .next
+      #     name: build-${{ github.run_id }}
+      #     path: dist
 
       - name: Deploy to Render
         if: github.ref == 'refs/heads/main'
