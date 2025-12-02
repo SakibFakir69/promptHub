@@ -36,31 +36,31 @@ jobs:
       - name: Build project
         run: npm run build --if-present
 
-      # ✅ Save build outputs if needed (optional)
+      # ⬆️ Updated to version 4
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build
-          path: .next # For Next.js
-          
+          path: .next
+
   # 2️⃣ Deploy job (CD)
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment: prompt hub 
+    environment: prompt-hub
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Optional: download build artifact if needed
+      # Optional if you ever need it
       # - name: Download build
-      #   uses: actions/download-artifact@v3
+      #   uses: actions/download-artifact@v4
       #   with:
       #     name: build
       #     path: .next
 
       - name: Deploy to Render
-        if: github.ref == 'refs/heads/main'   # deploy only from main branch
+        if: github.ref == 'refs/heads/main'
         run: |
           curl -X POST "https://api.render.com/deploy/srv-d4m8nakhg0os73bmgsi0?key=PM8ZTpxYsJY"
