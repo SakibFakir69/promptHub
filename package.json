@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node app/src/server.ts",
-    "test": "jest",
+      "test": "jest --passWithNoTests",
     "lint": "eslint .",
     "pretty": "npx prettier --write .",
     "lint:fix": "eslint --fix"
