@@ -1,13 +1,9 @@
+import js from '@eslint/js';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
-import js from '@eslint/js';
+import globals from 'globals';
 
 export default [
-  // Global ignore list
-  {
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**'],
-  },
-
   // Base JS rules
   {
     ...js.configs.recommended,
@@ -21,8 +17,7 @@ export default [
       sourceType: 'module',
       ecmaVersion: 'latest',
       globals: {
-        // allow process, __dirname, require, module, exports
-        ...require("globals").node,
+        ...globals.node,
       },
     },
     plugins: {
@@ -41,5 +36,10 @@ export default [
       // Allow require() inside TS if needed
       '@typescript-eslint/no-var-requires': 'off',
     },
+  },
+
+  // Global ignore list
+  {
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**'],
   },
 ];
