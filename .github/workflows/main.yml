@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build
-          path: .next
+          path: dist
 
   # 2️⃣ Deploy job (CD)
   deploy:
