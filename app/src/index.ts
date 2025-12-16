@@ -19,7 +19,7 @@ import { userRouter } from './modules/users/user.route';
 import { AuthRouter } from './modules/auth/auth.route';
 import { otpRouter } from './modules/otp/otp.route';
 import { ErrorHandler } from './helper/ErrorHandler';
-
+import { promptRouter } from './modules/prompt/prompt.route';
 
 
 // app
@@ -96,6 +96,8 @@ app.use('/api/v1/user', userRouter);
 app.use('/api/v1/auth', AuthRouter);
 // otp
 app.use('/api/v1/otp',otpRouter)
+// prompt
+app.use('/api/v1/prompt', promptRouter)
 
 // api test
 app.get('/', async (req: Request, res: Response) => {
