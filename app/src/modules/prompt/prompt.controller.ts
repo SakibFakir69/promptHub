@@ -1,9 +1,12 @@
 import multer from 'multer';
 import cloudinary from '../../config/cloudniary/config.cloud';
 import { NextFunction, Request, Response } from 'express';
+import { nextTick } from 'process';
 
 const storage = multer.memoryStorage();
 export const upload = multer({ storage: storage });
+
+// devide into services
 
 const promptImageUpload = async (
   req: Request,
@@ -33,6 +36,14 @@ const promptImageUpload = async (
   }
 };
 
+// 
+
+const createPrompt = async (req:Request, res:Response,next:NextFunction)=>{
+
+ 
+
+}
+
 export const promptController = {
-  promptImageUpload
+  promptImageUpload,createPrompt
 };

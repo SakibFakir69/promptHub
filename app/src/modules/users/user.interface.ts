@@ -3,11 +3,11 @@
 // verify , isdelete, activity  , isBlock
 
 export interface IUser {
-  _id:string,
+  
  
   name: string;
   email: string;
-  password: string;
+  password?: string;
   bio: string;
   photo?:string,
   avatar:string,
@@ -15,7 +15,7 @@ export interface IUser {
   gender: string;
   totalPost: number;
   tags: string[];
-  follower: string[];
+  followers: string[];
   following: string[];
   isVerify:boolean,
   isBlock:boolean,
