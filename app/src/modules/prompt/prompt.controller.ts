@@ -1,7 +1,8 @@
 import multer from 'multer';
 import cloudinary from '../../config/cloudniary/config.cloud';
 import { NextFunction, Request, Response } from 'express';
-import { nextTick } from 'process';
+
+import { Prompt } from './prompt.model';
 
 const storage = multer.memoryStorage();
 export const upload = multer({ storage: storage });
@@ -37,8 +38,24 @@ const promptImageUpload = async (
 };
 
 // 
-
+// add zod validation 
 const createPrompt = async (req:Request, res:Response,next:NextFunction)=>{
+
+
+  try {
+    // title,image,tags,profile
+
+    const promptData = req.body;
+    const result = await Prompt.create(promptData);
+    
+
+
+
+    
+  } catch (error) {
+    next(error);
+    
+  }
 
  
 
