@@ -169,7 +169,7 @@ const changePassword = async (req: Request, res: Response,next:NextFunction) => 
       return;
     }
 
-    const isMatchPassword = await bcrypt.compare(password, isUser.password);
+    const isMatchPassword = await bcrypt.compare(password as string, isUser?.password as string);
 
     if (!isMatchPassword) {
 
@@ -274,7 +274,7 @@ const refreshToken = (req: Request, res: Response,next:NextFunction) => {
       const user = req.user;
       const jwtPayload = {
          
-        id: user?._id,
+        id: user?.id,
 
         email: user?.email,
         name: user?.name,

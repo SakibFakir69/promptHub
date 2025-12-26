@@ -98,33 +98,33 @@ const updatePrompt = async (
 
 // delete prompt
 
-const deletePrompt = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const userId = req?.user?.id;
-    if (!userId) {
-      return ReturnResponse(
-        res,
-        401,
-        false,
-        'User authentication token missing',
-      );
+  const deletePrompt = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const userId = req?.user?.id;
+      if (!userId) {
+        return ReturnResponse(
+          res,
+          401,
+          false,
+          'User authentication token missing',
+        );
+      }
+
+      const deleted = await Prompt.findOneAndDelete({ user: userId });
+
+      if (!deleted) {
+        return ReturnResponse(res, 404, false, 'Prompt not found');
+      }
+
+      return ReturnResponse(res, 200, true, 'Prompt deleted successfully');
+    } catch (error) {
+      next(error);
     }
-
-    const deleted = await Prompt.findOneAndDelete({ user: userId });
-
-    if (!deleted) {
-      return ReturnResponse(res, 404, false, 'Prompt not found');
-    }
-
-    return ReturnResponse(res, 200, true, 'Prompt deleted successfully');
-  } catch (error) {
-    next(error);
-  }
-};
+  };
 
 export const promptController = {
   promptImageUpload,

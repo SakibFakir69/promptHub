@@ -30,7 +30,8 @@ const userSchema = new mongoose.Schema<IUser>(
     gender: { type: String, default: '' },
     totalPost: { type: Number, default: 0 },
     tags: { type: [String], default: [] },
-    follower: { type: [String], default: [] },
+    followers: { type: [String], default: [] },
+
     following: { type: [String], default: [] },
     isBlock:{type:Boolean , default:false},
     isDelete:{type:Boolean , default:false},
@@ -43,7 +44,7 @@ const userSchema = new mongoose.Schema<IUser>(
 // Add virtual id field
 // eslint-disable-next-line no-unused-vars
 userSchema.virtual("id").get(function (this: IUser) {
-  return this._id.toString();
+  return this.id.toString();
 });
 
 export const User = mongoose.model<IUser>('user', userSchema);

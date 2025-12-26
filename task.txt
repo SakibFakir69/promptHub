@@ -1,0 +1,10 @@
+
+
+/// design -> flow - test -> code  re-factor + j test 
+
+
+
+* data base design and make flow draw
+
+1. rate limiting
+2. supertest and jtest
