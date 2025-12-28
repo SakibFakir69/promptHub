@@ -10,6 +10,25 @@ export const upload = multer({ storage: storage });
 
 //zod -> swagger > db desigin -> real test
 
+// get
+
+const getAllPrompt =async (req:Request, res:Response, next:NextFunction)=>{
+
+  try {
+    const userId= req?.user?.id;
+
+    const result = await Prompt.findById(userId);
+    return ReturnResponse(res, 200, true, "prompt reterive", result);
+
+    
+  } catch (error) {
+    next(error);
+    
+  }
+}
+
+
+
 const promptImageUpload = async (
   req: Request,
   res: Response,
@@ -126,9 +145,14 @@ const updatePrompt = async (
     }
   };
 
+
+
+
+
 export const promptController = {
   promptImageUpload,
   createPrompt,
   updatePrompt,
   deletePrompt,
+  getAllPrompt
 };

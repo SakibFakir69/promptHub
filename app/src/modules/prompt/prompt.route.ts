@@ -1,6 +1,6 @@
-import { Router } from "express";
-import { promptController, upload } from "./prompt.controller";
-
+import { Router } from 'express';
+import { promptController, upload } from './prompt.controller';
+import { verifyToken } from '../../middleware/verifyToken';
 
 const router = Router();
 
@@ -8,70 +8,7 @@ const router = Router();
  * @swagger
  * tags:
  *   name: Prompts
- *   description: Prompt image upload endpoint
- */
-
-/**
- * @swagger
- * /prompts/create-prompt:
- *   post:
- *     tags: [Prompts]
- *     summary: Upload an image for a prompt
- *     description: Uploads a single image to Cloudinary and returns the public ID and URL.
- *     consumes:
- *       - multipart/form-data
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               image:
- *                 type: string
- *                 format: binary
- *                 description: The image file to upload
- *     responses:
- *       200:
- *         description: Image uploaded successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 public_id:
- *                   type: string
- *                   example: "sample_public_id"
- *                 url:
- *                   type: string
- *                   example: "https://res.cloudinary.com/demo/image/upload/sample.jpg"
- *       400:
- *         description: No file uploaded
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "No file uploaded"
- *       500:
- *         description: Error uploading to Cloudinary
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Error uploading to Cloudinary"
- */
-router.post('/create-prompt', upload.single("image"), promptController.promptImageUpload);
-/**
- * @swagger
- * tags:
- *   name: Prompts
- *   description: API endpoints for managing prompts
+ *   description: API endpoints for managing AI prompts (including image uploads)
  */
 
 /**
@@ -81,24 +18,27 @@ router.post('/create-prompt', upload.single("image"), promptController.promptIma
  *     Prompt:
  *       type: object
  *       properties:
+ *         _id:
+ *           type: string
+ *           example: "64f8c123456789abcdef1234"
  *         title:
  *           type: string
  *           example: "My AI Prompt"
  *         prompt:
  *           type: string
- *           example: "Generate a creative AI artwork"
+ *           example: "Generate a cyberpunk city at night with neon lights"
  *         tags:
  *           type: array
  *           items:
  *             type: string
- *           example: ["art","ai","creative"]
+ *           example: ["cyberpunk", "neon", "ai-art"]
  *         profile:
  *           type: string
  *           example: "John Doe"
  *         image:
  *           type: string
  *           format: uri
- *           example: "https://res.cloudinary.com/demo/image/upload/sample.jpg"
+ *           example: "https://res.cloudinary.com/demo/image/upload/v1234567890/sample.jpg"
  *         imagePublicId:
  *           type: string
  *           example: "sample_public_id"
@@ -108,7 +48,8 @@ router.post('/create-prompt', upload.single("image"), promptController.promptIma
  *         updatedAt:
  *           type: string
  *           format: date-time
- *     Response:
+ *
+ *     PromptResponse:
  *       type: object
  *       properties:
  *         success:
@@ -119,6 +60,16 @@ router.post('/create-prompt', upload.single("image"), promptController.promptIma
  *           example: "Prompt created successfully"
  *         data:
  *           $ref: '#/components/schemas/Prompt'
+ *
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: false
+ *         error:
+ *           type: string
+ *           example: "Error message"
  */
 
 /**
@@ -126,7 +77,8 @@ router.post('/create-prompt', upload.single("image"), promptController.promptIma
  * /prompts/create-prompt:
  *   post:
  *     tags: [Prompts]
- *     summary: Create a new prompt with image upload
+ *     summary: Create a new prompt with optional image upload
+ *     description: Accepts form data including an optional image file and prompt details. Image is uploaded to Cloudinary if provided.
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
@@ -135,11 +87,14 @@ router.post('/create-prompt', upload.single("image"), promptController.promptIma
  *         multipart/form-data:
  *           schema:
  *             type: object
+ *             required:
+ *               - title
+ *               - prompt
  *             properties:
  *               image:
  *                 type: string
  *                 format: binary
- *                 description: Image file to upload
+ *                 description: Optional image file to upload
  *               title:
  *                 type: string
  *                 example: "My AI Prompt"
@@ -150,7 +105,7 @@ router.post('/create-prompt', upload.single("image"), promptController.promptIma
  *                 type: array
  *                 items:
  *                   type: string
- *                 example: ["art","ai","creative"]
+ *                 example: ["art", "ai", "creative"]
  *               profile:
  *                 type: string
  *                 example: "John Doe"
@@ -160,105 +115,181 @@ router.post('/create-prompt', upload.single("image"), promptController.promptIma
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Response'
+ *               $ref: '#/components/schemas/PromptResponse'
  *       400:
- *         description: No file uploaded
+ *         description: Validation error or no required fields
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "No file uploaded"
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
- *         description: Error uploading image to Cloudinary
+ *         description: Server error (e.g., Cloudinary upload failure)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.post(
+  '/create-prompt',
+  upload.single('image'),
+  promptController.createPrompt, // Assuming you renamed or adjusted controller method
+);
+
+/**
+ * @swagger
+ * /prompts/update-prompt/{id}:
+ *   put:
+ *     tags: [Prompts]
+ *     summary: Update an existing prompt
+ *     description: Update prompt details. Image update is not supported in this endpoint (use separate upload if needed).
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the prompt to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               prompt:
+ *                 type: string
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               profile:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Prompt updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PromptResponse'
+ *       400:
+ *         description: Invalid data
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Prompt not found
+ *       500:
+ *         description: Server error
+ */
+router.put('/update-prompt/:id', promptController.updatePrompt);
+
+/**
+ * @swagger
+ * /prompts/delete-prompt/{id}:
+ *   delete:
+ *     tags: [Prompts]
+ *     summary: Delete a specific prompt
+ *     description: Permanently deletes a prompt by ID. Also deletes associated Cloudinary image if present.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The unique ID of the prompt to delete
+ *     responses:
+ *       200:
+ *         description: Prompt deleted successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Prompt deleted successfully"
+ *       401:
+ *         description: Unauthorized - token missing or invalid
+ *       404:
+ *         description: Prompt not found
+ *       500:
+ *         description: Internal server error
+ */
+router.delete('/delete-prompt/:id', promptController.deletePrompt);
+/**
+ * @swagger
+ * /prompts/my-prompts:
+ *   get:
+ *     tags: [Prompts]
+ *     summary: Get the current user's prompt
+ *     description: Retrieves the prompt document associated with the authenticated user. Requires authentication.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Prompt retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "prompt retrieved"
+ *                 data:
+ *                   $ref: '#/components/schemas/Prompt'
+ *       401:
+ *         description: Unauthorized - User not authenticated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
  *                 error:
  *                   type: string
- *                   example: "Error uploading image to Cloudinary"
+ *                   example: "Unauthorized"
+ *       404:
+ *         description: Prompt not found for this user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Prompt not found"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
  */
 
-
-router.put('/update-prompt', promptController.updatePrompt)
-/**
- * @swagger
- * /update-prompt:
- * put:
- * summary: Update an existing prompt
- * tags: [Prompts]
- * security:
- * - bearerAuth: []
- * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * type: object
- * properties:
- * id:
- * type: string
- * description: The unique ID of the prompt to update
- * title:
- * type: string
- * prompt:
- * type: string
- * tags:
- * type: array
- * items:
- * type: string
- * image:
- * type: string
- * responses:
- * 200:
- * description: Prompt updated successfully
- * 401:
- * description: User unauthorized
- * 404:
- * description: Prompt not found
- * 500:
- * description: Internal server error
- */
-
-
-router.delete('/delete-prompt', promptController.deletePrompt);
-/**
- * @swagger
- * /delete-prompt/{id}:
- * delete:
- * summary: Delete a specific prompt
- * tags: [Prompts]
- * security:
- * - bearerAuth: []
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * description: The unique ID of the prompt to delete
- * responses:
- * 200:
- * description: Prompt deleted successfully
- * content:
- * application/json:
- * schema:
- * type: object
- * properties:
- * success: { type: boolean, example: true }
- * message: { type: string, example: "Prompt deleted successfully" }
- * 401:
- * description: User authentication token missing
- * 404:
- * description: Prompt not found
- * 500:
- * description: Internal server error
- */
-
-
+router.get('/get-prompt', verifyToken ,promptController.getAllPrompt )
 
 export const promptRouter = router;
