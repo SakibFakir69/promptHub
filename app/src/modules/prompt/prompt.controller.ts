@@ -7,6 +7,7 @@ import { ReturnResponse } from '../../helper/ReturnResponse';
 import { zodValidationPrompt } from './prompt.validation';
 import { User } from '../users/user.model';
 import { success } from 'zod';
+import { Types } from 'mongoose';
 
 const storage = multer.memoryStorage();
 export const upload = multer({ storage: storage });
@@ -201,16 +202,18 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
     if (!userId) {
       return ReturnResponse(res, 401, false, "unauthorized");
     }
+    
+    const userObjectId = new Types.ObjectId(userId);
 
     const post = await Prompt.findById(postId);
     if (!post) {
       return ReturnResponse(res, 404, false, "Post not found");
     }
 
-    const alreadyUp = post.upVotedBy.includes(userId);
-    const alreadyDown = post.downVotedBy.includes(userId);
+    const alreadyUp = post.upVotedBy.includes(userObjectId);
+    const alreadyDown = post.downVotedBy.includes(userObjectId);
 
-    // 🔁 Case 1: remove upvote
+    //  remove upvote
     if (alreadyUp) {
       const updated = await Prompt.findByIdAndUpdate(
         postId,
@@ -227,7 +230,7 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    // 🔄 Case 2: switch down → up
+    //  switch down → up
     if (alreadyDown) {
       const updated = await Prompt.findByIdAndUpdate(
         postId,
@@ -245,7 +248,7 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    // ✅ Case 3: first upvote
+    //  first upvote
     const updated = await Prompt.findByIdAndUpdate(
       postId,
       {
@@ -265,6 +268,84 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const downVote = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { postId } = req.body;
+    if (!postId) {
+      return ReturnResponse(res, 400, false, "post id not found");
+    }
+
+    const userId = req.user?.id;
+    if (!userId) {
+      return ReturnResponse(res, 401, false, "unauthorized");
+    }
+    
+    const userObjectId = new Types.ObjectId(userId);
+
+    const post = await Prompt.findById(postId);
+    if (!post) {
+      return ReturnResponse(res, 404, false, "Post not found");
+    }
+
+    const alreadyDown = post.downVotedBy.includes(userObjectId);
+    const alreadyUp = post.upVotedBy.includes(userObjectId);
+
+    // remove downvote
+    if (alreadyDown) {
+      const updated = await Prompt.findByIdAndUpdate(
+        postId,
+        {
+          $pull: { downVotedBy: userId },
+          $inc: { downVote: -1 }
+        },
+        { new: true }
+      );
+
+      return ReturnResponse(res, 200, true, "DownVote removed", {
+        upVote: updated?.upVote,
+        downVote: updated?.downVote
+      });
+    }
+
+    //  switch up → down
+    if (alreadyUp) {
+      const updated = await Prompt.findByIdAndUpdate(
+        postId,
+        {
+          $pull: { upVotedBy: userId },
+          $addToSet: { downVotedBy: userId },
+          $inc: { upVote: -1, downVote: 1 }
+        },
+        { new: true }
+      );
+
+      return ReturnResponse(res, 200, true, "Switched to DownVote", {
+        upVote: updated?.upVote,
+        downVote: updated?.downVote
+      });
+    }
+
+    //  first downvote
+    const updated = await Prompt.findByIdAndUpdate(
+      postId,
+      {
+        $addToSet: { downVotedBy: userId },
+        $inc: { downVote: 1 }
+      },
+      { new: true }
+    );
+
+    return ReturnResponse(res, 200, true, "DownVote added", {
+      upVote: updated?.upVote,
+      downVote: updated?.downVote
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 
 export const promptController = {
   promptImageUpload,
@@ -272,4 +353,5 @@ export const promptController = {
   updatePrompt,
   deletePrompt,
   getAllPrompt,
+  upVote,downVote
 };

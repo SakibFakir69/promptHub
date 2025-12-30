@@ -292,4 +292,8 @@ router.delete('/delete-prompt/:id', promptController.deletePrompt);
 
 router.get('/get-prompt', verifyToken ,promptController.getAllPrompt )
 
+
+router.post('/upVote' , verifyToken, promptController.upVote);
+router.post('/downVote', verifyToken, promptController.downVote);
+
 export const promptRouter = router;
