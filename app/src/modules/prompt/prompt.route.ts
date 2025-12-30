@@ -130,7 +130,8 @@ const router = Router();
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
-  '/create-prompt',verifyToken,
+  '/create-prompt',
+  verifyToken,
   upload.single('image'),
   promptController.createPrompt, // Assuming you renamed or adjusted controller method
 );
@@ -290,7 +291,7 @@ router.delete('/delete-prompt/:id', promptController.deletePrompt);
  *                   example: "Internal server error"
  */
 
-router.get('/get-prompt', verifyToken ,promptController.getAllPrompt )
+router.get('/get-prompt', verifyToken, promptController.getAllPrompt);
 /**
  * @swagger
  * /upVote:
@@ -299,12 +300,12 @@ router.get('/get-prompt', verifyToken ,promptController.getAllPrompt )
  *     summary: Upvote a prompt/post
  *     description: |
  *       Allows an authenticated user to upvote a prompt/post.
- *       
+ *
  *       **Behavior:**
  *       - If the user has already upvoted → removes the upvote
  *       - If the user has downvoted → switches to upvote (removes downvote, adds upvote)
  *       - Otherwise → adds a new upvote
- *       
+ *
  *       Returns the updated upvote and downvote counts in all cases.
  *     security:
  *       - bearerAuth: []
@@ -390,8 +391,6 @@ router.get('/get-prompt', verifyToken ,promptController.getAllPrompt )
  */
 router.post('/upVote', verifyToken, promptController.upVote);
 
-router.post('/upVote' , verifyToken, promptController.upVote);
-
 /**
  * @swagger
  * /downVote:
@@ -400,12 +399,12 @@ router.post('/upVote' , verifyToken, promptController.upVote);
  *     summary: Downvote a prompt/post
  *     description: |
  *       Allows an authenticated user to downvote a prompt/post.
- *       
+ *
  *       **Behavior:**
  *       - If already downvoted → removes the downvote
  *       - If upvoted → switches to downvote
  *       - Otherwise → adds a new downvote
- *       
+ *
  *       Returns updated vote counts.
  *     security:
  *       - bearerAuth: []

@@ -2,7 +2,8 @@ name: Prompt Hub CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" ]   # Only deploy on main branch push
+  # Optional: remove PR trigger if you don't want auto deploy for PRs
   pull_request:
     branches: [ "main" ]
 
@@ -36,11 +37,11 @@ jobs:
       - name: Build project
         run: npm run build --if-present
 
-      # ✅ Upload build artifacts with a unique name per matrix job
-      - name: Upload build artifacts
+      # ✅ Upload build artifact (single artifact, not matrix specific)
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.node-version }}-${{ github.run_id }}
+          name: build
           path: dist
 
   # 2️⃣ Deploy job (CD)
@@ -48,19 +49,19 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     environment: prompt-hub
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'  # Only deploy on main push
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Optional: Download the artifact if your deploy needs it
-      - name: Download build
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: build-20.x-${{ github.run_id }}  # pick one version to deploy
+          name: build
           path: dist
 
       - name: Deploy to Render
-        if: github.ref == 'refs/heads/main'
         run: |
+          set -e   # Exit if curl fails
           curl -X POST "https://api.render.com/deploy/srv-d4m8nakhg0os73bmgsi0?key=PM8ZTpxYsJY"
