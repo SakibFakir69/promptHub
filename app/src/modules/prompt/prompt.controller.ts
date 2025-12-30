@@ -4,6 +4,9 @@ import { NextFunction, Request, Response } from 'express';
 
 import { Prompt } from './prompt.model';
 import { ReturnResponse } from '../../helper/ReturnResponse';
+import { zodValidationPrompt } from './prompt.validation';
+import { User } from '../users/user.model';
+import { success } from 'zod';
 
 const storage = multer.memoryStorage();
 export const upload = multer({ storage: storage });
@@ -12,22 +15,21 @@ export const upload = multer({ storage: storage });
 
 // get
 
-const getAllPrompt =async (req:Request, res:Response, next:NextFunction)=>{
-
+const getAllPrompt = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const userId= req?.user?.id;
+    const userId = req?.user?.id;
+    console.log(userId, ' user id');
+    const result = await Prompt.find({ 'createdBy.userId': userId });
 
-    const result = await Prompt.findById(userId);
-    return ReturnResponse(res, 200, true, "prompt reterive", result);
-
-    
+    return ReturnResponse(res, 200, true, 'prompt reterive', result);
   } catch (error) {
     next(error);
-    
   }
-}
-
-
+};
 
 const promptImageUpload = async (
   req: Request,
@@ -59,18 +61,53 @@ const promptImageUpload = async (
 
 //
 // add zod validation
-const createPrompt = async (
+
+export const createPrompt = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    // title,image,tags,profile,prompt
+    console.log('create - prompt');
 
-    const promptData = req.body;
+    // Attach logged-in user info automatically
+    if (!req.user) {
+      return ReturnResponse(res, 401, false, 'Unauthorized: user not found');
+    }
+    const userId = req?.user.id;
+    const user = await User.findById(userId);
+
+    const promptData = {
+      ...req.body,
+      createdBy: {
+        userId: user?.id,
+        name: user?.name,
+        avatar: user?.avatar,
+      },
+    };
+
+    //  Validate with Zod
+    const parsed = zodValidationPrompt.createPromptSchema.safeParse(promptData);
+    if (!parsed.success) {
+      return ReturnResponse(
+        res,
+        400,
+        false,
+        'Zod validation failed',
+        parsed.error.format(),
+      );
+    }
+
+    //  Create prompt in MongoDB
     const result = await Prompt.create(promptData);
 
-    return ReturnResponse(res, 201, true, 'prompt create successfull', result);
+    return ReturnResponse(
+      res,
+      201,
+      true,
+      'Prompt created successfully',
+      result,
+    );
   } catch (error) {
     next(error);
   }
@@ -91,6 +128,11 @@ const updatePrompt = async (
     }
 
     const data = req.body;
+    const updateZodValidation =
+      await zodValidationPrompt.updatePromptSchema.safeParse(data);
+    if (!updateZodValidation?.success) {
+      return ReturnResponse(res, 400, false, 'update zod validation failed');
+    }
     const { image, title, tags, prompt } = data;
     const payload = {
       title: title,
@@ -117,36 +159,111 @@ const updatePrompt = async (
 
 // delete prompt
 
-  const deletePrompt = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      const userId = req?.user?.id;
-      if (!userId) {
-        return ReturnResponse(
-          res,
-          401,
-          false,
-          'User authentication token missing',
-        );
-      }
-
-      const deleted = await Prompt.findOneAndDelete({ user: userId });
-
-      if (!deleted) {
-        return ReturnResponse(res, 404, false, 'Prompt not found');
-      }
-
-      return ReturnResponse(res, 200, true, 'Prompt deleted successfully');
-    } catch (error) {
-      next(error);
+const deletePrompt = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req?.user?.id;
+    if (!userId) {
+      return ReturnResponse(
+        res,
+        401,
+        false,
+        'User authentication token missing',
+      );
     }
-  };
 
+    const deleted = await Prompt.findOneAndDelete({ user: userId });
 
+    if (!deleted) {
+      return ReturnResponse(res, 404, false, 'Prompt not found');
+    }
 
+    return ReturnResponse(res, 200, true, 'Prompt deleted successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
+// inc vote
+// dec vote
+
+const upVote = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { postId } = req.body;
+    if (!postId) {
+      return ReturnResponse(res, 400, false, "post id not found");
+    }
+
+    const userId = req.user?.id;
+    if (!userId) {
+      return ReturnResponse(res, 401, false, "unauthorized");
+    }
+
+    const post = await Prompt.findById(postId);
+    if (!post) {
+      return ReturnResponse(res, 404, false, "Post not found");
+    }
+
+    const alreadyUp = post.upVotedBy.includes(userId);
+    const alreadyDown = post.downVotedBy.includes(userId);
+
+    // 🔁 Case 1: remove upvote
+    if (alreadyUp) {
+      const updated = await Prompt.findByIdAndUpdate(
+        postId,
+        {
+          $pull: { upVotedBy: userId },
+          $inc: { upVote: -1 }
+        },
+        { new: true }
+      );
+
+      return ReturnResponse(res, 200, true, "UpVote removed", {
+        upVote: updated?.upVote,
+        downVote: updated?.downVote
+      });
+    }
+
+    // 🔄 Case 2: switch down → up
+    if (alreadyDown) {
+      const updated = await Prompt.findByIdAndUpdate(
+        postId,
+        {
+          $pull: { downVotedBy: userId },
+          $addToSet: { upVotedBy: userId },
+          $inc: { downVote: -1, upVote: 1 }
+        },
+        { new: true }
+      );
+
+      return ReturnResponse(res, 200, true, "Switched to UpVote", {
+        upVote: updated?.upVote,
+        downVote: updated?.downVote
+      });
+    }
+
+    // ✅ Case 3: first upvote
+    const updated = await Prompt.findByIdAndUpdate(
+      postId,
+      {
+        $addToSet: { upVotedBy: userId },
+        $inc: { upVote: 1 }
+      },
+      { new: true }
+    );
+
+    return ReturnResponse(res, 200, true, "UpVote added", {
+      upVote: updated?.upVote,
+      downVote: updated?.downVote
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
 
 
 export const promptController = {
@@ -154,5 +271,5 @@ export const promptController = {
   createPrompt,
   updatePrompt,
   deletePrompt,
-  getAllPrompt
+  getAllPrompt,
 };

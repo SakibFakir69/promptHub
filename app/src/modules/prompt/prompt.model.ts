@@ -34,6 +34,9 @@ const promptSchema = new Schema<IPrompt>(
       default: 0,
     },
 
+      upVotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  downVotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  
     createdBy: {
       userId: {
         type: Types.ObjectId,

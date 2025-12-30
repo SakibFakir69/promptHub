@@ -10,31 +10,32 @@ import { generateJwtToken } from '../../utils/genrateToken';
 import { ReturnResponse } from '../../helper/ReturnResponse';
 import { authValidator } from './auth.validation';
 
-
-const loginUser = async (req: Request, res: Response , next:NextFunction) => {
+const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     console.log('login user');
     const { email, password } = req.body;
 
-    const zodValidation = authValidator.loginUserValidationSchema.safeParse(req.body);
+    const zodValidation = authValidator.loginUserValidationSchema.safeParse(
+      req.body,
+    );
 
-    if(!zodValidation.success)
-    {
+    if (!zodValidation.success) {
       const errors = zodValidation?.error.format();
-      return ReturnResponse <typeof errors>(res, 400, false, 'Validation failed', errors )
+      return ReturnResponse<typeof errors>(
+        res,
+        400,
+        false,
+        'Validation failed',
+        errors,
+      );
     }
-
-
 
     const isUserExits = await User.findOne({ email: email });
     console.log(email, password);
 
     // find user
     if (!isUserExits) {
-
-     
-
-      ReturnResponse(res, 401, false,'User not founded');
+      ReturnResponse(res, 401, false, 'User not founded');
       return;
     }
 
@@ -44,24 +45,26 @@ const loginUser = async (req: Request, res: Response , next:NextFunction) => {
     const isMatchPassword = await bcrypt.compare(password, hashPassword);
 
     if (!isMatchPassword) {
-
-     
-      ReturnResponse(res,404,false, 'Invalid credentials')
+      ReturnResponse(res, 404, false, 'Invalid credentials');
       return;
     }
 
     // cdata
-    
-    const result = await authServices.loginUser(isUserExits);
+    const payload = {
+      _id: isUserExits?._id as unknown as string,
+
+      name: isUserExits?.name as string,
+      email: isUserExits?.email as string,
+    };
+
+    const result = await authServices.loginUser(payload);
 
     const accessToken = result?.accessToken;
     const refreshToken = result?.refreshToken;
 
     if (!accessToken || !refreshToken) {
-      
-
-        ReturnResponse(res,500,false,'Token generation failed')
-        return;
+      ReturnResponse(res, 500, false, 'Token generation failed');
+      return;
     }
     console.log(accessToken, refreshToken, ' token ');
 
@@ -79,129 +82,109 @@ const loginUser = async (req: Request, res: Response , next:NextFunction) => {
     });
   } catch (error) {
     next(error);
-
-    
   }
 };
 
 // password change
 
-const ResetPassword = async (req: Request, res: Response , next:NextFunction) => {
+const ResetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { newPassword } = req.body;
 
-        // zod validation 
-    const zodValidation =authValidator.resetPasswordSchema.safeParse(req.body);
+    // zod validation
+    const zodValidation = authValidator.resetPasswordSchema.safeParse(req.body);
 
-
-    if(!zodValidation?.success)
-    {
+    if (!zodValidation?.success) {
       const errors = zodValidation.error.format();
-      return ReturnResponse(res, 400, false, 'Validation failed',errors );
-
+      return ReturnResponse(res, 400, false, 'Validation failed', errors);
     }
-
-
-    
 
     // old and new pass take then verify
 
-     
-
-     
     const email = req?.user?.id;
     console.log(email);
 
     const isUser = await User.findOne({ email: email });
     //
     if (!isUser) {
-      
-
-      ReturnResponse(res,404,false,'User not found');
+      ReturnResponse(res, 404, false, 'User not found');
       return;
     }
 
-    
-   
     const hashNewPassword = await bcrypt.hash(newPassword, 10);
     isUser.password = hashNewPassword;
 
     await isUser?.save();
 
-   
-
-    return ReturnResponse(res, 200, true,'password reset successfully');
-    
-
+    return ReturnResponse(res, 200, true, 'password reset successfully');
   } catch (error) {
-       next(error);
+    next(error);
   }
 };
 
-const changePassword = async (req: Request, res: Response,next:NextFunction) => {
+const changePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { password, newPassword } = req.body;
 
+    // zod validation
+    const zodValidation = authValidator.changePasswordSchema.safeParse(
+      req.body,
+    );
 
-
-    // zod validation 
-    const zodValidation = authValidator.changePasswordSchema.safeParse(req.body);
-
-    if(!zodValidation?.success)
-    {
+    if (!zodValidation?.success) {
       const errors = zodValidation?.error.format();
-      return ReturnResponse(res, 400, false, "Validation Failed",errors )
+      return ReturnResponse(res, 400, false, 'Validation Failed', errors);
     }
 
     // old and new pass take then verify
 
-     
-
-     
     const email = req?.user;
 
     const isUser = await User.findOne({ email: email });
     //
     if (!isUser) {
-
-      
-      ReturnResponse(res,404,false,'User not found');
+      ReturnResponse(res, 404, false, 'User not found');
       return;
     }
 
-    const isMatchPassword = await bcrypt.compare(password as string, isUser?.password as string);
+    const isMatchPassword = await bcrypt.compare(
+      password as string,
+      isUser?.password as string,
+    );
 
     if (!isMatchPassword) {
-
-     
-
-      ReturnResponse(res,200,false,'Password not match');
+      ReturnResponse(res, 200, false, 'Password not match');
       return;
     }
-
 
     const hashNewPassword = await bcrypt.hash(newPassword, 10);
     isUser.password = hashNewPassword;
 
     await isUser?.save();
 
-    ReturnResponse(res,200,false,'password change successfully');
+    ReturnResponse(res, 200, false, 'password change successfully');
     return;
-
   } catch (error) {
-       next(error);
+    next(error);
   }
 };
 
 // logout user
-const logOutUser = async (req: Request, res: Response,next:NextFunction) => {
+const logOutUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user_id = req.user?.id;
     const user = await User.findById(user_id);
 
     if (!user) {
-;
-      ReturnResponse(res,404,false,'User Not Founded');
+      ReturnResponse(res, 404, false, 'User Not Founded');
       return;
     }
 
@@ -216,64 +199,58 @@ const logOutUser = async (req: Request, res: Response,next:NextFunction) => {
       sameSite: 'none',
     });
 
-  
-    ReturnResponse(res,200,true,'User Log Out Successfully');
-
+    ReturnResponse(res, 200, true, 'User Log Out Successfully');
   } catch (error) {
-       next(error);
+    next(error);
   }
 };
 
 // get me
 
-const getMe = async (req: Request, res: Response,next:NextFunction) => {
+const getMe = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user_id = req.user?.id;
 
     if (!user_id) {
-
-      
-      ReturnResponse(res,404,false,'User not founded');
+      ReturnResponse(res, 404, false, 'User not founded');
       return;
     }
 
     const users = await authServices.getMe(user_id);
 
-   
-    ReturnResponse(res,200,true, 'User login successfull',users)
-
-     
+    ReturnResponse(res, 200, true, 'User data Retrieve successfully', users);
   } catch (error: any) {
-       next(error);
+    next(error);
   }
 };
 
 // refresh token
 
-const refreshToken = (req: Request, res: Response,next:NextFunction) => {
+const refreshToken = (req: Request, res: Response, next: NextFunction) => {
   try {
     const refresh_token = req.cookies.refreshToken;
     //// verify refreshToken
     if (!refresh_token) {
-
-      
-      ReturnResponse(res,401,false,'Token expired');
+      ReturnResponse(res, 401, false, 'Token expired');
       return;
     }
 
-    const refresh_secrect = process.env?.REFRESH_TOKEN_SECRET_KEY as string || 'token'
-   
-    jwt.verify(refresh_token,refresh_secrect , (error:any) => {
-      if (error) {
+    const refresh_secrect =
+      (process.env?.REFRESH_TOKEN_SECRET_KEY as string) || 'token';
 
-        
-        ReturnResponse(res,403,false,'You are not allowed to perform this action');
+    jwt.verify(refresh_token, refresh_secrect, (error: any) => {
+      if (error) {
+        ReturnResponse(
+          res,
+          403,
+          false,
+          'You are not allowed to perform this action',
+        );
         return;
       }
 
       const user = req.user;
       const jwtPayload = {
-         
         id: user?.id,
 
         email: user?.email,
@@ -284,13 +261,12 @@ const refreshToken = (req: Request, res: Response,next:NextFunction) => {
         | 'token';
       const accessToken = generateJwtToken(jwtPayload, accesScerect, '30m');
 
-      return  res.status(201).json({
-        accessToken:accessToken
-      })
-
+      return res.status(201).json({
+        accessToken: accessToken,
+      });
     });
   } catch (error) {
-       next(error);
+    next(error);
   }
 };
 
@@ -301,5 +277,5 @@ export const authController = {
   changePassword,
   getMe,
   logOutUser,
-  refreshToken
+  refreshToken,
 };

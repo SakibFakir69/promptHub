@@ -74,7 +74,7 @@ const router = Router();
 
 /**
  * @swagger
- * /prompts/create-prompt:
+ * /create-prompt:
  *   post:
  *     tags: [Prompts]
  *     summary: Create a new prompt with optional image upload
@@ -130,7 +130,7 @@ const router = Router();
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
-  '/create-prompt',
+  '/create-prompt',verifyToken,
   upload.single('image'),
   promptController.createPrompt, // Assuming you renamed or adjusted controller method
 );
@@ -226,7 +226,7 @@ router.put('/update-prompt/:id', promptController.updatePrompt);
 router.delete('/delete-prompt/:id', promptController.deletePrompt);
 /**
  * @swagger
- * /prompts/my-prompts:
+ * /my-prompts:
  *   get:
  *     tags: [Prompts]
  *     summary: Get the current user's prompt

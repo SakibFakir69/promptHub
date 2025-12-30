@@ -8,6 +8,9 @@ export interface IPrompt {
   tags: string[];
   upVote: number;
   downVote: number;
+   upVotedBy: Types.ObjectId[];
+  downVotedBy: Types.ObjectId[];
+
 
   createdBy: {
     userId: Types.ObjectId;

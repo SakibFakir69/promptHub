@@ -10,7 +10,7 @@ export const verifyToken = async (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log('veifry run');
+  
 
   const token = req.cookies.accessToken;
   console.log(req.cookies, 'cookies');

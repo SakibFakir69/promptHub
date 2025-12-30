@@ -39,6 +39,7 @@ const sendOtp = async (req: Request, res: Response,next:NextFunction) => {
 
     //  Store OTP in Redis for 5 minutes
     await redisClient.setEx(`otp:${email}`, 60 * 5, otp);
+    
     //  Send email
     await sendEmail(email, user_name as string,Number( otp));
 
@@ -60,9 +61,10 @@ const sendOtp = async (req: Request, res: Response,next:NextFunction) => {
 
 const verifyOtp = async (req: Request, res: Response,next:NextFunction) => {
   try {
-    const { otp } = req.body;
+    
+    const {otp}= req.body;
 
-    const otpValidationSchema = zodOtpValidationSchema.safeParse(otp);
+    const otpValidationSchema = zodOtpValidationSchema.safeParse(req.body);
 
     if(!otpValidationSchema.success)
     {
@@ -102,7 +104,7 @@ const verifyOtp = async (req: Request, res: Response,next:NextFunction) => {
        next(error);
   }
 };
-
+// re -send otp
 export const otpController = {
   sendOtp,
   verifyOtp,
