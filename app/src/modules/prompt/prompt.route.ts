@@ -291,9 +291,173 @@ router.delete('/delete-prompt/:id', promptController.deletePrompt);
  */
 
 router.get('/get-prompt', verifyToken ,promptController.getAllPrompt )
-
+/**
+ * @swagger
+ * /upVote:
+ *   post:
+ *     tags: [Voting]
+ *     summary: Upvote a prompt/post
+ *     description: |
+ *       Allows an authenticated user to upvote a prompt/post.
+ *       
+ *       **Behavior:**
+ *       - If the user has already upvoted → removes the upvote
+ *       - If the user has downvoted → switches to upvote (removes downvote, adds upvote)
+ *       - Otherwise → adds a new upvote
+ *       
+ *       Returns the updated upvote and downvote counts in all cases.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - postId
+ *             properties:
+ *               postId:
+ *                 type: string
+ *                 description: MongoDB ObjectId of the prompt/post to vote on
+ *                 example: "64f8a123456789abcdef1234"
+ *             additionalProperties: false
+ *     responses:
+ *       200:
+ *         description: Upvote operation successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/VoteResponse'
+ *             examples:
+ *               upvote-added:
+ *                 summary: First time upvoting
+ *                 value:
+ *                   success: true
+ *                   message: "UpVote added"
+ *                   data:
+ *                     upVote: 42
+ *                     downVote: 5
+ *               upvote-removed:
+ *                 summary: Removing existing upvote
+ *                 value:
+ *                   success: true
+ *                   message: "UpVote removed"
+ *                   data:
+ *                     upVote: 41
+ *                     downVote: 5
+ *               switched-from-downvote:
+ *                 summary: Switching from downvote to upvote
+ *                 value:
+ *                   success: true
+ *                   message: "Switched to UpVote"
+ *                   data:
+ *                     upVote: 42
+ *                     downVote: 4
+ *       400:
+ *         description: Bad request - missing postId
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "post id not found"
+ *       401:
+ *         description: Unauthorized - missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "unauthorized"
+ *       404:
+ *         description: Post not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: "Post not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.post('/upVote', verifyToken, promptController.upVote);
 
 router.post('/upVote' , verifyToken, promptController.upVote);
+
+/**
+ * @swagger
+ * /downVote:
+ *   post:
+ *     tags: [Voting]
+ *     summary: Downvote a prompt/post
+ *     description: |
+ *       Allows an authenticated user to downvote a prompt/post.
+ *       
+ *       **Behavior:**
+ *       - If already downvoted → removes the downvote
+ *       - If upvoted → switches to downvote
+ *       - Otherwise → adds a new downvote
+ *       
+ *       Returns updated vote counts.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - postId
+ *             properties:
+ *               postId:
+ *                 type: string
+ *                 description: MongoDB ObjectId of the post
+ *                 example: "64f8a123456789abcdef1234"
+ *     responses:
+ *       200:
+ *         description: Downvote operation successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/VoteResponse'
+ *             examples:
+ *               downvote-added:
+ *                 summary: New downvote
+ *                 value: { success: true, message: "DownVote added", data: { upVote: 10, downVote: 6 } }
+ *               downvote-removed:
+ *                 summary: Downvote removed
+ *                 value: { success: true, message: "DownVote removed", data: { upVote: 10, downVote: 5 } }
+ *               switched-from-upvote:
+ *                 summary: Switched from upvote
+ *                 value: { success: true, message: "Switched to DownVote", data: { upVote: 9, downVote: 6 } }
+ *       400:
+ *         description: Missing postId
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Post not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.post('/downVote', verifyToken, promptController.downVote);
 
 export const promptRouter = router;

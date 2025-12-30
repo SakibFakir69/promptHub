@@ -268,6 +268,9 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+
+
+
 const downVote = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { postId } = req.body;
