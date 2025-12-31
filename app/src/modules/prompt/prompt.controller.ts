@@ -5,8 +5,8 @@ import { Prompt } from './prompt.model';
 import { ReturnResponse } from '../../helper/ReturnResponse';
 import { zodValidationPrompt } from './prompt.validation';
 import { User } from '../users/user.model';
-
 import { Types } from 'mongoose';
+import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
 
 
 // super test and deploy
@@ -41,7 +41,8 @@ const promptImageUpload = async (
       return res.status(400).json({ error: 'No file uploaded' });
     }
     cloudinary.uploader
-      .upload_stream({ resource_type: 'auto' }, (error, result) => {
+      .upload_stream({ resource_type: 'auto' }, (error:UploadApiErrorResponse | undefined, result:UploadApiResponse | undefined) => {
+
         if (error) {
           console.log(error);
           return res
