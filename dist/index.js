@@ -1,5 +1,4 @@
 "use strict";
-/* eslint-disable @typescript-eslint/no-unused-vars */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -27,6 +26,7 @@ const user_route_1 = require("./modules/users/user.route");
 const auth_route_1 = require("./modules/auth/auth.route");
 const otp_route_1 = require("./modules/otp/otp.route");
 const ErrorHandler_1 = require("./helper/ErrorHandler");
+const prompt_route_1 = require("./modules/prompt/prompt.route");
 // app
 const app = (0, express_1.default)();
 // swagger ui
@@ -76,6 +76,8 @@ app.use('/api/v1/user', user_route_1.userRouter);
 app.use('/api/v1/auth', auth_route_1.AuthRouter);
 // otp
 app.use('/api/v1/otp', otp_route_1.otpRouter);
+// prompt
+app.use('/api/v1/prompt', prompt_route_1.promptRouter);
 // api test
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // sendEmail("sakibfakir749@gmail.com",'sakibfakir',1234);
@@ -84,7 +86,7 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 // handel error
 app.use(ErrorHandler_1.ErrorHandler);
 // Catch-all route for 404
-app.use((req, res, next) => {
+app.use((req, res) => {
     res.status(404).json({
         status: false,
         message: `Route not found: ${req.originalUrl}`

@@ -39,17 +39,17 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         console.log(error);
     }
 });
-/// password change 
+/// password change
 const passwordChange = (payload) => {
     const { newPassword, oldPassword } = payload;
     console.log(newPassword, oldPassword);
     return payload;
 };
-// getMe 
-// 
+// getMe
+//
 const getMe = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield user_model_1.User.findById(id).select("-password");
+        const result = yield user_model_1.User.findById(id).select('-password');
         // user do not see password filed
         return result;
     }
@@ -58,5 +58,7 @@ const getMe = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.authServices = {
-    loginUser, passwordChange, getMe
+    loginUser,
+    passwordChange,
+    getMe,
 };

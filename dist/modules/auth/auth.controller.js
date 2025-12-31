@@ -46,7 +46,12 @@ const loginUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function
             return;
         }
         // cdata
-        const result = yield auth_services_1.authServices.loginUser(isUserExits);
+        const payload = {
+            _id: isUserExits === null || isUserExits === void 0 ? void 0 : isUserExits._id,
+            name: isUserExits === null || isUserExits === void 0 ? void 0 : isUserExits.name,
+            email: isUserExits === null || isUserExits === void 0 ? void 0 : isUserExits.email,
+        };
+        const result = yield auth_services_1.authServices.loginUser(payload);
         const accessToken = result === null || result === void 0 ? void 0 : result.accessToken;
         const refreshToken = result === null || result === void 0 ? void 0 : result.refreshToken;
         if (!accessToken || !refreshToken) {
@@ -75,7 +80,7 @@ const ResetPassword = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     var _a;
     try {
         const { newPassword } = req.body;
-        // zod validation 
+        // zod validation
         const zodValidation = auth_validation_1.authValidator.resetPasswordSchema.safeParse(req.body);
         if (!(zodValidation === null || zodValidation === void 0 ? void 0 : zodValidation.success)) {
             const errors = zodValidation.error.format();
@@ -102,11 +107,11 @@ const ResetPassword = (req, res, next) => __awaiter(void 0, void 0, void 0, func
 const changePassword = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { password, newPassword } = req.body;
-        // zod validation 
+        // zod validation
         const zodValidation = auth_validation_1.authValidator.changePasswordSchema.safeParse(req.body);
         if (!(zodValidation === null || zodValidation === void 0 ? void 0 : zodValidation.success)) {
             const errors = zodValidation === null || zodValidation === void 0 ? void 0 : zodValidation.error.format();
-            return (0, ReturnResponse_1.ReturnResponse)(res, 400, false, "Validation Failed", errors);
+            return (0, ReturnResponse_1.ReturnResponse)(res, 400, false, 'Validation Failed', errors);
         }
         // old and new pass take then verify
         const email = req === null || req === void 0 ? void 0 : req.user;
@@ -116,7 +121,7 @@ const changePassword = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
             (0, ReturnResponse_1.ReturnResponse)(res, 404, false, 'User not found');
             return;
         }
-        const isMatchPassword = yield bcryptjs_1.default.compare(password, isUser.password);
+        const isMatchPassword = yield bcryptjs_1.default.compare(password, isUser === null || isUser === void 0 ? void 0 : isUser.password);
         if (!isMatchPassword) {
             (0, ReturnResponse_1.ReturnResponse)(res, 200, false, 'Password not match');
             return;
@@ -138,7 +143,6 @@ const logOutUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         const user_id = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
         const user = yield user_model_1.User.findById(user_id);
         if (!user) {
-            ;
             (0, ReturnResponse_1.ReturnResponse)(res, 404, false, 'User Not Founded');
             return;
         }
@@ -168,8 +172,7 @@ const getMe = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
             return;
         }
         const users = yield auth_services_1.authServices.getMe(user_id);
-        (0, ReturnResponse_1.ReturnResponse)(res, 200, true, 'User login successfull', users);
-         
+        (0, ReturnResponse_1.ReturnResponse)(res, 200, true, 'User data Retrieve successfully', users);
     }
     catch (error) {
         next(error);
@@ -193,14 +196,14 @@ const refreshToken = (req, res, next) => {
             }
             const user = req.user;
             const jwtPayload = {
-                id: user === null || user === void 0 ? void 0 : user._id,
+                id: user === null || user === void 0 ? void 0 : user.id,
                 email: user === null || user === void 0 ? void 0 : user.email,
                 name: user === null || user === void 0 ? void 0 : user.name,
             };
             const accesScerect = process.env.BCRYPT_SECRECT_KEY;
             const accessToken = (0, genrateToken_1.generateJwtToken)(jwtPayload, accesScerect, '30m');
             return res.status(201).json({
-                accessToken: accessToken
+                accessToken: accessToken,
             });
         });
     }
@@ -215,5 +218,5 @@ exports.authController = {
     changePassword,
     getMe,
     logOutUser,
-    refreshToken
+    refreshToken,
 };

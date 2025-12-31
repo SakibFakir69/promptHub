@@ -22,7 +22,6 @@ const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
             throw new Error('Payload not founded');
         }
         const password = payload.password;
-        // eslint-disable-next-line no-undef
         const saltRound = Number(process.env.SALT) || 10;
         //   hashPassword
         const hashPassword = yield bcryptjs_1.default.hash(password, saltRound);

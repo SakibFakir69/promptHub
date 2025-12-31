@@ -25,13 +25,14 @@ console.log(URI);
 (function () {
     return __awaiter(this, void 0, void 0, function* () {
         if (!URI) {
-            throw new Error('Not founed Databse Url');
+            throw new Error('Not found Database Url');
         }
         try {
             yield mongoose_1.default.connect(URI);
             server = _1.myApp.listen(port, () => {
                 console.log(`server running on this port ${port}`);
             });
+            console.log(server);
         }
         catch (error) {
             console.log(error);

@@ -1,4 +1,5 @@
 "use strict";
+/* eslint-disable no-unused-vars */
 // create user
 // verify , isdelete, activity  , isBlock
 Object.defineProperty(exports, "__esModule", { value: true });

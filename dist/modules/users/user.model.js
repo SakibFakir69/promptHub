@@ -26,15 +26,11 @@ const userSchema = new mongoose_1.default.Schema({
     gender: { type: String, default: '' },
     totalPost: { type: Number, default: 0 },
     tags: { type: [String], default: [] },
-    follower: { type: [String], default: [] },
+    followers: { type: [String], default: [] },
     following: { type: [String], default: [] },
     isBlock: { type: Boolean, default: false },
     isDelete: { type: Boolean, default: false },
     isVerify: { type: Boolean, default: false },
     isLoggedIn: { type: Boolean, default: false }
 }, { timestamps: true });
-// Add virtual id field
-userSchema.virtual("id").get(function () {
-    return this._id.toString();
-});
 exports.User = mongoose_1.default.model('user', userSchema);
