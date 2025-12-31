@@ -1,18 +1,15 @@
-import multer from 'multer';
+
 import cloudinary from '../../config/cloudniary/config.cloud';
 import { NextFunction, Request, Response } from 'express';
-
 import { Prompt } from './prompt.model';
 import { ReturnResponse } from '../../helper/ReturnResponse';
 import { zodValidationPrompt } from './prompt.validation';
 import { User } from '../users/user.model';
-import { success } from 'zod';
+
 import { Types } from 'mongoose';
 
-const storage = multer.memoryStorage();
-export const upload = multer({ storage: storage });
 
-//zod -> swagger > db desigin -> real test
+// super test and deploy
 
 // get
 
