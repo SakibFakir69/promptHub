@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { promptController, upload } from './prompt.controller';
+import { promptController } from './prompt.controller';
 import { verifyToken } from '../../middleware/verifyToken';
+import { upload } from '../../utils/multer';
 
 const router = Router();
 
