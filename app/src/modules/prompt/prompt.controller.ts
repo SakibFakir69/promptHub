@@ -347,7 +347,6 @@ const downVote = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 
-
 export const promptController = {
   promptImageUpload,
   createPrompt,
