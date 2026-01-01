@@ -6,7 +6,7 @@ const router = Router();
 
 /**
  * @openapi
- * /api/v1/otp/send-otp:
+ * /otp/send-otp:
  *   post:
  *     tags:
  *       - OTP
@@ -50,7 +50,7 @@ router.post('/send-otp', verifyToken, otpController.sendOtp);
 
 /**
  * @openapi
- * /api/v1/otp/verify-otp:
+ * /otp/verify-otp:
  *   post:
  *     tags:
  *       - OTP

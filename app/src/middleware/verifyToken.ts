@@ -2,6 +2,7 @@
 
 import { NextFunction, Request, Response } from 'express';
 import Jwt from 'jsonwebtoken';
+import { IUserPayload } from '../types/express';
 
 
 
@@ -37,7 +38,7 @@ export const verifyToken = async (
         return res.status(403).json({ status: false, message: "Unauthorized" });
     }
 
-    req.user = decode  
+    req.user = decode  as IUserPayload; 
 
     console.log(req.user, " decode");
 

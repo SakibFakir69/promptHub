@@ -66,7 +66,7 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
 
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user_id = req.user?.id as string;
+    const user_id = req.user?.id  as string;
 
     const updateData = {
       name: req.body.name,
@@ -96,8 +96,8 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 
     // update services
 
-    const result = await userServices.updateUser<typeof updatedData>(
-      user_id,
+    const result = await userServices.updateUser(
+      user_id ,
       updatedData,
     );
 

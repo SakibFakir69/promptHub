@@ -10,7 +10,7 @@ const router = Router();
 
 /**
  * @openapi
- * /api/v1/user/create-user:
+ * /user/create-user:
  *   post:
  *     tags:
  *       - User
@@ -55,7 +55,7 @@ router.post('/create-user',userController.createUser )
 
 /**
  * @openapi
- * /api/v1/user/delete-user:
+ * /user/delete-user:
  *   delete:
  *     tags:
  *       - User
@@ -91,7 +91,7 @@ router.delete('/delete-user',verifyToken, userController.deleteUser);
 
 /**
  * @openapi
- * /api/v1/user/update-user:
+ * /user/update-user:
  *   put:
  *     tags:
  *       - User

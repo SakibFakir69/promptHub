@@ -139,7 +139,7 @@ router.post(
 
 /**
  * @swagger
- * /prompts/update-prompt/{id}:
+ * /update-prompt:
  *   put:
  *     tags: [Prompts]
  *     summary: Update an existing prompt
@@ -190,7 +190,7 @@ router.put('/update-prompt/:id', promptController.updatePrompt);
 
 /**
  * @swagger
- * /prompts/delete-prompt/{id}:
+ * /delete-prompt:
  *   delete:
  *     tags: [Prompts]
  *     summary: Delete a specific prompt

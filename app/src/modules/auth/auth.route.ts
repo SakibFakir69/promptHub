@@ -91,7 +91,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/v1/auth/me:
+ * /auth/me:
  *   get:
  *     tags: [Auth]
  *     summary: Get current authenticated user details
@@ -121,7 +121,7 @@ router.get('/me', verifyToken, authController.getMe);
 
 /**
  * @swagger
- * /api/v1/auth/login-user:
+ * /auth/login-user:
  *   post:
  *     tags: [Auth]
  *     summary: Login user and set authentication cookies
@@ -169,7 +169,7 @@ router.post('/login-user', authController.loginUser);
 
 /**
  * @swagger
- * /api/v1/auth/change-password:
+ * /auth/change-password:
  *   post:
  *     tags: [Auth]
  *     summary: Change current user's password
@@ -214,7 +214,7 @@ router.post('/change-password', verifyToken, authController.changePassword);
 
 /**
  * @swagger
- * /api/v1/auth/reset-password:
+ * /auth/reset-password:
  *   post:
  *     tags: [Auth]
  *     summary: Reset password (for logged-in users)
@@ -247,7 +247,7 @@ router.post('/reset-password', verifyToken, authController.ResetPassword);
 
 /**
  * @swagger
- * /api/v1/auth/refresh:
+ * /auth/refresh:
  *   post:
  *     tags: [Auth]
  *     summary: Refresh access token
@@ -271,7 +271,7 @@ router.post('/refresh', authController.refreshToken);
 
 /**
  * @swagger
- * /api/v1/auth/logout:
+ * /auth/logout:
  *   post:
  *     tags: [Auth]
  *     summary: Logout user
@@ -298,7 +298,7 @@ router.post('/logout', authController.logOutUser); // ← Fixed: was wrongly poi
 
 /**
  * @swagger
- * /api/v1/auth/google:
+ * /auth/google:
  *   get:
  *     tags: [Auth]
  *     summary: Initiate Google OAuth login
@@ -311,7 +311,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 /**
  * @swagger
- * /api/v1/auth/google/callback:
+ * /auth/google/callback:
  *   get:
  *     tags: [Auth]
  *     summary: Google OAuth callback
@@ -328,7 +328,7 @@ router.get(
 
 /**
  * @swagger
- * /api/v1/auth/dashboard:
+ * /auth/dashboard:
  *   get:
  *     tags: [Auth]
  *     summary: Render dashboard (for testing OAuth flow)

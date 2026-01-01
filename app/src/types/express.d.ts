@@ -1,15 +1,20 @@
-// app/src/types/express.d.ts
-import { IUser } from "../modules/users/user.interface";
-import { Multer } from "multer";
-
+export interface IUserPayload {
+  id: string;
+  email: string;
+  name: string;
+}
 
 declare global {
   namespace Express {
-     
-    interface User extends IUser {} // Extend Mongoose's IUser
+   
+    interface User extends IUserPayload {}
+
     interface Request {
-      user?: User; // Use the augmented Express.User
-      file?:Multer.File
+      user?: IUserPayload;
+      file?: Express.Multer.File;
+      files?: Express.Multer.File[];
     }
   }
 }
+
+export {};

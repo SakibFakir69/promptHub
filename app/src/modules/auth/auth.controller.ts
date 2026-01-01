@@ -180,7 +180,8 @@ const changePassword = async (
 // logout user
 const logOutUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user_id = req.user?.id;
+    const user_id = req?.user?.id;
+
     const user = await User.findById(user_id);
 
     if (!user) {
