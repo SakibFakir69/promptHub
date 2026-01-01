@@ -22,7 +22,6 @@
     "@types/express-session": "^1.18.2",
     "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/multer": "^2.0.0",
     "@types/node": "^24.9.1",
     "@types/nodemailer": "^7.0.2",
     "@types/otp-generator": "^4.0.2",
