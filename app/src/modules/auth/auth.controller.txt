@@ -3,8 +3,6 @@ resource ( swagger api doc): [ https://dev.to/desmondsanctity/documenting-nodejs
 
 
 
-
-
 1. test all complete api 
 2.check oauth 
 3.develop access and refress token 
