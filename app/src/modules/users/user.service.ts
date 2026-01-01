@@ -38,7 +38,6 @@ const deleteUser = async (id: string) => {
 };
 
 // update user
-
 const updateUser = async <T>(id: string | number, data?: Partial<IUser | T>) => {
   const result = await User.findByIdAndUpdate(
     id,
