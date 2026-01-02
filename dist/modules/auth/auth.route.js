@@ -92,7 +92,7 @@ const router = (0, express_1.Router)();
  */
 /**
  * @swagger
- * /api/v1/auth/me:
+ * /auth/me:
  *   get:
  *     tags: [Auth]
  *     summary: Get current authenticated user details
@@ -121,7 +121,7 @@ const router = (0, express_1.Router)();
 router.get('/me', verifyToken_1.verifyToken, auth_controller_1.authController.getMe);
 /**
  * @swagger
- * /api/v1/auth/login-user:
+ * /auth/login-user:
  *   post:
  *     tags: [Auth]
  *     summary: Login user and set authentication cookies
@@ -168,7 +168,7 @@ router.get('/me', verifyToken_1.verifyToken, auth_controller_1.authController.ge
 router.post('/login-user', auth_controller_1.authController.loginUser);
 /**
  * @swagger
- * /api/v1/auth/change-password:
+ * /auth/change-password:
  *   post:
  *     tags: [Auth]
  *     summary: Change current user's password
@@ -212,7 +212,7 @@ router.post('/login-user', auth_controller_1.authController.loginUser);
 router.post('/change-password', verifyToken_1.verifyToken, auth_controller_1.authController.changePassword);
 /**
  * @swagger
- * /api/v1/auth/reset-password:
+ * /auth/reset-password:
  *   post:
  *     tags: [Auth]
  *     summary: Reset password (for logged-in users)
@@ -244,7 +244,7 @@ router.post('/change-password', verifyToken_1.verifyToken, auth_controller_1.aut
 router.post('/reset-password', verifyToken_1.verifyToken, auth_controller_1.authController.ResetPassword);
 /**
  * @swagger
- * /api/v1/auth/refresh:
+ * /auth/refresh:
  *   post:
  *     tags: [Auth]
  *     summary: Refresh access token
@@ -267,7 +267,7 @@ router.post('/reset-password', verifyToken_1.verifyToken, auth_controller_1.auth
 router.post('/refresh', auth_controller_1.authController.refreshToken);
 /**
  * @swagger
- * /api/v1/auth/logout:
+ * /auth/logout:
  *   post:
  *     tags: [Auth]
  *     summary: Logout user
@@ -293,7 +293,7 @@ router.post('/refresh', auth_controller_1.authController.refreshToken);
 router.post('/logout', auth_controller_1.authController.logOutUser); // ← Fixed: was wrongly pointing to loginUser
 /**
  * @swagger
- * /api/v1/auth/google:
+ * /auth/google:
  *   get:
  *     tags: [Auth]
  *     summary: Initiate Google OAuth login
@@ -305,7 +305,7 @@ router.post('/logout', auth_controller_1.authController.logOutUser); // ← Fixe
 router.get('/google', passport_1.default.authenticate('google', { scope: ['profile', 'email'] }));
 /**
  * @swagger
- * /api/v1/auth/google/callback:
+ * /auth/google/callback:
  *   get:
  *     tags: [Auth]
  *     summary: Google OAuth callback
@@ -317,7 +317,7 @@ router.get('/google', passport_1.default.authenticate('google', { scope: ['profi
 router.get('/google/callback', passport_1.default.authenticate('google', { failureRedirect: '/' }));
 /**
  * @swagger
- * /api/v1/auth/dashboard:
+ * /auth/dashboard:
  *   get:
  *     tags: [Auth]
  *     summary: Render dashboard (for testing OAuth flow)

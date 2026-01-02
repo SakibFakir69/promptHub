@@ -7,7 +7,7 @@ const verifyToken_1 = require("../../middleware/verifyToken");
 const router = (0, express_1.Router)();
 /**
  * @openapi
- * /api/v1/user/create-user:
+ * /user/create-user:
  *   post:
  *     tags:
  *       - User
@@ -48,7 +48,7 @@ const router = (0, express_1.Router)();
 router.post('/create-user', user_controller_1.userController.createUser);
 /**
  * @openapi
- * /api/v1/user/delete-user:
+ * /user/delete-user:
  *   delete:
  *     tags:
  *       - User
@@ -79,7 +79,7 @@ router.post('/create-user', user_controller_1.userController.createUser);
 router.delete('/delete-user', verifyToken_1.verifyToken, user_controller_1.userController.deleteUser);
 /**
  * @openapi
- * /api/v1/user/update-user:
+ * /user/update-user:
  *   put:
  *     tags:
  *       - User
