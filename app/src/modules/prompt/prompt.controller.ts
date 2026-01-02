@@ -40,8 +40,11 @@ const promptImageUpload = async (
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
+
+   
     cloudinaryConfig.uploader
       .upload_stream({ resource_type: 'auto' }, (error:UploadApiErrorResponse | undefined, result:UploadApiResponse | undefined) => {
+
 
         if (error) {
           console.log(error);
