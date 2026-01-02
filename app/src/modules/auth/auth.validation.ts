@@ -1,4 +1,5 @@
-import * as z from 'zod';
+import * as zod from 'zod';
+const z = (zod as any).z || zod;
 
 const loginUserValidationSchema = z.object({
   email: z.string().email({ message: 'Invalid email' }),

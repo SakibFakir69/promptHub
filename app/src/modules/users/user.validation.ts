@@ -1,8 +1,10 @@
-import * as z from 'zod';
+import * as zod from 'zod';
+const z = (zod as any).z || zod;
+
 import { GenderEnum } from './user.interface';
 
 export interface IUser {
-  _id: string;
+  // _id: string;
 
   name: string;
   email: string;

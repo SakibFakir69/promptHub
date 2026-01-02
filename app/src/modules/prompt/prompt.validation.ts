@@ -1,4 +1,5 @@
-import * as z from 'zod';
+import * as zod from 'zod';
+const z = (zod as any).z || zod;
 const createPromptSchema = z.object({
   title: z.string().min(3).max(100),
   prompt: z.string().min(10),
