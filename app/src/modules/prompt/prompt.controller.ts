@@ -1,5 +1,5 @@
 
-import cloudinary from '../../config/cloudniary/config.cloud';
+import { cloudinaryConfig } from '../../config/cloudniary/config.cloud';
 import { NextFunction, Request, Response } from 'express';
 import { Prompt } from './prompt.model';
 import { ReturnResponse } from '../../helper/ReturnResponse';
@@ -40,7 +40,7 @@ const promptImageUpload = async (
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
-    cloudinary.uploader
+    cloudinaryConfig.uploader
       .upload_stream({ resource_type: 'auto' }, (error:UploadApiErrorResponse | undefined, result:UploadApiResponse | undefined) => {
 
         if (error) {

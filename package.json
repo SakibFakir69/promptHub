@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node app/src/server.ts",
+    "start": "node dist/index.js",
     "test": "jest --passWithNoTests",
     "lint": "eslint .",
     "pretty": "npx prettier --write .",

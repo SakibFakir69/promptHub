@@ -9,4 +9,4 @@ cloudinary.config({
 });
 
 
-export default cloudinary;
+export const  cloudinaryConfig= cloudinary;
