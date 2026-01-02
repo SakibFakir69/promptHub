@@ -1,5 +1,4 @@
-import { z } from 'zod';
-
+import * as z from 'zod';
 const createPromptSchema = z.object({
   title: z.string().min(3).max(100),
   prompt: z.string().min(10),
