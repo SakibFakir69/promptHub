@@ -10,11 +10,7 @@
     "strict": true,
     "rootDir": "./app/src",
     "outDir": "./dist",
-    "baseUrl": ".",
-    "paths": {
-      "zod": ["node_modules/zod"]
-    },
-    "types": ["node"]
+    "baseUrl": "."
   },
   "include": ["app/src/**/*"]
 }
