@@ -4,6 +4,7 @@
     "module": "commonjs",             // Changed from node16 to commonjs
     "moduleResolution": "node",       // Changed from node16 to node
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true, /* Add this */
     "skipLibCheck": true,             // This ignores errors in node_modules
     "forceConsistentCasingInFileNames": true,
     "strict": true,
