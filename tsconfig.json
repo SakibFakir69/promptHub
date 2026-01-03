@@ -11,6 +11,9 @@
     "rootDir": "./",
     "outDir": "./dist",
     "baseUrl": ".",
+    "paths": {
+      "zod": ["node_modules/zod"]
+    },
     "moduleDetection": "force"
   },
   "include": ["app/src/**/*"],
