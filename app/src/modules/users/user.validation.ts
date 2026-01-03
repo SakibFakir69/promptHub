@@ -33,18 +33,17 @@ const createUserSchema = z.object({
   avatar: z.string().optional().default(''),
   googleId: z.string().optional().default(''),
   totalPost: z.number().default(0),
- gender: z
+  gender: z
   .nativeEnum(GenderEnum)
   .optional()
   .refine(
-    (val) =>
+    (val: GenderEnum | undefined) =>
       val === undefined ||
       Object.values(GenderEnum).includes(val),
     {
       message: "Gender must be male, female, or others",
     }
   ),
-
 
   tags: z.array(z.string()).optional(),
 
