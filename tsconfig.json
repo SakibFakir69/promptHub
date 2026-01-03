@@ -8,9 +8,11 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "rootDir": "./app/src",
+    "rootDir": "./",
     "outDir": "./dist",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "moduleDetection": "force"
   },
-  "include": ["app/src/**/*"]
+  "include": ["app/src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
