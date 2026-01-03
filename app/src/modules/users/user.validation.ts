@@ -1,5 +1,4 @@
-import * as zod from 'zod';
-const z = (zod as any).z || zod;
+import { z } from "zod";
 
 import { GenderEnum } from './user.interface';
 
@@ -34,11 +33,19 @@ const createUserSchema = z.object({
   avatar: z.string().optional().default(''),
   googleId: z.string().optional().default(''),
   totalPost: z.number().default(0),
-  gender: z
-    .nativeEnum(GenderEnum, {
-      errorMap: () => ({ message: 'Gender must be male, female, or others' }),
-    })
-    .optional(),
+ gender: z
+  .nativeEnum(GenderEnum)
+  .optional()
+  .refine(
+    (val) =>
+      val === undefined ||
+      Object.values(GenderEnum).includes(val),
+    {
+      message: "Gender must be male, female, or others",
+    }
+  ),
+
+
   tags: z.array(z.string()).optional(),
 
   isVerify: z.boolean().optional(),
