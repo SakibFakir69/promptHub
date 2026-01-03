@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+
 import { GenderEnum } from './user.interface';
 
 export interface IUser {
