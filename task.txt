@@ -1,8 +1,11 @@
 
 
-/// design -> flow - test -> code  re-factor + j test 
+/////  https://prompthub-2.onrender.com 
 
-
+ /// add security 
+ /// jest 
+ /// fix email sending
+ ///// console
 
 * data base design and make flow draw
 
@@ -12,3 +15,9 @@
 
 
 #dockerization this project
+
+
+
+
+
+///// feed system -> search post -> 

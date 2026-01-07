@@ -6,8 +6,9 @@ import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
+import helmet from 'helmet';
 
- 
+
 import express, { Application, Request, Response } from 'express';
 
 import session, { SessionOptions as ExpressSessionOptions } from "express-session";
@@ -60,7 +61,8 @@ const options = {
 const swaggerSpec = swaggerJSDoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-
+// helmet
+app.use(helmet())
 
 // middleware 
 // session middlweare
