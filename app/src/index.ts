@@ -7,7 +7,7 @@ import passport from 'passport';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import helmet from 'helmet';
-
+import limiter from './middleware/rateLimiting';
 
 import express, { Application, Request, Response } from 'express';
 
@@ -63,6 +63,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // helmet
 app.use(helmet())
+// limiter
+app.use(limiter);
 
 // middleware 
 // session middlweare
