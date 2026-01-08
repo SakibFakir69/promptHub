@@ -31,7 +31,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const isUserExits = await User.findOne({ email: email });
-    console.log(email, password);
+   
 
     // find user
     if (!isUserExits) {
@@ -66,7 +66,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
       ReturnResponse(res, 500, false, 'Token generation failed');
       return;
     }
-    console.log(accessToken, refreshToken, ' token ');
+    
 
     // setcookies
     /// access token
@@ -106,7 +106,7 @@ const ResetPassword = async (
     // old and new pass take then verify
 
     const email = req?.user?.id;
-    console.log(email);
+   
 
     const isUser = await User.findOne({ email: email });
     //

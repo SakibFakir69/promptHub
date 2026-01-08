@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport({
 // send email
 
 export const sendEmail = async (toEmail: string, name: string, otp: number) => {
-  console.log(toEmail, name, otp, ' email ');
+  
 
 
 
@@ -35,7 +35,7 @@ export const sendEmail = async (toEmail: string, name: string, otp: number) => {
     subject: `Your OTP Code`,
     html
   };
-  console.log(mailOptions);
+ 
 
   // Send the email
   try {

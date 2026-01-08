@@ -78,8 +78,6 @@ const verifyOtp = async (req: Request, res: Response,next:NextFunction) => {
     //  Get OTP from Redis
     const storedOtp = await redisClient.get(`otp:${email}`);
 
-    console.log(storedOtp)
-
     if (!storedOtp) {
      
       ReturnResponse(res,400,false,"OTP expired or not found.")

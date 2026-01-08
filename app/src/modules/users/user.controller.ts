@@ -10,7 +10,7 @@ import { userValidation } from './user.validation';
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   console.log('create user    ');
-  console.log(req.body);
+  
 
   try {
     const { email } = req.body;
@@ -39,7 +39,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     const createUserData = validationResult.data;
 
     const result = await userServices.createUser(createUserData);
-    console.log(result);
+   
 
     ReturnResponse(res, 201, true, 'User created Successfully', result);
   } catch (error) {

@@ -24,9 +24,7 @@ export const verifyToken = async (
 
   const SECRECT_KEY = process.env.BCRYPT_SECRECT_KEY as string | "token"
 
-  console.log(token);
-  console.log('=============================');
-  console.log(SECRECT_KEY);
+ 
 
   Jwt.verify(token, SECRECT_KEY, (err: any, decode: any) => {
     console.log('verify');
@@ -40,7 +38,7 @@ export const verifyToken = async (
 
     req.user = decode  as IUserPayload; 
 
-    console.log(req.user, " decode");
+    
 
     next();
   });

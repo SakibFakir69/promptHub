@@ -41,7 +41,7 @@ const loginUser = async (payload: Partial<IJwtPayload>) => {
     // refreshToken
     const refreshToken = generateJwtToken(jwtPayload, refreshScerect, '15d');
 
-    console.log(refreshToken, accessToken, payload);
+  
 
     const result = {
       accessToken: accessToken,
@@ -58,7 +58,7 @@ const loginUser = async (payload: Partial<IJwtPayload>) => {
 
 const passwordChange = (payload: IPasswordPayload) => {
   const { newPassword, oldPassword } = payload;
-  console.log(newPassword, oldPassword);
+  
 
   return payload;
 };

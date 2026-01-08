@@ -20,7 +20,7 @@ const getAllPrompt = async (
 ) => {
   try {
     const userId = req?.user?.id;
-    console.log(userId, ' user id');
+  
     const result = await Prompt.find({ 'createdBy.userId': userId });
 
     return ReturnResponse(res, 200, true, 'prompt reterive', result);
@@ -36,7 +36,7 @@ const promptImageUpload = async (
 ) => {
   // up vote , down , nutrual , description , photo
   try {
-    console.log(req?.file);
+
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
