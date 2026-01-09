@@ -10,6 +10,8 @@ export interface IPrompt {
   downVote: number;
    upVotedBy: Types.ObjectId[];
   downVotedBy: Types.ObjectId[];
+  visibility:boolean,
+  // view count -> 
 
 
   createdBy: {
@@ -18,4 +20,6 @@ export interface IPrompt {
     avatar?: string;
     
   };
+    createdAt?: Date;
+  updatedAt?: Date;
 }

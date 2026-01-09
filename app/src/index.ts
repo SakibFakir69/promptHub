@@ -21,6 +21,7 @@ import { AuthRouter } from './modules/auth/auth.route';
 import { otpRouter } from './modules/otp/otp.route';
 import { ErrorHandler } from './helper/ErrorHandler';
 import { promptRouter } from './modules/prompt/prompt.route';
+import { feedRouter } from './modules/feed/feed.route';
 
 
 // app
@@ -102,6 +103,10 @@ app.use('/api/v1/auth', AuthRouter);
 app.use('/api/v1/otp',otpRouter)
 // prompt
 app.use('/api/v1/prompt', promptRouter)
+
+
+// feed
+app.use('/api/v1', feedRouter);
 
 // api test
 app.get('/', async (req: Request, res: Response) => {

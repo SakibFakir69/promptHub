@@ -1,4 +1,4 @@
-import mongoose, { mongo, Schema, Types } from "mongoose";
+import mongoose, {  Schema, Types } from "mongoose";
 import { IPrompt } from "./prompt.interface";
 
 const promptSchema = new Schema<IPrompt>(
@@ -36,6 +36,7 @@ const promptSchema = new Schema<IPrompt>(
 
       upVotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   downVotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  visibility:{type:Boolean, default:true},
   
     createdBy: {
       userId: {
