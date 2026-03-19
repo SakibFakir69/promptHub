@@ -9,4 +9,5 @@ const redisClient = {
   isOpen: true,
 };
 
+
 export default redisClient;
