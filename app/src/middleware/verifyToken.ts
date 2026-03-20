@@ -13,8 +13,9 @@ export const verifyToken = async (
 ) => {
   
 
-  const token = req.cookies.accessToken;
-  console.log(req.cookies, 'cookies');
+   const token = req.cookies?.accessToken || req.headers['authorization']?.split(' ')[1];
+
+  console.log(req.cookies, req.headers['authorization']?.split(' ')[1], 'cookies');
 
   console.log(' ', token);
   // tokn 401
