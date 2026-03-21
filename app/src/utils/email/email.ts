@@ -8,11 +8,17 @@ import ejs from 'ejs'
 // use redish
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, 
   auth: {
     user: 'fakirsakib22232@gmail.com',
     pass: 'egra xurx aebz uhmp',
   },
+ 
+  connectionTimeout: 5000, // 5 seconds
+  greetingTimeout: 5000,
+  socketTimeout: 5000,
 });
 
 // send email

@@ -26,6 +26,7 @@ import { feedRouter } from './modules/feed/feed.route';
 
 // app
 const app: Application = express();
+app.set('trust proxy', 1);
 
 
 

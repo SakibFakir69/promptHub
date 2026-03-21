@@ -41,7 +41,7 @@ const sendOtp = async (req: Request, res: Response,next:NextFunction) => {
     await redisClient.setEx(`otp:${email}`, 60 * 5, otp);
     
     //  Send email
-    await sendEmail(email, user_name as string,Number( otp));
+    await sendEmail(email, user_name as string,Number(otp));
 
    
       const  otpDetails:{email:string,user_name:string,otp:string, time:number}={
