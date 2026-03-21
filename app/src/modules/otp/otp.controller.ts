@@ -26,7 +26,7 @@ const sendOtp = async (req: Request, res: Response,next:NextFunction) => {
     const existingOtp = await redisClient.get(`otp:${email}`);
     if (existingOtp) {
       
-      ReturnResponse(res, 429,false,"Please wait before requesting another OTP.")
+     return ReturnResponse(res, 429,false,"Please wait before requesting another OTP.")
     }
 
     //  Generate OTP
@@ -38,7 +38,7 @@ const sendOtp = async (req: Request, res: Response,next:NextFunction) => {
     });
 
     //  Store OTP in Redis for 5 minutes
-    await redisClient.setEx(`otp:${email}`, 60 * 5, otp);
+    await redisClient.setEx(`otp:${email}`, 60 * 3, otp);
     
     //  Send email
     await sendEmail(email, user_name as string,Number(otp));
