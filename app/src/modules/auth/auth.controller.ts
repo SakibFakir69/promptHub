@@ -9,7 +9,6 @@ import jwt from 'jsonwebtoken';
 import { generateJwtToken } from '../../utils/genrateToken';
 import { ReturnResponse } from '../../helper/ReturnResponse';
 import { authValidator } from './auth.validation';
-import { issue } from 'zod/v4/core/util.cjs';
 
 const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
