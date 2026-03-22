@@ -9,6 +9,7 @@ import jwt from 'jsonwebtoken';
 import { generateJwtToken } from '../../utils/genrateToken';
 import { ReturnResponse } from '../../helper/ReturnResponse';
 import { authValidator } from './auth.validation';
+import { issue } from 'zod/v4/core/util.cjs';
 
 const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -79,6 +80,9 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
       message: 'User Login Successfully',
       accessToken: accessToken,
       refreshToken: refreshToken,
+      data:{
+         isVerify:isUserExits.isVerify
+      }
     });
   } catch (error) {
     next(error);
