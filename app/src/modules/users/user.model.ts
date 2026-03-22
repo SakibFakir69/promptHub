@@ -31,7 +31,6 @@ const userSchema = new mongoose.Schema<IUser>(
     totalPost: { type: Number, default: 0 },
     tags: { type: [String], default: [] },
     followers: { type: [String], default: [] },
-
     following: { type: [String], default: [] },
     isBlock:{type:Boolean , default:false},
     isDelete:{type:Boolean , default:false},

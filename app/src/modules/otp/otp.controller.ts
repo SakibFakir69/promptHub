@@ -4,6 +4,7 @@ import { sendEmail } from "../../utils/email/email";
 import { redisClient } from "../../config/redis/redisClient";
 import { ReturnResponse } from "../../helper/ReturnResponse";
 import { zodOtpValidationSchema } from "./otp.validation";
+import { User } from "../users/user.model";
 
 
 
@@ -102,8 +103,43 @@ const verifyOtp = async (req: Request, res: Response,next:NextFunction) => {
        next(error);
   }
 };
+
+const isVerifyUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = req.user?.id;
+
+    if (!id) {
+      return ReturnResponse(res, 400, false, "User ID not found");
+    }
+
+  
+    const user = await User.findByIdAndUpdate(
+      id,
+      { isVerify: true, isLoggedIn: true },
+      { new: true }
+    );
+
+    
+    if (!user) {
+      return ReturnResponse(res, 404, false, "User not found");
+    }
+
+    return ReturnResponse(
+      res,
+      200,
+      true,
+      "User Verify Successful",
+    
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 // re -send otp
 export const otpController = {
   sendOtp,
   verifyOtp,
+  isVerifyUser
 };
