@@ -91,6 +91,6 @@ router.post('/send-otp', verifyToken, otpController.sendOtp);
 router.post('/verify-otp', verifyToken, otpController.verifyOtp);
 
 router.post('/user-verify',verifyToken, otpController.isVerifyUser);
-
+router.post('/resend-otp', verifyToken,otpController.resendOtp);
 
 export const otpRouter = router;
