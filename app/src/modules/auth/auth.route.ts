@@ -190,7 +190,7 @@ router.post('/login-user', authController.loginUser);
  *               password:
  *                 type: string
  *                 description: Current password
- *               newPassword:
+ *               newPassword: 
  *                 type: string
  *                 description: New password
  *     responses:

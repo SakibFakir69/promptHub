@@ -37,7 +37,6 @@ const sendOtp = async (req: Request, res: Response, next: NextFunction) => {
       specialChars: false,
       lowerCaseAlphabets: false,
     });
-
     //  Store OTP in Redis for 5 minutes
     await redisClient.setEx(`otp:${email}`, 60 * 3, otp);
 

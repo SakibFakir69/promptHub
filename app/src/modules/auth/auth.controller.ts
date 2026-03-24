@@ -1,5 +1,5 @@
-// login-user
-
+import { sendEmail } from './../../utils/email/email';
+import otpGenerator from 'otp-generator';
 import { NextFunction, Request, Response } from 'express';
 import { User } from '../users/user.model';
 import bcrypt from 'bcryptjs';
@@ -9,6 +9,8 @@ import jwt from 'jsonwebtoken';
 import { generateJwtToken } from '../../utils/genrateToken';
 import { ReturnResponse } from '../../helper/ReturnResponse';
 import { authValidator } from './auth.validation';
+import { redisClient } from 'app/src/config/redis/redisClient';
+
 
 const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -274,6 +276,82 @@ const refreshToken = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+// reset-email 
+
+
+
+const resetEmail = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email } = req.body; 
+    if (!email) {
+      return ReturnResponse(res, 400, false, "Please provide email address");
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return ReturnResponse(res, 404, false, 'User Email Not Found');
+    }
+
+  
+    const isExitsOtp = await redisClient.get(`otp:${email}`);
+    if (isExitsOtp) {
+   
+      return ReturnResponse(res, 429, false, "OTP already sent. Please wait 5 minutes before requesting a new one.");
+    }
+
+    // 2. Generate OTP (Keep as string to preserve leading zeros)
+    const otp = otpGenerator.generate(4, {
+      digits: true,
+      upperCaseAlphabets: false,
+      specialChars: false,
+      lowerCaseAlphabets: false,
+    });
+
+    // 3. Store in Redis (5 minutes = 300 seconds)
+    await redisClient.setEx(`otp:${email}`, 300, otp);
+
+   
+    await sendEmail(user.email, 'Password Reset OTP', Number(otp));
+
+    return ReturnResponse(res, 200, true, "OTP sent successfully to your email");
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+// reset-code
+const resetCode = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, otpCode } = req.body; 
+
+    if (!email || !otpCode) {
+      return ReturnResponse(res, 400, false, 'Email and OTP are required');
+    }
+
+    
+    const storedOtp = await redisClient.get(`otp:${email}`);
+
+ 
+    if (!storedOtp) {
+      return ReturnResponse(res, 400, false, 'OTP expired or not found');
+    }
+
+   
+    if (storedOtp !== otpCode) {
+      return ReturnResponse(res, 400, false, 'Invalid OTP code');
+    }
+
+   
+    await redisClient.del(`otp:${email}`);
+
+    return ReturnResponse(res, 200, true, 'OTP verified successfully');
+
+  } catch (error) {
+    next(error);
+  }
+}
+
 // export
 export const authController = {
   loginUser,
@@ -282,4 +360,6 @@ export const authController = {
   getMe,
   logOutUser,
   refreshToken,
+  resetEmail,
+  resetCode
 };
