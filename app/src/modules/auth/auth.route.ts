@@ -341,4 +341,8 @@ router.get(
  */
 
 
+router.post('/reset-email', authController.resetEmail);
+router.post('/reset-code', authController.resetCode);
+
+
 export const AuthRouter = router;

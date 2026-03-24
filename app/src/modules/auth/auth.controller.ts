@@ -9,8 +9,7 @@ import jwt from 'jsonwebtoken';
 import { generateJwtToken } from '../../utils/genrateToken';
 import { ReturnResponse } from '../../helper/ReturnResponse';
 import { authValidator } from './auth.validation';
-import { redisClient } from 'app/src/config/redis/redisClient';
-
+import { redisClient } from '../../config/redis/redisClient';
 
 const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -323,9 +322,10 @@ const resetEmail = async (req: Request, res: Response, next: NextFunction) => {
 // reset-code
 const resetCode = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, otpCode } = req.body; 
+    const { email, otp } = req.body; 
+    console.log(email,otp)
 
-    if (!email || !otpCode) {
+    if (!email || !otp) {
       return ReturnResponse(res, 400, false, 'Email and OTP are required');
     }
 
@@ -334,11 +334,11 @@ const resetCode = async (req: Request, res: Response, next: NextFunction) => {
 
  
     if (!storedOtp) {
-      return ReturnResponse(res, 400, false, 'OTP expired or not found');
+      return ReturnResponse(res, 400, false, 'OTP expired');
     }
 
    
-    if (storedOtp !== otpCode) {
+    if (storedOtp !== otp) {
       return ReturnResponse(res, 400, false, 'Invalid OTP code');
     }
 
