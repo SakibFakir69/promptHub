@@ -383,7 +383,13 @@ const resendRestCode = async (req: Request, res: Response, next: NextFunction) =
       lowerCaseAlphabets: false,
     });
 
-    // Store in Redis (Overwrites existing if it's there)
+    const storeOtp = await redisClient.get(`otp:${email}`);
+    if(storeOtp)
+    {
+      return ReturnResponse(res,400,false,'Please wait 3 minutes')
+    }
+
+   
     await redisClient.setEx(`otp:${email}`, 300, otp);
 
     
