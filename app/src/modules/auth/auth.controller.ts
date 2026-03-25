@@ -97,7 +97,16 @@ const ResetPassword = async (
   next: NextFunction,
 ) => {
   try {
-    const { newPassword } = req.body;
+    const { newPassword, confirmPassword,email} = req.body;
+
+    if(!newPassword || !confirmPassword || !email)
+    {
+      return ReturnResponse(res,400,false,'Something missing')
+    }
+    if(newPassword!==confirmPassword)
+    {
+      return ReturnResponse(res,400,false,"Password not match");
+    }
 
     // zod validation
     const zodValidation = authValidator.resetPasswordSchema.safeParse(req.body);
@@ -109,7 +118,7 @@ const ResetPassword = async (
 
     // old and new pass take then verify
 
-    const email = req?.user?.id;
+    
    
 
     const isUser = await User.findOne({ email: email });
