@@ -361,6 +361,41 @@ const resetCode = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+
+const resendRestCode = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return ReturnResponse(res, 400, false, 'Please provide email address');
+    }
+
+    const isUserExits = await User.findOne({ email: email });
+    if (!isUserExits) {
+      return ReturnResponse(res, 400, false, 'User with this email does not exist');
+    }
+
+    
+    const otp = otpGenerator.generate(4, {
+      digits: true,
+      upperCaseAlphabets: false,
+      specialChars: false,
+      lowerCaseAlphabets: false,
+    });
+
+    // Store in Redis (Overwrites existing if it's there)
+    await redisClient.setEx(`otp:${email}`, 300, otp);
+
+    
+    await sendEmail(email, 'Password Reset OTP', Number(otp)); 
+
+    return ReturnResponse(res, 200, true, "OTP sent successfully to your email");
+    
+  } catch (error) {
+    next(error);
+  }
+}
+
 // export
 export const authController = {
   loginUser,
@@ -370,5 +405,6 @@ export const authController = {
   logOutUser,
   refreshToken,
   resetEmail,
-  resetCode
+  resetCode,
+  resendRestCode
 };

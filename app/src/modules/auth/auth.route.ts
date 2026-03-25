@@ -343,6 +343,6 @@ router.get(
 
 router.post('/reset-email', authController.resetEmail);
 router.post('/reset-code', authController.resetCode);
-
+router.post('/reset-otp-code', authController.resendRestCode);
 
 export const AuthRouter = router;
