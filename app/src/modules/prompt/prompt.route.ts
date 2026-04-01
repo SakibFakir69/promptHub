@@ -133,9 +133,11 @@ const router = Router();
 router.post(
   '/create-prompt',
   verifyToken,
-  upload.single('image'),
   promptController.createPrompt, // Assuming you renamed or adjusted controller method
 );
+
+// IMAGE UPLOAD ONLY
+router.post('/prompt-image', verifyToken, upload.single("image") , promptController.promptImageUpload)
 
 /**
  * @swagger
