@@ -137,7 +137,7 @@ router.post(
 );
 
 // IMAGE UPLOAD ONLY
-router.post('/prompt-image', verifyToken, upload.single("image") , promptController.promptImageUpload)
+router.post('/prompt-image',  upload.single("image") , promptController.promptImageUpload)
 
 /**
  * @swagger
@@ -461,5 +461,7 @@ router.post('/upVote', verifyToken, promptController.upVote);
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post('/downVote', verifyToken, promptController.downVote);
+
+router.get('/prompt-details/:id', promptController.getPromptDetails);
 
 export const promptRouter = router;

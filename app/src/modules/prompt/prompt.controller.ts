@@ -29,12 +29,50 @@ const getAllPrompt = async (
   }
 };
 
+// GET PROMPT DETAILS
+
+
+const getPromptDetails = async(req:Request , res:Response , next:NextFunction)=>{
+
+  try {
+    const promptId = req.params.id;
+
+    if(!promptId)
+    {
+      return res.status(404).json({
+        success:false,
+        message:"Please enter correct id"
+
+      })
+    }
+
+    const prompt = await Prompt.findById(promptId);
+    if(!prompt){
+       return res.status(404).json({
+        success:false,
+        message:"Please enter correct id"
+
+      })
+    }
+
+
+    return ReturnResponse(res,200,true,'Prompt details fetch successfully',prompt);
+  
+
+
+    
+  } catch (error) {
+    next(error);
+  }
+}
+
+
 const promptImageUpload = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  // up vote , down , nutrual , description , photo
+  
   try {
 
     if (!req.file) {
@@ -64,6 +102,11 @@ const promptImageUpload = async (
 //
 // add zod validation
 
+// 
+
+  /* add attribute ( public , private) */ 
+// 
+
 export const createPrompt = async (
   req: Request,
   res: Response,
@@ -71,7 +114,6 @@ export const createPrompt = async (
 ) => {
   try {
     console.log('create - prompt');
-
     // Attach logged-in user info automatically
     if (!req.user) {
       return ReturnResponse(res, 401, false, 'Unauthorized: user not found');
@@ -353,6 +395,8 @@ const downVote = async (req: Request, res: Response, next: NextFunction) => {
 export const promptController = {
   promptImageUpload,
   createPrompt,
+  getPromptDetails
+  ,
   updatePrompt,
   deletePrompt,
   getAllPrompt,
