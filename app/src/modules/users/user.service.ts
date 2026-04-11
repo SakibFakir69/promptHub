@@ -10,7 +10,6 @@ const createUser = async (payload: Partial<IUser>) => {
 
     const password: string = payload.password as string;
 
-     
     const saltRound: number = Number(process.env.SALT) || 10;
     //   hashPassword
     const hashPassword = await bcrypt.hash(password, saltRound);
@@ -38,16 +37,33 @@ const deleteUser = async (id: string) => {
 };
 
 // update user
-const updateUser = async <T>(id: string | number, data?: Partial<IUser | T>) => {
+const updateUser = async (
+  id: string,
+  data: Partial<IUser>
+) => {
+  
+  if (!data || Object.keys(data).length === 0) {
+    throw new Error("No data provided for update");
+  }
+
+  const allowedFields = ["name", "bio", "photo", "avatar", "tags", "gender"];
+
+  const safeData = Object.fromEntries(
+    Object.entries(data).filter(([key]) => allowedFields.includes(key))
+  );
+
   const result = await User.findByIdAndUpdate(
     id,
-    { $set: data },
-
+    { $set: safeData },
     {
-      new: true, /// return new data
-      runValidators: true, /// return mongos validator
-    },
-  );
+      new: true,
+      runValidators: true,
+    }
+  ).lean();
+
+  if (!result) {
+    throw new Error("User not found");
+  }
 
   return result;
 };

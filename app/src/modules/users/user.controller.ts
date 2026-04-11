@@ -66,52 +66,47 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
 
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user_id = req.user?.id  as string;
+    const user_id = req.user?.id as string;
 
-    const updateData = {
-      name: req.body.name,
-      bio: req.body.bio,
-      photo: req.body.photo,
-      avatar: req.body.avatar,
-      tags: req.body.tags,
-      // extend as need
-    };
+    const updateData: Record<string, any> = {};
 
-    // zod validation
-    const updateDataValidation =
-      userValidation.updateUserSchema.safeParse(updateData);
+    if (req.body.name !== undefined) updateData.name = req.body.name;
+    if (req.body.bio !== undefined) updateData.bio = req.body.bio;
+    if (req.body.photo !== undefined) updateData.photo = req.body.photo;
+    if (req.body.avatar !== undefined) updateData.avatar = req.body.avatar;
+    if (req.body.tags !== undefined) updateData.tags = req.body.tags;
+    if (req.body.gender !== undefined) updateData.gender = req.body.gender;
 
-    if (!updateDataValidation?.success) {
-      const updateError = updateDataValidation?.error.format();
+    if (Object.keys(updateData).length === 0) {
+      return ReturnResponse(res, 400, false, "No data provided to update");
+    }
+
+    const validation = userValidation.updateUserSchema.safeParse(updateData);
+
+    if (!validation.success) {
       return ReturnResponse(
         res,
         400,
         false,
-        'Zod Update Validation Error',
-        updateError,
+        "Zod Update Validation Error",
+        validation.error.format()
       );
     }
 
-    const updatedData = updateDataValidation?.data;
-
-    // update services
-
-    const result = await userServices.updateUser(
-      user_id ,
-      updatedData,
-    );
+    const result = await userServices.updateUser(user_id, validation.data);
 
     return ReturnResponse(
       res,
       200,
       true,
-      'User Data Update Successfully',
-      result,
+      "User Data Updated Successfully",
+      result
     );
   } catch (error) {
     next(error);
   }
 };
+
 
 export const userController = {
   createUser,
