@@ -159,7 +159,8 @@ const changePassword = async (
 
     // old and new pass take then verify
 
-    const email = req?.user;
+    const email = req?.user?.email;
+    
 
     const isUser = await User.findOne({ email: email });
     //
