@@ -294,7 +294,7 @@ router.post('/refresh', authController.refreshToken);
  *       500:
  *         description: Server error
  */
-router.post('/logout', authController.logOutUser); // ← Fixed: was wrongly pointing to loginUser
+router.post('/logout',verifyToken, authController.logOutUser); 
 
 /**
  * @swagger
