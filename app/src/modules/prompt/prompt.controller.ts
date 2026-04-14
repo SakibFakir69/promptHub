@@ -1,12 +1,13 @@
 
 import { cloudinaryConfig } from '../../config/cloudniary/config.cloud';
 import { NextFunction, Request, Response } from 'express';
-import { Prompt } from './prompt.model';
+import { Prompt, SavedPrompt } from './prompt.model';
 import { ReturnResponse } from '../../helper/ReturnResponse';
 import { zodValidationPrompt } from './prompt.validation';
 import { User } from '../users/user.model';
 import { Types } from 'mongoose';
 import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
+
 
 
 // super test and deploy
@@ -392,6 +393,46 @@ const downVote = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 
+// MY SAVED PROMPT 
+
+
+
+const mySavedPrompt = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { promptId } = req.body;
+    const userId = req.user?.id;
+
+   
+    const alreadySaved = await SavedPrompt.findOne({ userId, promptId });
+
+    if (alreadySaved) {
+      res.status(400).json({
+        success: false,
+        message: 'Prompt already saved',
+      });
+      return;
+    }
+
+    const result = await SavedPrompt.create({ userId, promptId });
+
+    res.status(201).json({
+      success: true,
+      message: 'Prompt saved successfully',
+      data: result,
+    });
+
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+
+
+
+
+
+
 export const promptController = {
   promptImageUpload,
   createPrompt,
@@ -400,5 +441,6 @@ export const promptController = {
   updatePrompt,
   deletePrompt,
   getAllPrompt,
-  upVote,downVote
+  upVote,downVote,
+  mySavedPrompt
 };

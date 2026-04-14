@@ -1,5 +1,5 @@
-import mongoose, {  Schema, Types } from "mongoose";
-import { IPrompt } from "./prompt.interface";
+import mongoose, { Schema, Types, Document } from 'mongoose';
+import { IPrompt } from './prompt.interface';
 
 const promptSchema = new Schema<IPrompt>(
   {
@@ -34,24 +34,61 @@ const promptSchema = new Schema<IPrompt>(
       default: 0,
     },
 
-      upVotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  downVotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  visibility:{type:Boolean, default:true},
-  
+    upVotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    downVotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    visibility: { type: Boolean, default: true },
+
     createdBy: {
       userId: {
         type: Types.ObjectId,
-        ref: "User",//// collection
+        ref: 'User', //// collection
         required: true,
       },
-      
+
       name: String,
       avatar: String,
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-export const Prompt=mongoose.model("prompt",promptSchema);
+export const Prompt = mongoose.model('prompt', promptSchema);
+
+
+
+
+
+// savedPrompt.model.ts
+
+
+export interface ISavedPrompt extends Document {
+  userId: Types.ObjectId;
+  promptId: Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+}
+const savedPromptSchema = new Schema<ISavedPrompt>(
+  {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+
+    promptId: {
+      type: Schema.Types.ObjectId,
+      ref: 'prompt', 
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+
+savedPromptSchema.index({ userId: 1, promptId: 1 }, { unique: true });
+
+export const SavedPrompt = mongoose.model('savedPrompt', savedPromptSchema);

@@ -184,7 +184,7 @@ const changePassword = async (
 
     await isUser?.save();
 
-    ReturnResponse(res, 200, false, 'password change successfully');
+    ReturnResponse(res, 200, true, 'password change successfully');
     return;
   } catch (error) {
     next(error);
