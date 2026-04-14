@@ -396,55 +396,73 @@ const downVote = async (req: Request, res: Response, next: NextFunction) => {
 // MY SAVED PROMPT 
 
 
-
+// ADD INDEXING HERE
 const mySavedPrompt = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { promptId } = req.body;
+    const { prompt } = req.body;
     const userId = req.user?.id;
 
-   
-    const alreadySaved = await SavedPrompt.findOne({ userId, promptId });
-
-    if (alreadySaved) {
-      res.status(400).json({
-        success: false,
-        message: 'Prompt already saved',
-      });
-      return;
-    }
-
-    const result = await SavedPrompt.create({ userId, promptId });
-
-    res.status(201).json({
-      success: true,
-      message: 'Prompt saved successfully',
-      data: result,
+    
+    const isAlreadySaved = await SavedPrompt.findOne({
+      userIdSavePrompt: userId,
+      promptId: prompt?._id,
     });
 
+    if (isAlreadySaved) {
+      return res.status(400).json({
+        success: false,
+        message: "This prompt is already saved",
+      });
+    }
+
+  
+    const payload = {
+      userIdSavePrompt: userId,
+      promptId: prompt._id,
+    };
+
+
+    const result = await SavedPrompt.create(payload);
+
+    return res.status(201).json({
+      success: true,
+      message: "Prompt saved successfully",
+      data: result,
+    });
   } catch (error) {
     console.log(error);
     next(error);
   }
 };
 
+
 const getSavedPrompt = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user?.id;
 
-    const result = await SavedPrompt.find({ userId })
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized user",
+      });
+    }
+
+    const result = await SavedPrompt.find({
+      userIdSavePrompt: userId,
+    })
       .populate({
-        path: 'promptId',
-        model: 'prompt',
-        select: 'title prompt category tags upVote downVote visibility createdBy createdAt',
+        path: "promptId",
+        model: "Prompt",
+        select:
+          "title prompt category tags upVote downVote visibility createdBy createdAt",
       })
       .sort({ createdAt: -1 });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: 'Saved prompts fetched successfully',
+      message: "Saved prompts fetched successfully",
       data: result,
     });
-
   } catch (error) {
     console.log(error);
     next(error);
