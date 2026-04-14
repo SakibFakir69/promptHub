@@ -402,9 +402,9 @@ const mySavedPrompt = async (req: Request, res: Response, next: NextFunction) =>
     const { prompt } = req.body;
     const userId = req.user?.id;
 
-    
+    // 1. check already saved
     const isAlreadySaved = await SavedPrompt.findOne({
-      userIdSavePrompt: userId,
+      userId,
       promptId: prompt?._id,
     });
 
@@ -415,12 +415,11 @@ const mySavedPrompt = async (req: Request, res: Response, next: NextFunction) =>
       });
     }
 
-  
+    // 2. save
     const payload = {
-      userIdSavePrompt: userId,
+      userId,
       promptId: prompt._id,
     };
-
 
     const result = await SavedPrompt.create(payload);
 
@@ -435,7 +434,6 @@ const mySavedPrompt = async (req: Request, res: Response, next: NextFunction) =>
   }
 };
 
-
 const getSavedPrompt = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user?.id;
@@ -447,9 +445,7 @@ const getSavedPrompt = async (req: Request, res: Response, next: NextFunction) =
       });
     }
 
-    const result = await SavedPrompt.find({
-      userIdSavePrompt: userId,
-    })
+    const result = await SavedPrompt.find({ userId })
       .populate({
         path: "promptId",
         model: "Prompt",

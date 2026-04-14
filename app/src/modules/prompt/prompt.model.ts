@@ -69,26 +69,33 @@ export interface ISavedPrompt extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
 const savedPromptSchema = new Schema<ISavedPrompt>(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
     },
 
     promptId: {
       type: Schema.Types.ObjectId,
-      ref: 'prompt', 
+      ref: "Prompt", 
       required: true,
     },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 
-savedPromptSchema.index({ userId: 1, promptId: 1 }, { unique: true });
+savedPromptSchema.index(
+  { userId: 1, promptId: 1 },
+  { unique: true }
+);
 
-export const SavedPrompt = mongoose.model('savedPrompt', savedPromptSchema);
+export const SavedPrompt = mongoose.model<ISavedPrompt>(
+  "SavedPrompt", 
+  savedPromptSchema
+);
