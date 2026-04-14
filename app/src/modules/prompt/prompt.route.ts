@@ -464,5 +464,6 @@ router.post('/downVote', verifyToken, promptController.downVote);
 
 router.get('/prompt-details/:id', promptController.getPromptDetails);
 router.post('/saved-prompt', verifyToken, promptController.mySavedPrompt);
+router.get('/save-prompt',verifyToken, promptController.getSavedPrompt)
 
 export const promptRouter = router;

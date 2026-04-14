@@ -427,6 +427,30 @@ const mySavedPrompt = async (req: Request, res: Response, next: NextFunction) =>
   }
 };
 
+const getSavedPrompt = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user?.id;
+
+    const result = await SavedPrompt.find({ userId })
+      .populate({
+        path: 'promptId',
+        model: 'prompt',
+        select: 'title prompt category tags upVote downVote visibility createdBy createdAt',
+      })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      message: 'Saved prompts fetched successfully',
+      data: result,
+    });
+
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
 
 
 
@@ -442,5 +466,6 @@ export const promptController = {
   deletePrompt,
   getAllPrompt,
   upVote,downVote,
-  mySavedPrompt
+  mySavedPrompt,
+  getSavedPrompt
 };
