@@ -188,7 +188,7 @@ router.post('/prompt-image',  upload.single("image") , promptController.promptIm
  *       500:
  *         description: Server error
  */
-router.put('/update-prompt/:id', promptController.updatePrompt);
+router.put('/update-prompt/:id',verifyToken, promptController.updatePrompt);
 
 /**
  * @swagger
@@ -227,7 +227,7 @@ router.put('/update-prompt/:id', promptController.updatePrompt);
  *       500:
  *         description: Internal server error
  */
-router.delete('/delete-prompt/:id', promptController.deletePrompt);
+router.delete('/delete-prompt/:id',verifyToken, promptController.deletePrompt);
 /**
  * @swagger
  * /my-prompts:

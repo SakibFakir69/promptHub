@@ -465,9 +465,7 @@ const getSavedPrompt = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
-
-
-
+// DELETE SAVED PROMPT
 
 
 
