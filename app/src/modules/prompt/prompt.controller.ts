@@ -220,7 +220,7 @@ const deletePrompt = async (
       );
     }
 
-    const deleted = await Prompt.findOneAndDelete({ user: userId });
+    const deleted = await Prompt.findOneAndDelete({   "createdBy.userId": userId, });
 
     if (!deleted) {
       return ReturnResponse(res, 404, false, 'Prompt not found');
