@@ -1,4 +1,3 @@
-
 import { cloudinaryConfig } from '../../config/cloudniary/config.cloud';
 import { NextFunction, Request, Response } from 'express';
 import { Prompt, SavedPrompt } from './prompt.model';
@@ -7,8 +6,6 @@ import { zodValidationPrompt } from './prompt.validation';
 import { User } from '../users/user.model';
 import { Types } from 'mongoose';
 import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
-
-
 
 // super test and deploy
 
@@ -21,7 +18,7 @@ const getAllPrompt = async (
 ) => {
   try {
     const userId = req?.user?.id;
-  
+
     const result = await Prompt.find({ 'createdBy.userId': userId });
 
     return ReturnResponse(res, 200, true, 'prompt reterive', result);
@@ -32,68 +29,68 @@ const getAllPrompt = async (
 
 // GET PROMPT DETAILS
 
-
-const getPromptDetails = async(req:Request , res:Response , next:NextFunction)=>{
-
+const getPromptDetails = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const promptId = req.params.id;
 
-    if(!promptId)
-    {
+    if (!promptId) {
       return res.status(404).json({
-        success:false,
-        message:"Please enter correct id"
-
-      })
+        success: false,
+        message: 'Please enter correct id',
+      });
     }
 
     const prompt = await Prompt.findById(promptId);
-    if(!prompt){
-       return res.status(404).json({
-        success:false,
-        message:"Please enter correct id"
-
-      })
+    if (!prompt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Please enter correct id',
+      });
     }
 
-
-    return ReturnResponse(res,200,true,'Prompt details fetch successfully',prompt);
-  
-
-
-    
+    return ReturnResponse(
+      res,
+      200,
+      true,
+      'Prompt details fetch successfully',
+      prompt,
+    );
   } catch (error) {
     next(error);
   }
-}
-
+};
 
 const promptImageUpload = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  
   try {
-
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-   
     cloudinaryConfig.uploader
-      .upload_stream({ resource_type: 'auto' }, (error:UploadApiErrorResponse | undefined, result:UploadApiResponse | undefined) => {
+      .upload_stream(
+        { resource_type: 'auto' },
+        (
+          error: UploadApiErrorResponse | undefined,
+          result: UploadApiResponse | undefined,
+        ) => {
+          if (error) {
+            console.log(error);
+            return res
+              .status(500)
+              .json({ error: 'Error uploading to Cloudinary' });
+          }
 
-
-        if (error) {
-          console.log(error);
-          return res
-            .status(500)
-            .json({ error: 'Error uploading to Cloudinary' });
-        }
-
-        res.json({ public_id: result?.public_id, url: result?.secure_url });
-      })
+          res.json({ public_id: result?.public_id, url: result?.secure_url });
+        },
+      )
       .end(req?.file.buffer);
   } catch (error) {
     next(error);
@@ -103,10 +100,10 @@ const promptImageUpload = async (
 //
 // add zod validation
 
-// 
+//
 
-  /* add attribute ( public , private) */ 
-// 
+/* add attribute ( public , private) */
+//
 
 export const createPrompt = async (
   req: Request,
@@ -186,10 +183,14 @@ const updatePrompt = async (
       image: image,
     };
 
-    const result = await Prompt.findByIdAndUpdate(userId, payload, {
-      new: true,
-      upsert: false,
-    });
+    const result = await Prompt.findOneAndUpdate(
+      { 'createdBy.userId': userId },
+      payload,
+      {
+        new: true,
+        upsert: false,
+      },
+    );
 
     if (!result) {
       return ReturnResponse(res, 404, false, 'Not find any data with this id');
@@ -220,7 +221,9 @@ const deletePrompt = async (
       );
     }
 
-    const deleted = await Prompt.findOneAndDelete({   "createdBy.userId": userId, });
+    const deleted = await Prompt.findOneAndDelete({
+      'createdBy.userId': userId,
+    });
 
     if (!deleted) {
       return ReturnResponse(res, 404, false, 'Prompt not found');
@@ -239,19 +242,19 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { postId } = req.body;
     if (!postId) {
-      return ReturnResponse(res, 400, false, "post id not found");
+      return ReturnResponse(res, 400, false, 'post id not found');
     }
 
     const userId = req.user?.id;
     if (!userId) {
-      return ReturnResponse(res, 401, false, "unauthorized");
+      return ReturnResponse(res, 401, false, 'unauthorized');
     }
-    
+
     const userObjectId = new Types.ObjectId(userId);
 
     const post = await Prompt.findById(postId);
     if (!post) {
-      return ReturnResponse(res, 404, false, "Post not found");
+      return ReturnResponse(res, 404, false, 'Post not found');
     }
 
     const alreadyUp = post.upVotedBy.includes(userObjectId);
@@ -263,14 +266,14 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
         postId,
         {
           $pull: { upVotedBy: userId },
-          $inc: { upVote: -1 }
+          $inc: { upVote: -1 },
         },
-        { new: true }
+        { new: true },
       );
 
-      return ReturnResponse(res, 200, true, "UpVote removed", {
+      return ReturnResponse(res, 200, true, 'UpVote removed', {
         upVote: updated?.upVote,
-        downVote: updated?.downVote
+        downVote: updated?.downVote,
       });
     }
 
@@ -281,14 +284,14 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
         {
           $pull: { downVotedBy: userId },
           $addToSet: { upVotedBy: userId },
-          $inc: { downVote: -1, upVote: 1 }
+          $inc: { downVote: -1, upVote: 1 },
         },
-        { new: true }
+        { new: true },
       );
 
-      return ReturnResponse(res, 200, true, "Switched to UpVote", {
+      return ReturnResponse(res, 200, true, 'Switched to UpVote', {
         upVote: updated?.upVote,
-        downVote: updated?.downVote
+        downVote: updated?.downVote,
       });
     }
 
@@ -297,41 +300,37 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
       postId,
       {
         $addToSet: { upVotedBy: userId },
-        $inc: { upVote: 1 }
+        $inc: { upVote: 1 },
       },
-      { new: true }
+      { new: true },
     );
 
-    return ReturnResponse(res, 200, true, "UpVote added", {
+    return ReturnResponse(res, 200, true, 'UpVote added', {
       upVote: updated?.upVote,
-      downVote: updated?.downVote
+      downVote: updated?.downVote,
     });
-
   } catch (error) {
     next(error);
   }
 };
 
-
-
-
 const downVote = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { postId } = req.body;
     if (!postId) {
-      return ReturnResponse(res, 400, false, "post id not found");
+      return ReturnResponse(res, 400, false, 'post id not found');
     }
 
     const userId = req.user?.id;
     if (!userId) {
-      return ReturnResponse(res, 401, false, "unauthorized");
+      return ReturnResponse(res, 401, false, 'unauthorized');
     }
-    
+
     const userObjectId = new Types.ObjectId(userId);
 
     const post = await Prompt.findById(postId);
     if (!post) {
-      return ReturnResponse(res, 404, false, "Post not found");
+      return ReturnResponse(res, 404, false, 'Post not found');
     }
 
     const alreadyDown = post.downVotedBy.includes(userObjectId);
@@ -343,14 +342,14 @@ const downVote = async (req: Request, res: Response, next: NextFunction) => {
         postId,
         {
           $pull: { downVotedBy: userId },
-          $inc: { downVote: -1 }
+          $inc: { downVote: -1 },
         },
-        { new: true }
+        { new: true },
       );
 
-      return ReturnResponse(res, 200, true, "DownVote removed", {
+      return ReturnResponse(res, 200, true, 'DownVote removed', {
         upVote: updated?.upVote,
-        downVote: updated?.downVote
+        downVote: updated?.downVote,
       });
     }
 
@@ -361,14 +360,14 @@ const downVote = async (req: Request, res: Response, next: NextFunction) => {
         {
           $pull: { upVotedBy: userId },
           $addToSet: { downVotedBy: userId },
-          $inc: { upVote: -1, downVote: 1 }
+          $inc: { upVote: -1, downVote: 1 },
         },
-        { new: true }
+        { new: true },
       );
 
-      return ReturnResponse(res, 200, true, "Switched to DownVote", {
+      return ReturnResponse(res, 200, true, 'Switched to DownVote', {
         upVote: updated?.upVote,
-        downVote: updated?.downVote
+        downVote: updated?.downVote,
       });
     }
 
@@ -377,27 +376,28 @@ const downVote = async (req: Request, res: Response, next: NextFunction) => {
       postId,
       {
         $addToSet: { downVotedBy: userId },
-        $inc: { downVote: 1 }
+        $inc: { downVote: 1 },
       },
-      { new: true }
+      { new: true },
     );
 
-    return ReturnResponse(res, 200, true, "DownVote added", {
+    return ReturnResponse(res, 200, true, 'DownVote added', {
       upVote: updated?.upVote,
-      downVote: updated?.downVote
+      downVote: updated?.downVote,
     });
-
   } catch (error) {
     next(error);
   }
 };
 
-
-// MY SAVED PROMPT 
-
+// MY SAVED PROMPT
 
 // ADD INDEXING HERE
-const mySavedPrompt = async (req: Request, res: Response, next: NextFunction) => {
+const mySavedPrompt = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { prompt } = req.body;
     const userId = req.user?.id;
@@ -411,7 +411,7 @@ const mySavedPrompt = async (req: Request, res: Response, next: NextFunction) =>
     if (isAlreadySaved) {
       return res.status(400).json({
         success: false,
-        message: "This prompt is already saved",
+        message: 'This prompt is already saved',
       });
     }
 
@@ -425,7 +425,7 @@ const mySavedPrompt = async (req: Request, res: Response, next: NextFunction) =>
 
     return res.status(201).json({
       success: true,
-      message: "Prompt saved successfully",
+      message: 'Prompt saved successfully',
       data: result,
     });
   } catch (error) {
@@ -434,29 +434,33 @@ const mySavedPrompt = async (req: Request, res: Response, next: NextFunction) =>
   }
 };
 
-const getSavedPrompt = async (req: Request, res: Response, next: NextFunction) => {
+const getSavedPrompt = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const userId = req.user?.id;
 
     if (!userId) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized user",
+        message: 'Unauthorized user',
       });
     }
 
     const result = await SavedPrompt.find({ userId })
       .populate({
-        path: "promptId",
-        model: "Prompt",
+        path: 'promptId',
+        model: 'Prompt',
         select:
-          "title prompt category tags upVote downVote visibility createdBy createdAt",
+          'title prompt category tags upVote downVote visibility createdBy createdAt',
       })
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
-      message: "Saved prompts fetched successfully",
+      message: 'Saved prompts fetched successfully',
       data: result,
     });
   } catch (error) {
@@ -467,17 +471,15 @@ const getSavedPrompt = async (req: Request, res: Response, next: NextFunction) =
 
 // DELETE SAVED PROMPT
 
-
-
 export const promptController = {
   promptImageUpload,
   createPrompt,
-  getPromptDetails
-  ,
+  getPromptDetails,
   updatePrompt,
   deletePrompt,
   getAllPrompt,
-  upVote,downVote,
+  upVote,
+  downVote,
   mySavedPrompt,
-  getSavedPrompt
+  getSavedPrompt,
 };
