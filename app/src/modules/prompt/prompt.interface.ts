@@ -1,25 +1,23 @@
-import { Types } from "mongoose";
-
+import { Types } from 'mongoose';
 
 export interface IPrompt {
   title: string;
   prompt: string;
   category: string[];
   tags: string[];
+  image:String,
   upVote: number;
   downVote: number;
-   upVotedBy: Types.ObjectId[];
+  upVotedBy: Types.ObjectId[];
   downVotedBy: Types.ObjectId[];
-  visibility:boolean,
-  // view count -> 
-
+  visibility: boolean;
+  // view count ->
 
   createdBy: {
     userId: Types.ObjectId;
     name?: string;
     avatar?: string;
-    
   };
-    createdAt?: Date;
+  createdAt?: Date;
   updatedAt?: Date;
 }

@@ -23,6 +23,10 @@ const promptSchema = new Schema<IPrompt>(
       type: [String],
       default: [],
     },
+    image:{
+      type:String,
+      default:""
+    },
 
     upVote: {
       type: Number,
