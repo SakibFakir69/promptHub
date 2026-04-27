@@ -452,8 +452,8 @@ const getSavedPrompt = async (
     const result = await SavedPrompt.find({ userId })
       .populate({
         path: 'promptId',
-        model: 'Prompt',
-        select:
+
+              select:
           'title prompt category tags upVote downVote visibility createdBy createdAt',
       })
       .sort({ createdAt: -1 });
