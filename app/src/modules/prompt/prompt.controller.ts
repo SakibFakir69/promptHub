@@ -453,7 +453,7 @@ const getSavedPrompt = async (
       .populate({
         path: 'promptId',
 
-              select:
+        select:
           'title prompt category tags upVote downVote visibility createdBy createdAt',
       })
       .sort({ createdAt: -1 });

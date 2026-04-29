@@ -58,7 +58,7 @@ const promptSchema = new Schema<IPrompt>(
   },
 );
 
-export const Prompt = mongoose.model('prompt', promptSchema);
+export const Prompt = mongoose.model('Prompt', promptSchema);
 
 
 
