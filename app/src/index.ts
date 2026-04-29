@@ -22,6 +22,7 @@ import { otpRouter } from './modules/otp/otp.route';
 import { ErrorHandler } from './helper/ErrorHandler';
 import { promptRouter } from './modules/prompt/prompt.route';
 import { feedRouter } from './modules/feed/feed.route';
+import { discoverRouter } from './modules/discover/discover.route';
 
 
 // app
@@ -103,7 +104,9 @@ app.use('/api/v1/auth', AuthRouter);
 // otp
 app.use('/api/v1/otp',otpRouter)
 // prompt
-app.use('/api/v1/prompt', promptRouter)
+app.use('/api/v1/prompt', promptRouter);
+// discover
+app.use('/api/v1/discover', discoverRouter);
 
 
 // feed
