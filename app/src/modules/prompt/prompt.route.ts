@@ -463,7 +463,8 @@ router.post('/upVote', verifyToken, promptController.upVote);
 router.post('/downVote', verifyToken, promptController.downVote);
 
 router.get('/prompt-details/:id', promptController.getPromptDetails);
-router.post('/saved-prompt', verifyToken, promptController.mySavedPrompt);
+router.post('/save-prompt', verifyToken, promptController.mySavedPrompt);
 router.get('/save-prompt',verifyToken, promptController.getSavedPrompt)
+router.delete('/save-prompt',verifyToken, promptController.deleteSavedPrompt)
 
 export const promptRouter = router;

@@ -7,6 +7,7 @@ import { User } from '../users/user.model';
 import { Types } from 'mongoose';
 import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
 
+
 // super test and deploy
 
 // get
@@ -471,6 +472,56 @@ const getSavedPrompt = async (
 
 // DELETE SAVED PROMPT
 
+
+
+
+const deleteSavedPrompt = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user?.id;
+    const { promptId } = req.body;
+
+    // 1. Auth Check
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: User not found"
+      });
+    }
+
+   
+    if (!promptId) {
+      return res.status(400).json({
+        success: false,
+        message: "Prompt ID is required in the request body"
+      });
+    }
+
+   
+    const result = await SavedPrompt.findOneAndDelete({
+      promptId: promptId,
+      userId: userId
+    });
+
+
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "Saved prompt not found or you don't have permission to delete it"
+      });
+    }
+
+ 
+    return res.status(200).json({
+      success: true,
+      message: "Prompt removed from your saved list successfully",
+    
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const promptController = {
   promptImageUpload,
   createPrompt,
@@ -482,4 +533,5 @@ export const promptController = {
   downVote,
   mySavedPrompt,
   getSavedPrompt,
+  deleteSavedPrompt
 };
