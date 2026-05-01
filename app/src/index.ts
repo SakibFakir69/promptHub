@@ -23,6 +23,7 @@ import { ErrorHandler } from './helper/ErrorHandler';
 import { promptRouter } from './modules/prompt/prompt.route';
 import { feedRouter } from './modules/feed/feed.route';
 import { discoverRouter } from './modules/discover/discover.route';
+import { exploreRouter } from './modules/explore/explore.route';
 
 
 // app
@@ -107,8 +108,8 @@ app.use('/api/v1/otp',otpRouter)
 app.use('/api/v1/prompt', promptRouter);
 // discover
 app.use('/api/v1/discover', discoverRouter);
-
-
+// explore
+app.use('/api/v1/explore', exploreRouter);
 // feed
 app.use('/api/v1', feedRouter);
 

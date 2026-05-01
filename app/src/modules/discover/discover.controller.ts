@@ -8,46 +8,36 @@ export const discoverPeople = async (
   next: NextFunction,
 ) => {
   try {
-
     const cursor = req.query.cursor as string | undefined;
     const limit = parseInt(req.query.limit as string) || 10;
     const name = req.query.name as string | undefined;
     const gender = req.query.gender as string | undefined;
-   
-
 
     const query: any = {};
-
 
     if (name) {
       query.$or = [
         { name: { $regex: name, $options: 'i' } },
-        { email: { $regex: name, $options: 'i' } }
+        { email: { $regex: name, $options: 'i' } },
       ];
     }
 
-    
-if (gender && gender.trim() !== "") {
-  
-  query.gender = { $regex: `^${gender}$`, $options: 'i' };
-}
+    if (gender && gender.trim() !== '') {
+      query.gender = { $regex: `^${gender}$`, $options: 'i' };
+    }
 
-    
-    
     if (cursor && mongoose.Types.ObjectId.isValid(cursor)) {
       query._id = { $lt: new mongoose.Types.ObjectId(cursor) };
     }
 
-    
-    const userData = await User.find(query) 
+    const userData = await User.find(query)
       .select(
-        'name gender bio avatar totalPost followers following isVerify createdAt age'
+        'name gender bio avatar totalPost followers following isVerify createdAt age',
       )
-      .sort({ _id: -1 }) 
+      .sort({ _id: -1 })
       .limit(limit)
       .lean();
 
-    
     const nextCursor =
       userData.length === limit ? userData[userData.length - 1]._id : null;
 
@@ -61,7 +51,6 @@ if (gender && gender.trim() !== "") {
   }
 };
 
-
-export const discoverController={
-    discoverPeople
-}
+export const discoverController = {
+  discoverPeople,
+};
