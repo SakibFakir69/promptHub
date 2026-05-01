@@ -13,7 +13,7 @@ export const discoverPeople = async (
     const limit = parseInt(req.query.limit as string) || 10;
     const name = req.query.name as string | undefined;
     const gender = req.query.gender as string | undefined;
-    const age = req.query.age as string | undefined;
+   
 
 
     const query: any = {};
@@ -26,14 +26,13 @@ export const discoverPeople = async (
       ];
     }
 
-    if (gender) {
-      query.gender = gender;
-    }
+    
+if (gender && gender.trim() !== "") {
+  
+  query.gender = { $regex: `^${gender}$`, $options: 'i' };
+}
 
-    if (age) {
-      query.age = parseInt(age);
-    }
-
+    
     
     if (cursor && mongoose.Types.ObjectId.isValid(cursor)) {
       query._id = { $lt: new mongoose.Types.ObjectId(cursor) };
