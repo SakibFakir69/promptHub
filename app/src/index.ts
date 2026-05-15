@@ -98,20 +98,15 @@ app.use(cookieParser()); //// enable cookies parser
 app.set("view engine","ejs")
 
 
-// route 
 app.use('/api/v1/user', userRouter);
-// auth
 app.use('/api/v1/auth', AuthRouter);
-// otp
-app.use('/api/v1/otp',otpRouter)
-// prompt
+app.use('/api/v1/otp', otpRouter);
 app.use('/api/v1/prompt', promptRouter);
-// discover
 app.use('/api/v1/discover', discoverRouter);
-// explore
 app.use('/api/v1/explore', exploreRouter);
-// feed
+// MOVE THIS TO LAST
 app.use('/api/v1', feedRouter);
+
 
 // api test
 app.get('/', async (req: Request, res: Response) => {
