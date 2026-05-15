@@ -10,9 +10,9 @@ const exploreAllPrompt = async (
 ) => {
   try {
     const cursor = req.query.cursor as string;
-    const search = req.query.prompt as string; 
+    const search = req.query.prompt as string;
     const limit = 10;
-
+    console.log(search);
     const query: any = {};
 
     if (search) {
@@ -20,7 +20,7 @@ const exploreAllPrompt = async (
       query.$or = [
         { prompt: searchRegex },
         { title: searchRegex },
-        { tags: searchRegex }, 
+        { tags: searchRegex },
       ];
     }
 
@@ -37,7 +37,8 @@ const exploreAllPrompt = async (
     const nextCursor =
       allPrompt.length === limit ? allPrompt[allPrompt.length - 1]._id : null;
 
-    return ReturnResponse(res, 200, true, 'All Prompts fetched successfully', {
+    return res.status(200).json({
+      message: 'All Prompts fetched successfully',
       data: allPrompt,
       nextCursor,
     });
