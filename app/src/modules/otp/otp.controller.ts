@@ -11,11 +11,11 @@ import { User } from '../users/user.model';
 
 const sendOtp = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const email = req.user?.email;
-    const user_name = req.user?.name;
+    
+    const {name,email} = req.body;
 
     //  Validate input
-    if (!email || !user_name) {
+    if (!email || !name) {
       return ReturnResponse(res, 400, false, 'Email and username are required');
     }
 
@@ -41,16 +41,16 @@ const sendOtp = async (req: Request, res: Response, next: NextFunction) => {
     await redisClient.setEx(`otp:${email}`, 60 * 3, otp);
 
     //  Send email
-    await sendEmail(email, user_name as string, Number(otp));
+    await sendEmail(email, name as string, Number(otp));
 
     const otpDetails: {
       email: string;
-      user_name: string;
+      name: string;
       otp: string;
       time: number;
     } = {
       email: email,
-      user_name: user_name as string,
+      name: name as string,
       otp: otp,
       time: 60 * 3,
     };
