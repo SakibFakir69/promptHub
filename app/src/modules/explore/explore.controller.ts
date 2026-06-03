@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import { Prompt } from '../prompt/prompt.model';
-import { ReturnResponse } from '../../helper/ReturnResponse';
 import mongoose from 'mongoose';
 
 const exploreAllPrompt = async (

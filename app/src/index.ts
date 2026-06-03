@@ -8,7 +8,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import helmet from 'helmet';
 import limiter from './middleware/rateLimiting';
-
+import cors from 'cors'
 import express, { Application, Request, Response } from 'express';
 
 import session, { SessionOptions as ExpressSessionOptions } from "express-session";
@@ -30,6 +30,11 @@ import { exploreRouter } from './modules/explore/explore.route';
 const app: Application = express();
 app.set('trust proxy', 1);
 
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 
 // swagger ui
@@ -43,7 +48,7 @@ const options = {
       // contact
       
     },
-    servers: [
+    servers: [  
       {
         url: 'http://localhost:5000',
         description:"Local Server"
@@ -85,6 +90,7 @@ app.use(session(sessionOptions))
 
 
 
+
 // passport
 app.use(passport.initialize())
 app.use(passport.session());
@@ -98,7 +104,8 @@ app.use(cookieParser()); //// enable cookies parser
 app.set("view engine","ejs")
 
 
-app.use('/api/v1/user', userRouter);
+app.use('/api/v1', userRouter);
+
 app.use('/api/v1/auth', AuthRouter);
 app.use('/api/v1/otp', otpRouter);
 app.use('/api/v1/prompt', promptRouter);

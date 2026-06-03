@@ -1,16 +1,13 @@
 import { Router } from "express";
 import { userController } from "./user.controller";
 import { verifyToken } from "../../middleware/verifyToken";
-
-
+import { authController } from "../auth/auth.controller";
 
 const router = Router();
 
-
-
 /**
  * @openapi
- * /user/create-user:
+ * /api/v1/users:
  *   post:
  *     tags:
  *       - User
@@ -24,6 +21,7 @@ const router = Router();
  *             required:
  *               - name
  *               - email
+ *               - password
  *             properties:
  *               name:
  *                 type: string
@@ -48,55 +46,34 @@ const router = Router();
  *       500:
  *         description: Server error
  */
-
-router.post('/create-user',userController.createUser )
-
-
+router.post("/users", userController.createUser);
 
 /**
  * @openapi
- * /user/delete-user:
- *   delete:
+ * /api/v1/users/me:
+ *   get:
  *     tags:
  *       - User
- *     summary: Delete logged-in user
- *     description: Deletes the currently authenticated user based on the token.
+ *     summary: Get logged-in user profile
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: User Deleted Successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: User Deleted Successfully
+ *         description: User profile returned successfully
  *       401:
- *         description: Unauthorized - Invalid or missing token
+ *         description: Unauthorized
  *       500:
  *         description: Server error
  */
-
-
-// delete update
-router.delete('/delete-user',verifyToken, userController.deleteUser);
-
-
+router.get("/users/me", verifyToken, authController.getMe);
 
 /**
  * @openapi
- * /user/update-user:
+ * /api/v1/users:
  *   put:
  *     tags:
  *       - User
  *     summary: Update logged-in user information
- *     description: Updates user data (name, bio, photo, avatar, tags) for the authenticated user.
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -125,31 +102,33 @@ router.delete('/delete-user',verifyToken, userController.deleteUser);
  *                 example: ["developer", "javascript", "mern"]
  *     responses:
  *       200:
- *         description: User Data Updated Successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: User Data Update Successfully
- *                 data:
- *                   type: object
+ *         description: User updated successfully
  *       400:
- *         description: Zod Update Validation Error
+ *         description: Validation error
  *       401:
- *         description: Unauthorized - Missing or invalid token
+ *         description: Unauthorized
  *       500:
- *         description: Server Error
+ *         description: Server error
  */
+router.put("/users", verifyToken, userController.updateUser);
 
-// update user 
-router.put('/update-user' , verifyToken, userController.updateUser);
-
-
+/**
+ * @openapi
+ * /api/v1/users:
+ *   delete:
+ *     tags:
+ *       - User
+ *     summary: Delete logged-in user
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
+router.delete("/users", verifyToken, userController.deleteUser);
 
 export const userRouter = router;
