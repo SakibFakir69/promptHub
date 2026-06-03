@@ -44,7 +44,7 @@ const router = Router();
  *       500:
  *         description: Server error
  */
-router.post('/send-otp', verifyToken, otpController.sendOtp);
+router.post('/send-otp',otpController.sendOtp);
 
 
 
@@ -89,6 +89,7 @@ router.post('/send-otp', verifyToken, otpController.sendOtp);
  */
 
 router.post('/verify-otp', verifyToken, otpController.verifyOtp);
+
 
 router.post('/user-verify',verifyToken, otpController.isVerifyUser);
 router.post('/resend-otp', verifyToken,otpController.resendOtp);
