@@ -63,7 +63,7 @@ const sendOtp = async (req: Request, res: Response, next: NextFunction) => {
 
 const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { otp } = req.body;
+    const { otp,email } = req.body;
 
     const otpValidationSchema = zodOtpValidationSchema.safeParse(req.body);
 
@@ -72,7 +72,7 @@ const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
       return ReturnResponse(res, 400, false, 'Validation Failed', errors);
     }
 
-    const email = req.user?.email;
+  
 
     //  Get OTP from Redis
     const storedOtp = await redisClient.get(`otp:${email}`);
