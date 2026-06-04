@@ -8,7 +8,6 @@ const limiter = rateLimit({
     legacyHeaders:false,
     ipv6Subnet:56
 
-
 })
 
 export default limiter;
