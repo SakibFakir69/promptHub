@@ -12,7 +12,7 @@ import { User } from '../users/user.model';
 const sendOtp = async (req: Request, res: Response, next: NextFunction) => {
   try {
     
-    const {name,email} = req.body;
+    const {name="Guest",email} = req.body;
 
     //  Validate input
     if (!email || !name) {
