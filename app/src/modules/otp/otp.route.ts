@@ -88,7 +88,7 @@ router.post('/send-otp',otpController.sendOtp);
  *         description: Server error
  */
 
-router.post('/verify-otp', verifyToken, otpController.verifyOtp);
+router.post('/verify-otp',  otpController.verifyOtp);
 
 
 router.post('/user-verify',verifyToken, otpController.isVerifyUser);
