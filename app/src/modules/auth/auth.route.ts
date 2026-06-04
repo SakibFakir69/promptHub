@@ -165,7 +165,7 @@ router.get('/me', verifyToken, authController.getMe);
  *       500:
  *         description: Server error
  */
-router.post('/login-user', authController.loginUser);
+router.post('/login', authController.loginUser);
 
 /**
  * @swagger
