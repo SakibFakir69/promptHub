@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { userController } from "./user.controller";
 import { verifyToken } from "../../middleware/verifyToken";
-import { authController } from "../auth/auth.controller";
+
 
 const router = Router();
 
@@ -46,7 +46,7 @@ const router = Router();
  *       500:
  *         description: Server error
  */
-router.post("/", userController.createUser);
+router.post("/users", userController.createUser);
 
 /**
  * @openapi
@@ -110,7 +110,7 @@ router.post("/", userController.createUser);
  *       500:
  *         description: Server error
  */
-router.put("/", verifyToken, userController.updateUser);
+router.put("/users", verifyToken, userController.updateUser);
 
 /**
  * @openapi
@@ -129,6 +129,6 @@ router.put("/", verifyToken, userController.updateUser);
  *       500:
  *         description: Server error
  */
-router.delete("/", verifyToken, userController.deleteUser);
+router.delete("/users", verifyToken, userController.deleteUser);
 
 export const userRouter = router;

@@ -105,7 +105,7 @@ app.set("view engine","ejs")
 
 
 app.use('/api/v1/auth', AuthRouter);       
-app.use('/api/v1/users', userRouter);       
+app.use('/api/v1/user', userRouter);       
 app.use('/api/v1/otp', otpRouter);
 app.use('/api/v1/prompt', promptRouter);
 app.use('/api/v1/discover', discoverRouter);
