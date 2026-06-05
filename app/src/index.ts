@@ -104,16 +104,13 @@ app.use(cookieParser()); //// enable cookies parser
 app.set("view engine","ejs")
 
 
-app.use('/api/v1', userRouter);
-
-app.use('/api/v1/auth', AuthRouter);
+app.use('/api/v1/auth', AuthRouter);       
+app.use('/api/v1/users', userRouter);       
 app.use('/api/v1/otp', otpRouter);
 app.use('/api/v1/prompt', promptRouter);
 app.use('/api/v1/discover', discoverRouter);
 app.use('/api/v1/explore', exploreRouter);
-// MOVE THIS TO LAST
-app.use('/api/v1', feedRouter);
-
+app.use('/api/v1/feed', feedRouter);        // ← Made specific
 
 // api test
 app.get('/', async (req: Request, res: Response) => {

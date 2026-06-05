@@ -46,7 +46,7 @@ const router = Router();
  *       500:
  *         description: Server error
  */
-router.post("/users", userController.createUser);
+router.post("/", userController.createUser);
 
 /**
  * @openapi
@@ -65,7 +65,7 @@ router.post("/users", userController.createUser);
  *       500:
  *         description: Server error
  */
-router.get("/users/me", verifyToken, authController.getMe);
+
 
 /**
  * @openapi
@@ -110,7 +110,7 @@ router.get("/users/me", verifyToken, authController.getMe);
  *       500:
  *         description: Server error
  */
-router.put("/users", verifyToken, userController.updateUser);
+router.put("/", verifyToken, userController.updateUser);
 
 /**
  * @openapi
@@ -129,6 +129,6 @@ router.put("/users", verifyToken, userController.updateUser);
  *       500:
  *         description: Server error
  */
-router.delete("/users", verifyToken, userController.deleteUser);
+router.delete("/", verifyToken, userController.deleteUser);
 
 export const userRouter = router;
