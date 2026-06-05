@@ -243,7 +243,7 @@ router.post('/change-password', verifyToken, authController.changePassword);
  *       500:
  *         description: Server error
  */
-router.post('/reset-password', verifyToken, authController.ResetPassword);
+router.post('/reset-password',  authController.ResetPassword);
 
 /**
  * @swagger
