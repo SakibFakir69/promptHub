@@ -1,4 +1,4 @@
- 
+
 
 import { NextFunction, Request, Response } from 'express';
 import Jwt from 'jsonwebtoken';
@@ -11,9 +11,9 @@ export const verifyToken = async (
   res: Response,
   next: NextFunction,
 ) => {
-  
 
-   const token = req.cookies?.accessToken || req.headers['authorization']?.split(' ')[1];
+
+  const token = req.cookies?.accessToken || req.headers['authorization']?.split(' ')[1];
 
   console.log(req.cookies, req.headers['authorization']?.split(' ')[1], 'cookies');
 
@@ -25,24 +25,24 @@ export const verifyToken = async (
 
   const SECRECT_KEY = process.env.BCRYPT_SECRECT_KEY as string | "token"
 
- 
+
 
   Jwt.verify(token, SECRECT_KEY, (err: any, decode: any) => {
     console.log('verify');
 
-     if (err) {
-        if (err.name === "TokenExpiredError") {
-            return res.status(403).json({ status: false, message: "Token expired" });
-        }
-        return res.status(403).json({ status: false, message: "Unauthorized" });
+    if (err) {
+      if (err.name === "TokenExpiredError") {
+        return res.status(403).json({ status: false, message: "Token expired" });
+      }
+      return res.status(403).json({ status: false, message: "Unauthorized" });
     }
 
-    req.user = decode  as IUserPayload; 
+    req.user = decode as IUserPayload;
 
-    
+
 
     next();
   });
 
- 
+
 };
