@@ -10,9 +10,9 @@ import { Response } from "express";
 const SetCookies = (res:Response, cookieName:string , cookieValue:string, maxAge:number)=>{
 
     res.cookie(cookieName, cookieValue,{
-        httpOnly:true, /// can not access with js 
+        httpOnly:true, 
 
-        secure:process.env.NODE_ENV==='production', 
+        secure:false,
         sameSite:"none",
         maxAge,
 
