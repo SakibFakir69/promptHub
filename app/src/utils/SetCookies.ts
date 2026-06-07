@@ -12,8 +12,8 @@ const SetCookies = (res:Response, cookieName:string , cookieValue:string, maxAge
     res.cookie(cookieName, cookieValue,{
         httpOnly:true, /// can not access with js 
 
-        secure:process.env.NODE_ENV==='production', /// only production true 
-        sameSite:"lax",
+        secure:process.env.NODE_ENV==='production', 
+        sameSite:"none",
         maxAge,
 
     });
