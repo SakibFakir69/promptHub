@@ -93,14 +93,12 @@ app.use(session(sessionOptions))
 
 
 
-// passport
+// middleware
 app.use(passport.initialize())
 app.use(passport.session());
-
-// express ( middleware)
-app.use(express.json()); /// convert to all json 
-app.use(express.urlencoded({ extended: true })); // parse URL-encoded body
-app.use(cookieParser()); //// enable cookies parser
+app.use(cookieParser())
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 // ejs
 app.set("view engine","ejs")

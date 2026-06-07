@@ -12,16 +12,12 @@ const SetCookies = (res:Response, cookieName:string , cookieValue:string, maxAge
     res.cookie(cookieName, cookieValue,{
         httpOnly:true, 
 
-        secure:false,
+        secure:true,
         sameSite:"none",
         maxAge,
 
     });
    
-
-
-
-
 }
 
 export default SetCookies;

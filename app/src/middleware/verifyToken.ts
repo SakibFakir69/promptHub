@@ -13,7 +13,8 @@ export const verifyToken = async (
 ) => {
 
 
-  const token = req.cookies?.accessToken || req.headers['authorization']?.split(' ')[1];
+  const token = req.cookies?.accessToken ;
+  
 
   console.log("Cookies:", req.cookies);
   console.log("Access Token:", req.cookies?.accessToken);
