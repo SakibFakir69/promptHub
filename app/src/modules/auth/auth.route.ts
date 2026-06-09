@@ -1,8 +1,9 @@
-import { Router } from "express";
+import { NextFunction, Router } from "express";
 import { authController } from "./auth.controller";
 import { verifyToken } from "../../middleware/verifyToken";
 import passport from "passport";
-import SetCookies from "app/src/utils/SetCookies";
+import SetCookies from '../../utils/SetCookies';
+
 import { authServices } from "./auth.services";
 
 
@@ -327,7 +328,7 @@ router.get(
   '/google/callback',
   passport.authenticate('google', { failureRedirect: '/', session: false }),
 
-  async (req, res, next) => {
+  async (req, res, next:NextFunction) => {
     try {
       const googleUser = req.user as any;
 
