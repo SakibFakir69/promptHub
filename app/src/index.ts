@@ -31,13 +31,12 @@ const app: Application = express();
 app.set('trust proxy', 1);
 
 app.use(cors({
-  origin: ['http://localhost:3000','http://localhost:5000'],
-
+  origin: ['http://localhost:3000', 'http://localhost:5000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials:true
-}));
-
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'], 
+  exposedHeaders: ['Set-Cookie'],                               
+  credentials: true,
+}))
 
 // swagger ui
 // Swagger Code

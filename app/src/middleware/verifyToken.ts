@@ -15,7 +15,6 @@ export const verifyToken = async (
 
   const token = req.cookies?.accessToken ;
   
-
   console.log("Cookies:", req.cookies);
   console.log("Access Token:", req.cookies?.accessToken);
   console.log("Authorization:", req.headers.authorization);

@@ -2,6 +2,8 @@ import { Router } from "express";
 import { authController } from "./auth.controller";
 import { verifyToken } from "../../middleware/verifyToken";
 import passport from "passport";
+import SetCookies from "app/src/utils/SetCookies";
+import { authServices } from "./auth.services";
 
 
 const router = Router();
@@ -320,10 +322,38 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
  *       302:
  *         description: Redirect to /dashboard (success) or / (failure)
  */
+
 router.get(
   '/google/callback',
-  passport.authenticate('google', { failureRedirect: '/' }),
-  
+  passport.authenticate('google', { failureRedirect: '/', session: false }),
+
+  async (req, res, next) => {
+    try {
+      const googleUser = req.user as any;
+
+      const payload = {
+        _id: googleUser?._id as string,
+        name: googleUser?.name as string,
+        email: googleUser?.email as string,
+      };
+
+      const result = await authServices.loginUser(payload);
+      const accessToken = result?.accessToken;
+      const refreshToken = result?.refreshToken;
+
+      if (!accessToken || !refreshToken) {
+        return res.redirect(`${process.env.FRONT_END_URL}/login?error=auth_failed`);
+      }
+
+      SetCookies(res, 'accessToken', accessToken, 24 * 60 * 60 * 1000);
+      SetCookies(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000);
+
+      res.redirect(`${process.env.FRONT_END_URL}/`);
+
+    } catch (error:any) {
+      res.redirect(`${process.env.FRONT_END_URL}/login?error=server_error`);
+    }
+  }
 );
 
 /**

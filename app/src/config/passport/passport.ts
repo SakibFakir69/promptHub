@@ -1,93 +1,44 @@
-
-
-
-
-import dotenv from 'dotenv'
-dotenv.config();
-
 import passport from 'passport';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { User } from '../../modules/users/user.model';
 
-console.log(process.env.GOOGLE_CLIENT_SECRET)
-console.log(process.env.GOOGLE_CLIENT_ID)
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      callbackURL: 'https://prompthub-2.onrender.com/api/v1/auth/google/callback',
+    },
 
-passport.use(new GoogleStrategy({
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        // Check if profile has an email
+        if (!profile?.emails || profile.emails.length === 0) {
+          return done(null, false, { message: 'No email associated with this Google account' });
+        }
 
+        const userEmail = profile.emails[0].value;
 
-  // google cloud 
+        // Check if user already exists
+        const existingUser = await User.findOne({ email: userEmail });
 
-  clientID: process.env.GOOGLE_CLIENT_ID as string,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+        if (existingUser) {
+          return done(null, existingUser.toObject({ virtuals: true }));
+        }
 
-  callbackURL: "https://prompthub-2.onrender.com/api/v1/auth/google/callback"
+        
+        const newUser = await User.create({
+          name: profile.displayName,
+          email: userEmail,
+          avatar: profile.photos?.[0]?.value || null,
+          googleId: profile.id,
+        });
 
-},
+        return done(null, newUser.toObject({ virtuals: true }));
 
-  // handel user 
-  async (accessToken, refreshToken, profile, done) => {
-
-    try {
-
-      // use check 
-
-      /// email
-      // check user have email or not
-      if (!profile?.emails || profile.emails.length == 0) {
-        return done(null, false, { message: "Please provide user email" })
-
-
+      } catch (error) {
+        return done(error as Error);
       }
-
-      const userEmail = profile?.emails[0]?.value;
-
-      const exitingUsers = await User.findOne({ email: userEmail });
-      console.log(exitingUsers, " user ")
-
-      // if user exit with email 
-      if (exitingUsers) {
-        return done(null, exitingUsers.toObject({ virtuals: true }));
-        // virtual true add for req.user , create vitula ( id )
-      }
-
-      // if user not have in db
-
-
-      // create user 
-
-      const newUser = await User.create({
-        name: profile.displayName,
-        email: userEmail,
-        avatar: profile.photos?.[0]?.value || null, // optional
-        // provider: "google", // optional
-        googleId: profile.id
-      });
-      console.log(newUser, " new user")
-
-
-      return done(null, newUser);
-
-    } catch (error) {
-
-      return done(error)
-
     }
-
-
-  }
-));
-
-
-
-passport.serializeUser((user: any, done) => {
-  done(null, user?._id);
-});
-
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
-});
+  )
+);
