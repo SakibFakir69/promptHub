@@ -63,36 +63,33 @@ const sendOtp = async (req: Request, res: Response, next: NextFunction) => {
 
 const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { otp,email } = req.body;
+    const validation = zodOtpValidationSchema.safeParse(req.body);
 
-    const otpValidationSchema = zodOtpValidationSchema.safeParse(req.body);
-
-    if (!otpValidationSchema.success) {
-      const errors = otpValidationSchema.error.format();
-      return ReturnResponse(res, 400, false, 'Validation Failed', errors);
+    if (!validation.success) {
+      const errors = validation.error.format();
+      return ReturnResponse(res, 400, false, 'Validation failed.', errors);
     }
 
-  
+    const { email, otp } = validation.data; 
 
-    //  Get OTP from Redis
     const storedOtp = await redisClient.get(`otp:${email}`);
-
     if (!storedOtp) {
-      ReturnResponse(res, 400, false, 'OTP expired or not found.');
+      return ReturnResponse(res, 400, false, 'OTP expired or not found.');
     }
 
-    //  Compare OTP
     if (storedOtp !== otp) {
-      return res.status(400).json({
-        status: false,
-        message: 'Invalid OTP.',
-      });
+      return ReturnResponse(res, 400, false, 'Invalid OTP.'); 
     }
 
-    //  Delete OTP after verification
-    await redisClient.del(`otp:${email}`);
+    const user = await User.findOne({ email });
+    if (!user) {
+      return ReturnResponse(res, 404, false, 'User not found.');
+    }
 
-    ReturnResponse(res, 200, true, 'OTP verified successfully.');
+    await redisClient.del(`otp:${email}`);                   
+    await User.findByIdAndUpdate(user._id, { isOtpVerify: true });
+
+    return ReturnResponse(res, 200, true, 'OTP verified successfully.'); 
   } catch (error) {
     next(error);
   }

@@ -6,7 +6,9 @@ export const zodOtpValidationSchema = z.object({
     .string()
     .length(4, { message: "OTP must be exactly 4 digits" })
     .regex(/^\d{4}$/, { message: "OTP must contain only digits" })
-    .refine((val:string) => /^\d{4}$/.test(val), {
+    .refine((val: string) => /^\d{4}$/.test(val), {
       message: "Invalid OTP format",
     }),
+
+  email: z.string()
 });

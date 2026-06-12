@@ -32,7 +32,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const isUserExits = await User.findOne({ email: email });
-   
+
 
     // find user
     if (!isUserExits) {
@@ -67,7 +67,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
       ReturnResponse(res, 500, false, 'Token generation failed');
       return;
     }
-    
+
 
     // setcookies
     /// access token
@@ -80,8 +80,8 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
       message: 'User Login Successfully',
       accessToken: accessToken,
       refreshToken: refreshToken,
-      data:{
-         isVerify:isUserExits.isVerify
+      data: {
+        isOtpVerify: isUserExits.isOtpVerify
       }
     });
   } catch (error) {
@@ -97,15 +97,13 @@ const ResetPassword = async (
   next: NextFunction,
 ) => {
   try {
-    const { newPassword, confirmPassword,email} = req.body;
+    const { newPassword, confirmPassword, email } = req.body;
 
-    if(!newPassword || !confirmPassword || !email)
-    {
-      return ReturnResponse(res,400,false,'Something missing')
+    if (!newPassword || !confirmPassword || !email) {
+      return ReturnResponse(res, 400, false, 'Something missing')
     }
-    if(newPassword!==confirmPassword)
-    {
-      return ReturnResponse(res,400,false,"Password not match");
+    if (newPassword !== confirmPassword) {
+      return ReturnResponse(res, 400, false, "Password not match");
     }
 
     // zod validation
@@ -118,8 +116,8 @@ const ResetPassword = async (
 
     // old and new pass take then verify
 
-    
-   
+
+
 
     const isUser = await User.findOne({ email: email });
     //
@@ -160,7 +158,7 @@ const changePassword = async (
     // old and new pass take then verify
 
     const email = req?.user?.email;
-    
+
 
     const isUser = await User.findOne({ email: email });
     //
@@ -291,7 +289,7 @@ const refreshToken = (req: Request, res: Response, next: NextFunction) => {
 
 const resetEmail = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email } = req.body; 
+    const { email } = req.body;
     if (!email) {
       return ReturnResponse(res, 400, false, "Please provide email address");
     }
@@ -301,10 +299,10 @@ const resetEmail = async (req: Request, res: Response, next: NextFunction) => {
       return ReturnResponse(res, 404, false, 'User Email Not Found');
     }
 
-  
+
     const isExitsOtp = await redisClient.get(`otp:${email}`);
     if (isExitsOtp) {
-   
+
       return ReturnResponse(res, 429, false, "OTP already sent. Please wait 5 minutes before requesting a new one.");
     }
 
@@ -319,7 +317,7 @@ const resetEmail = async (req: Request, res: Response, next: NextFunction) => {
     // 3. Store in Redis (5 minutes = 300 seconds)
     await redisClient.setEx(`otp:${email}`, 300, otp);
 
-   
+
     await sendEmail(user.email, 'Password Reset OTP', Number(otp));
 
     return ReturnResponse(res, 200, true, "OTP sent successfully to your email");
@@ -332,27 +330,27 @@ const resetEmail = async (req: Request, res: Response, next: NextFunction) => {
 // reset-code
 const resetCode = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, otp } = req.body; 
-    console.log(email,otp)
+    const { email, otp } = req.body;
+    console.log(email, otp)
 
     if (!email || !otp) {
       return ReturnResponse(res, 400, false, 'Email and OTP are required');
     }
 
-    
+
     const storedOtp = await redisClient.get(`otp:${email}`);
 
- 
+
     if (!storedOtp) {
       return ReturnResponse(res, 400, false, 'OTP expired');
     }
 
-   
+
     if (storedOtp !== otp) {
       return ReturnResponse(res, 400, false, 'Invalid OTP code');
     }
 
-   
+
     await redisClient.del(`otp:${email}`);
 
     return ReturnResponse(res, 200, true, 'OTP verified successfully');
@@ -376,7 +374,7 @@ const resendRestCode = async (req: Request, res: Response, next: NextFunction) =
       return ReturnResponse(res, 400, false, 'User with this email does not exist');
     }
 
-    
+
     const otp = otpGenerator.generate(4, {
       digits: true,
       upperCaseAlphabets: false,
@@ -385,25 +383,28 @@ const resendRestCode = async (req: Request, res: Response, next: NextFunction) =
     });
 
     const storeOtp = await redisClient.get(`otp:${email}`);
-    if(storeOtp)
-    {
-      return ReturnResponse(res,400,false,'Please wait 3 minutes')
+    if (storeOtp) {
+      return ReturnResponse(res, 400, false, 'Please wait 3 minutes')
     }
 
-   
+
     await redisClient.setEx(`otp:${email}`, 300, otp);
 
-    
-    await sendEmail(email, 'Password Reset OTP', Number(otp)); 
+
+    await sendEmail(email, 'Password Reset OTP', Number(otp));
 
     return ReturnResponse(res, 200, true, "OTP sent successfully to your email");
-    
+
   } catch (error) {
     next(error);
   }
 }
 
+
+
+
 // export
+
 export const authController = {
   loginUser,
   ResetPassword,

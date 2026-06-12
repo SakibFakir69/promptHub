@@ -21,6 +21,7 @@ export interface IUser {
   isBlock:boolean,
   isDelete:boolean,
   isLoggedIn:boolean,
+  isOtpVerify:boolean,
   id:string, /// virtual id
   
 }
