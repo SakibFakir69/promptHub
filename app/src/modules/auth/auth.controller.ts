@@ -200,16 +200,19 @@ const logOutUser = async (req: Request, res: Response, next: NextFunction) => {
       ReturnResponse(res, 404, false, 'User Not Founded');
       return;
     }
+      const isProd = process.env.NODE_ENV === "production";
 
-    res.clearCookie('accessToken', {
+       res.clearCookie("accessToken", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+      path: "/",
     });
-    res.clearCookie('refreshToken', {
+    res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+      path: "/",
     });
 
     ReturnResponse(res, 200, true, 'User Log Out Successfully');
