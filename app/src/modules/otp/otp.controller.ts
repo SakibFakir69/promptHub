@@ -14,9 +14,18 @@ const sendOtp = async (req: Request, res: Response, next: NextFunction) => {
     
     const {name="Guest",email} = req.body;
 
+
     //  Validate input
     if (!email || !name) {
       return ReturnResponse(res, 400, false, 'Email and username are required');
+    }
+
+    // check user have account or not
+    const isUserExits  = await User.findOne({email:email});
+    
+    if(!isUserExits)
+    {
+      return ReturnResponse(res,404,false,"User info not founded");
     }
 
     //  Prevent multiple OTP requests
