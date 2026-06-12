@@ -349,7 +349,7 @@ router.get(
       SetCookies(res, 'accessToken', accessToken, 24 * 60 * 60 * 1000);
       SetCookies(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000);
 
-      res.redirect(`${process.env.FRONT_END_URL}/`);
+      res.redirect(`${process.env.FRONT_END_URL}/home`);
 
     } catch (error:any) {
       res.redirect(`${process.env.FRONT_END_URL}/login?error=server_error`);
