@@ -6,7 +6,7 @@ import { peopleController } from "./people.controller";
 
 const router = Router();
 
-router.get('/', peopleController.searchUser);
+router.get('/search', peopleController.searchUser);
 
 
 export const peopleRouter = router;
