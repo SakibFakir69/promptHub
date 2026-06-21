@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { registerDeviceToken, removeDeviceToken } from './notification.service';
 
-interface AuthedRequest extends Request {
+export interface AuthedRequest extends Omit<Request, "user"> {
   user?: { id: string };
 }
 
