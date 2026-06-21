@@ -24,6 +24,7 @@ import { promptRouter } from './modules/prompt/prompt.route';
 import { feedRouter } from './modules/feed/feed.route';
 import { discoverRouter } from './modules/discover/discover.route';
 import { exploreRouter } from './modules/explore/explore.route';
+import { peopleRouter } from './modules/people/people.route';
 
 
 // app
@@ -110,6 +111,8 @@ app.use('/api/v1/prompt', promptRouter);
 app.use('/api/v1/discover', discoverRouter);
 app.use('/api/v1/explore', exploreRouter);
 app.use('/api/v1/feed', feedRouter);        // ← Made specific
+app.use('/api/v1/people',peopleRouter);
+
 
 // api test
 app.get('/', async (req: Request, res: Response) => {

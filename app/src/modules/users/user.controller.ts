@@ -108,20 +108,6 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 
-// SEARCH USER , 
-
-const searchUser = (req:Request, res:Response, next:NextFunction)=>{
-  try {
-    // add many filter type  gender , age , name , etc
-    // handel user search and others option 
-    // pagination cursor
-    
-    
-  } catch (error) {
-    next(error);
-  }
-}
-
 
 
 
