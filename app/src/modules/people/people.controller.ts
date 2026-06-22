@@ -79,10 +79,11 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
 
     const safeLimit = Math.min(Math.max(Number(limit) || 20, 1), 100);
 
-    const result = await User.find(query)
-      .sort({ followers: -1, _id: 1 })
-      .limit(safeLimit + 1)
-      .lean();
+   const result = await User.find(query)
+  .sort({ followers: -1, _id: 1 })
+  .limit(safeLimit + 1)
+  .select("-password")
+  .lean();
 
     const hasNextPage = result.length > safeLimit;
     const items = hasNextPage ? result.slice(0, safeLimit) : result;
