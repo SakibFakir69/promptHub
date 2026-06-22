@@ -30,19 +30,18 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
       age,
       gender,
       cursor,
-      limit = 20,
-    }: {
+      limit = "20",
+    } = req.query as {
       name?: string;
       email?: string;
-      age?: number;
+      age?: string;
       gender?: string;
       cursor?: string;
-      limit?: number;
-    } = req.body;
+      limit?: string;
+    };
 
     const query: Record<string, any> = {};
 
-    // name + email (search)
     if (name || email) {
       const orConditions: Record<string, any>[] = [];
       if (name) orConditions.push({ name: { $regex: name, $options: "i" } });
@@ -50,17 +49,18 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
       query.$or = orConditions;
     }
 
-    // age filter (minimum age)
+    // age comes in as string from query params, parse it
     if (age !== undefined) {
-      query.age = { $gte: age };
+      const parsedAge = Number(age);
+      if (!isNaN(parsedAge)) {
+        query.age = { $gte: parsedAge };
+      }
     }
 
-    // gender filter (only applied if explicitly provided)
     if (gender) {
       query.gender = gender;
     }
 
-    // cursor based pagination, sorted by followers desc then _id asc as tiebreaker
     if (cursor) {
       const decoded = decodeCursor(cursor);
       if (!decoded) {
@@ -71,10 +71,7 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
         {
           $or: [
             { followers: { $lt: decoded.followers } },
-            {
-              followers: decoded.followers,
-              _id: { $gt: decoded._id },
-            },
+            { followers: decoded.followers, _id: { $gt: decoded._id } },
           ],
         },
       ];
@@ -84,11 +81,10 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
 
     const result = await User.find(query)
       .sort({ followers: -1, _id: 1 })
-      .limit(safeLimit + 1) 
+      .limit(safeLimit + 1)
       .lean();
 
     const hasNextPage = result.length > safeLimit;
-    
     const items = hasNextPage ? result.slice(0, safeLimit) : result;
 
     const nextCursor =
@@ -101,16 +97,12 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
 
     return res.status(200).json({
       data: items,
-      pagination: {
-        nextCursor,
-        hasNextPage,
-      },
+      pagination: { nextCursor, hasNextPage },
     });
   } catch (error) {
     next(error);
   }
 };
-
 export const peopleController = {
   searchUser,
 };
