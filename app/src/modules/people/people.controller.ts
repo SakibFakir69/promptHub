@@ -1,7 +1,7 @@
 import { ReturnResponse } from './../../helper/ReturnResponse';
 import { NextFunction, Request, Response } from "express";
 import { User } from "../users/user.model";
-import { ReturnResponse } from "app/src/helper/ReturnResponse";
+
 
 interface Cursor {
   followers: number;
