@@ -1,5 +1,7 @@
+import { ReturnResponse } from './../../helper/ReturnResponse';
 import { NextFunction, Request, Response } from "express";
 import { User } from "../users/user.model";
+import { ReturnResponse } from "app/src/helper/ReturnResponse";
 
 interface Cursor {
   followers: number;
@@ -79,11 +81,11 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
 
     const safeLimit = Math.min(Math.max(Number(limit) || 20, 1), 100);
 
-   const result = await User.find(query)
-  .sort({ followers: -1, _id: 1 })
-  .limit(safeLimit + 1)
-  .select("-password")
-  .lean();
+    const result = await User.find(query)
+      .sort({ followers: -1, _id: 1 })
+      .limit(safeLimit + 1)
+      .select("-password")
+      .lean();
 
     const hasNextPage = result.length > safeLimit;
     const items = hasNextPage ? result.slice(0, safeLimit) : result;
@@ -91,9 +93,9 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
     const nextCursor =
       hasNextPage && items.length > 0
         ? encodeCursor(
-            (items[items.length - 1] as any).followers,
-            String((items[items.length - 1] as any)._id)
-          )
+          (items[items.length - 1] as any).followers,
+          String((items[items.length - 1] as any)._id)
+        )
         : null;
 
     return res.status(200).json({
@@ -104,6 +106,65 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 };
+
+
+const followUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id: targetUserId } = req.body;
+    const currentUserId = req.user?.id;
+
+    // 1. Validations
+    if (!targetUserId) {
+      return ReturnResponse(res, 400, false, 'Target user ID is required');
+    }
+
+    if (!currentUserId) {
+      return ReturnResponse(res, 401, false, "Token not valid");
+    }
+
+
+    if (currentUserId === targetUserId) {
+      return ReturnResponse(res, 400, false, "You cannot follow yourself");
+    }
+
+    
+    const currentUser = await User.findById(currentUserId).select('following');
+    
+    if (!currentUser) {
+      return ReturnResponse(res, 404, false, "User not found");
+    }
+
+    const isFollowing = currentUser.following.includes(targetUserId);
+
+
+    if (isFollowing) {
+   
+      await Promise.all([
+   
+        User.findByIdAndUpdate(targetUserId, { $pull: { followers: currentUserId } }),
+     
+        User.findByIdAndUpdate(currentUserId, { $pull: { following: targetUserId } }),
+      ]);
+
+      return ReturnResponse(res, 200, true, "Unfollowed successfully", { following: false });
+
+    } else {
+    
+      await Promise.all([
+      
+        User.findByIdAndUpdate(targetUserId, { $push: { followers: currentUserId } }),
+    
+        User.findByIdAndUpdate(currentUserId, { $push: { following: targetUserId } }),
+      ]);
+
+      return ReturnResponse(res, 200, true, "Followed successfully", { following: true });
+    }
+
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const peopleController = {
-  searchUser,
+  searchUser,followUser
 };
