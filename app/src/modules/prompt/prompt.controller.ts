@@ -522,7 +522,55 @@ const deleteSavedPrompt = async (req: Request, res: Response, next: NextFunction
   }
 };
 
+// TOP TAGS AND TOP CATEGORY
+
+const topTagsAndTopCategory = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const since = new Date();
+    since.setDate(since.getDate() - 7);
+
+    const [tags, categories] = await Promise.all([
+      Prompt.aggregate([
+        { $match: { visibility: true, createdAt: { $gte: since } } },
+        { $unwind: '$tags' },
+        { $group: { _id: '$tags', count: { $sum: 1 }, totalUpvotes: { $sum: '$upVote' } } },
+        { $addFields: { trendScore: { $multiply: ['$count', { $add: ['$totalUpvotes', 1] }] } } },
+        { $sort: { trendScore: -1 } },
+        { $limit: 10 },
+        { $project: { _id: 0, tag: '$_id', count: 1, trendScore: 1 } },
+      ]),
+
+      Prompt.aggregate([
+        { $match: { visibility: true, createdAt: { $gte: since } } },
+        { $unwind: '$category' },
+        { $group: { _id: '$category', count: { $sum: 1 }, totalUpvotes: { $sum: '$upVote' } } },
+        { $addFields: { trendScore: { $multiply: ['$count', { $add: ['$totalUpvotes', 1] }] } } },
+        { $sort: { trendScore: -1 } },
+        { $limit: 10 },
+        { $project: { _id: 0, category: '$_id', count: 1, trendScore: 1 } },
+      ]),
+    ]);
+
+    // shuffle and slice 8–10
+    const shuffle = <T>(arr: T[]) => arr.sort(() => Math.random() - 0.5);
+
+    const randomCount = Math.floor(Math.random() * 3) + 8; // 8, 9, or 10
+
+    res.json({
+      success: true,
+      data: {
+        tags:       shuffle(tags).slice(0, randomCount),
+        categories: shuffle(categories).slice(0, randomCount),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 export const promptController = {
+  topTagsAndTopCategory,
   promptImageUpload,
   createPrompt,
   getPromptDetails,
