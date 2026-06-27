@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { ReturnResponse } from './../../helper/ReturnResponse';
 import { NextFunction, Request, Response } from "express";
 import { User } from "../users/user.model";
@@ -70,14 +71,13 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
     const pipeline: any[] = [
       { $match: matchStage },
 
-      // Compute followersCount and isFollowing as real fields
       {
         $addFields: {
           followersCount: { $size: { $ifNull: ["$followers", []] } },
           isFollowing: currentUserId
             ? {
                 $in: [
-                  currentUserId,
+                  new mongoose.Types.ObjectId(currentUserId), 
                   { $ifNull: ["$followers", []] },
                 ],
               }
@@ -85,7 +85,6 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
         },
       },
 
-      // Cursor-based pagination on (followersCount DESC, _id ASC)
       ...(cursor
         ? (() => {
             const decoded = decodeCursor(cursor);
@@ -109,17 +108,15 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
       { $sort: { followersCount: -1, _id: 1 } },
       { $limit: safeLimit + 1 },
 
-      // Shape the response — drop password and raw followers array
       {
         $project: {
           password: 0,
-          followers: 0,   // don't leak the full array to the client
+          followers: 0,
           following: 0,
         },
       },
     ];
 
-    // Validate cursor before running pipeline
     if (cursor) {
       const decoded = decodeCursor(cursor);
       if (!decoded) {
@@ -140,7 +137,6 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
           )
         : null;
 
-    // Rename followersCount → followers for the frontend interface
     const data = items.map((u) => ({
       _id: u._id,
       name: u.name,
@@ -150,8 +146,8 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
       avatar: u.avatar ?? null,
       photo: u.photo ?? null,
       bio: u.bio ?? "",
-      followers: u.followersCount,   // ← number, not array
-      isFollowing: u.isFollowing,    // ← boolean
+      followers: u.followersCount,
+      isFollowing: u.isFollowing,
     }));
 
     return res.status(200).json({
