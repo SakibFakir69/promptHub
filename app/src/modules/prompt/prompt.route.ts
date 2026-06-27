@@ -466,5 +466,5 @@ router.get('/prompt-details/:id', promptController.getPromptDetails);
 router.post('/save-prompt', verifyToken, promptController.mySavedPrompt);
 router.get('/save-prompt',verifyToken, promptController.getSavedPrompt)
 router.delete('/save-prompt',verifyToken, promptController.deleteSavedPrompt)
-
+router.get('/trending',promptController.topTagsAndTopCategory)
 export const promptRouter = router;
