@@ -522,12 +522,12 @@ const deleteSavedPrompt = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-// TOP TAGS AND TOP CATEGORY
+
 
 const topTagsAndTopCategory = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const since = new Date();
-    since.setDate(since.getDate() - 7);
+    since.setDate(since.getDate() - 10);
 
     const [tags, categories] = await Promise.all([
       Prompt.aggregate([
