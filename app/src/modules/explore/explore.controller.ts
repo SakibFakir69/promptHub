@@ -13,7 +13,6 @@ const exploreAllPrompt = async (
     const limit = 10;
     console.log(search);
     const query: any = { visibility: true,};
-
     if (search) {
       const searchRegex = { $regex: search, $options: 'i' };
       query.$or = [
