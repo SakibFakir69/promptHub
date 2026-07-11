@@ -176,12 +176,13 @@ const updatePrompt = async (
     if (!updateZodValidation?.success) {
       return ReturnResponse(res, 400, false, 'update zod validation failed');
     }
-    const { image, title, tags, prompt } = data;
+    const { image, title, tags, prompt ,visibility } = data;
     const payload = {
       title: title,
       prompt: prompt,
       tags: tags,
       image: image,
+      visibility: visibility
     };
 
     const result = await Prompt.findOneAndUpdate(
