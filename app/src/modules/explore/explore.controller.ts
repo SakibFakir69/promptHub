@@ -12,7 +12,7 @@ const exploreAllPrompt = async (
     const search = req.query.prompt as string;
     const limit = 10;
     console.log(search);
-    const query: any = {};
+    const query: any = { visibility: true,};
 
     if (search) {
       const searchRegex = { $regex: search, $options: 'i' };
