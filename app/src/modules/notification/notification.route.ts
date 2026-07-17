@@ -4,24 +4,23 @@ import { registerToken, unregisterToken } from './notification.controller';
 import { verifyToken } from "../../middleware/verifyToken";
 import { notifyUser } from './notification.service';
 
+
 const router = Router();
+
 
 router.post('/register-token', verifyToken, registerToken);
 router.post('/unregister-token', verifyToken, unregisterToken);
 
 router.post("/test-push", verifyToken, async (req, res) => {
+    
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+  }
 
-    if(!req.user.id)
-    {
-        return res.status(404).json({
-            success:false,
-            message:"failed to re4ach"
-        })
-    }
-
-  const userId = req?.user.id;
-
-  await notifyUser(userId, {
+  await notifyUser(req.user.id, {
     title: "🎉 Test Notification",
     body: "This is a test notification from PromptHub!",
     data: {
@@ -29,7 +28,7 @@ router.post("/test-push", verifyToken, async (req, res) => {
     },
   });
 
-  res.json({ success: true });
+  return res.json({ success: true });
 });
 
 
