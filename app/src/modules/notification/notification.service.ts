@@ -25,6 +25,7 @@ export async function removeDeviceToken(token: string, userId?: string) {
   const filter = userId ? { token, user: userId } : { token };
   return DeviceToken.deleteOne(filter);
 }
+// BEFORE SEND NOTIFICATION DECTED PLATFROM
 
 async function sendExpoPush(token: string, payload: NotificationPayload) {
   const res = await fetch('https://exp.host/--/api/v2/push/send', {

@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { ReturnResponse } from './../../helper/ReturnResponse';
 import { NextFunction, Request, Response } from "express";
 import { User } from "../users/user.model";
+import { notifyUser } from '../notification/notification.service';
 
 interface Cursor {
   followersCount: number;
@@ -196,6 +197,18 @@ const followUser = async (req: Request, res: Response, next: NextFunction) => {
         User.findByIdAndUpdate(targetUserId, { $push: { followers: currentUserId } }),
         User.findByIdAndUpdate(currentUserId, { $push: { following: targetUserId } }),
       ]);
+      
+      notifyUser
+        if (currentUserId !== targetUserId) {
+    await notifyUser(targetUserId, {
+      title: "🎉 New Follower",
+      body: `${req.user?.name} started following you.`,
+      data: {
+        type: "FOLLOW",
+        senderId: currentUserId,
+      },
+    });
+  }
 
       return ReturnResponse(res, 200, true, "Followed successfully", { following: true });
     }
