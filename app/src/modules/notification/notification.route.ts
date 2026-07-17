@@ -1,10 +1,12 @@
+
 import { Router } from 'express';
 import { registerToken, unregisterToken } from './notification.controller';
-// import { authMiddleware } from '../../middleware/auth'; // wire up to your existing auth guard
+import { verifyToken } from 'app/src/middleware/verifyToken';
+
 
 const router = Router();
 
-router.post('/register-token', /* authMiddleware, */ registerToken);
-router.post('/unregister-token', /* authMiddleware, */ unregisterToken);
+router.post('/register-token', verifyToken, registerToken);
+router.post('/unregister-token', verifyToken, unregisterToken);
 
-export default router;
+export const notificationRouter= router;
