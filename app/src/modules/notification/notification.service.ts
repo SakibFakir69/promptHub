@@ -40,6 +40,10 @@ async function sendExpoPush(token: string, payload: NotificationPayload) {
   return res.json();
 }
 
+// just use send web push , token
+// but which token need  , json token, or other - here confusion
+
+
 async function sendWebPush(token: string, payload: NotificationPayload) {
   return fcmMessaging.send({
     token,

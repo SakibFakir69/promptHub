@@ -6,6 +6,7 @@ import { zodValidationPrompt } from './prompt.validation';
 import { User } from '../users/user.model';
 import { Types } from 'mongoose';
 import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
+import { notifyUser } from '../notification/notification.service';
 
 
 // super test and deploy
@@ -176,7 +177,7 @@ const updatePrompt = async (
     if (!updateZodValidation?.success) {
       return ReturnResponse(res, 400, false, 'update zod validation failed');
     }
-    const { image, title, tags, prompt ,visibility } = data;
+    const { image, title, tags, prompt, visibility } = data;
     const payload = {
       title: title,
       prompt: prompt,
@@ -291,6 +292,8 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
         { new: true },
       );
 
+
+
       return ReturnResponse(res, 200, true, 'Switched to UpVote', {
         upVote: updated?.upVote,
         downVote: updated?.downVote,
@@ -306,6 +309,18 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
       },
       { new: true },
     );
+
+    if (post.createdBy.userId.toString() !== userId) {
+      await notifyUser(post.createdBy.userId.toString(), {
+        title: "👍 New Upvote",
+        body: `${post.createdBy.name} received a new upvote.`,
+        data: {
+          type: "UPVOTE",
+          promptId: post._id.toString(),
+          senderId: userId,
+        },
+      });
+    }
 
     return ReturnResponse(res, 200, true, 'UpVote added', {
       upVote: updated?.upVote,
@@ -489,7 +504,7 @@ const deleteSavedPrompt = async (req: Request, res: Response, next: NextFunction
       });
     }
 
-   
+
     if (!promptId) {
       return res.status(400).json({
         success: false,
@@ -497,7 +512,7 @@ const deleteSavedPrompt = async (req: Request, res: Response, next: NextFunction
       });
     }
 
-   
+
     const result = await SavedPrompt.findOneAndDelete({
       promptId: promptId,
       userId: userId
@@ -511,11 +526,11 @@ const deleteSavedPrompt = async (req: Request, res: Response, next: NextFunction
       });
     }
 
- 
+
     return res.status(200).json({
       success: true,
       message: "Prompt removed from your saved list successfully",
-    
+
     });
 
   } catch (error) {
@@ -560,7 +575,7 @@ const topTagsAndTopCategory = async (req: Request, res: Response, next: NextFunc
     res.json({
       success: true,
       data: {
-        tags:       shuffle(tags).slice(0, randomCount),
+        tags: shuffle(tags).slice(0, randomCount),
         categories: shuffle(categories).slice(0, randomCount),
       },
     });
