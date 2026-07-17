@@ -57,7 +57,7 @@ const createUserSchema = z.object({
 // update user
 
 const updateUserSchema = z.object({
-  name: z.string().min(4, { message: 'Name must be 4 length' }),
+  name: z.string().min(4, { message: 'Name must be 4 length' }).optional(),
   bio: z.string().optional().default(''),
   photo: z.string().optional(),
   avatar: z.string().optional().default(''),
