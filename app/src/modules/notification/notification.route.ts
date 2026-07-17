@@ -11,7 +11,15 @@ router.post('/unregister-token', verifyToken, unregisterToken);
 
 router.post("/test-push", verifyToken, async (req, res) => {
 
-  const userId = req.user.id;
+    if(!req.user.id)
+    {
+        return res.status(404).json({
+            success:false,
+            message:"failed to re4ach"
+        })
+    }
+
+  const userId = req?.user.id;
 
   await notifyUser(userId, {
     title: "🎉 Test Notification",
