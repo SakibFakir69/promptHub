@@ -1,8 +1,7 @@
 
 import { Router } from 'express';
 import { registerToken, unregisterToken } from './notification.controller';
-import { verifyToken } from 'app/src/middleware/verifyToken';
-
+import { verifyToken } from "../../middleware/verifyToken";
 
 const router = Router();
 
