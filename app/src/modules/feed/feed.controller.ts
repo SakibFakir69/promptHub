@@ -11,8 +11,11 @@ export const feed = async (req: Request, res: Response) => {
       query.createdAt = { $lt: new Date(cursor as string) };
     }
 
-    // Fetch prompts
-    const prompts = await Prompt.find({}).limit(10).select('-viewedBy').lean();
+    const prompts = await Prompt.find(query)
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .select('-viewedBy')
+      .lean();
 
     const nextCursor = prompts.length
       ? prompts[prompts.length - 1].createdAt
