@@ -241,11 +241,17 @@ const deletePrompt = async (
 // inc vote
 // dec vote
 
+type VoteResult = {
+  upVote: number;
+  downVote: number;
+  userVote: 'up' | 'down' | null;
+};
+
 const upVote = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { postId } = req.body;
-    if (!postId) {
-      return ReturnResponse(res, 400, false, 'post id not found');
+    if (!postId || !Types.ObjectId.isValid(postId)) {
+      return ReturnResponse(res, 400, false, 'Invalid post id');
     }
 
     const userId = req.user?.id;
@@ -255,77 +261,53 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
 
     const userObjectId = new Types.ObjectId(userId);
 
-    const post = await Prompt.findById(postId);
-    if (!post) {
-      return ReturnResponse(res, 404, false, 'Post not found');
+    // 1. Toggle off — atomic, only matches if user currently upvoted
+    const removed = await Prompt.findOneAndUpdate(
+      { _id: postId, upVotedBy: userObjectId },
+      { $pull: { upVotedBy: userObjectId }, $inc: { upVote: -1 } },
+      { new: true },
+    );
+    if (removed) {
+      const data: VoteResult = { upVote: removed.upVote, downVote: removed.downVote, userVote: null };
+      return ReturnResponse(res, 200, true, 'UpVote removed', data);
     }
 
-    const alreadyUp = post.upVotedBy.includes(userObjectId);
-    const alreadyDown = post.downVotedBy.includes(userObjectId);
-
-    //  remove upvote
-    if (alreadyUp) {
-      const updated = await Prompt.findByIdAndUpdate(
-        postId,
-        {
-          $pull: { upVotedBy: userId },
-          $inc: { upVote: -1 },
-        },
-        { new: true },
-      );
-
-      return ReturnResponse(res, 200, true, 'UpVote removed', {
-        upVote: updated?.upVote,
-        downVote: updated?.downVote,
-      });
-    }
-
-    //  switch down → up
-    if (alreadyDown) {
-      const updated = await Prompt.findByIdAndUpdate(
-        postId,
-        {
-          $pull: { downVotedBy: userId },
-          $addToSet: { upVotedBy: userId },
-          $inc: { downVote: -1, upVote: 1 },
-        },
-        { new: true },
-      );
-
-
-
-      return ReturnResponse(res, 200, true, 'Switched to UpVote', {
-        upVote: updated?.upVote,
-        downVote: updated?.downVote,
-      });
-    }
-
-    //  first upvote
-    const updated = await Prompt.findByIdAndUpdate(
-      postId,
+    // 2. Switch down -> up — atomic, only matches if user currently downvoted
+    const switched = await Prompt.findOneAndUpdate(
+      { _id: postId, downVotedBy: userObjectId },
       {
-        $addToSet: { upVotedBy: userId },
-        $inc: { upVote: 1 },
+        $pull: { downVotedBy: userObjectId },
+        $addToSet: { upVotedBy: userObjectId },
+        $inc: { downVote: -1, upVote: 1 },
       },
       { new: true },
     );
+    if (switched) {
+      const data: VoteResult = { upVote: switched.upVote, downVote: switched.downVote, userVote: 'up' };
+      return ReturnResponse(res, 200, true, 'Switched to UpVote', data);
+    }
 
-    if (post.createdBy.userId.toString() !== userId) {
-      await notifyUser(post.createdBy.userId.toString(), {
-        title: "👍 New Upvote",
-        body: `${post.createdBy.name} received a new upvote.`,
-        data: {
-          type: "UPVOTE",
-          promptId: post._id.toString(),
-          senderId: userId,
-        },
+    // 3. Fresh upvote — filter excludes users already in upVotedBy, so a
+    // concurrent duplicate request simply matches nothing (no double count)
+    const added = await Prompt.findOneAndUpdate(
+      { _id: postId, upVotedBy: { $ne: userObjectId } },
+      { $addToSet: { upVotedBy: userObjectId }, $inc: { upVote: 1 } },
+      { new: true },
+    );
+    if (!added) {
+      return ReturnResponse(res, 404, false, 'Post not found');
+    }
+
+    if (added.createdBy.userId.toString() !== userId) {
+      await notifyUser(added.createdBy.userId.toString(), {
+        title: '👍 New Upvote',
+        body: `${added.createdBy.name} received a new upvote.`,
+        data: { type: 'UPVOTE', promptId: added._id.toString(), senderId: userId },
       });
     }
 
-    return ReturnResponse(res, 200, true, 'UpVote added', {
-      upVote: updated?.upVote,
-      downVote: updated?.downVote,
-    });
+    const data: VoteResult = { upVote: added.upVote, downVote: added.downVote, userVote: 'up' };
+    return ReturnResponse(res, 200, true, 'UpVote added', data);
   } catch (error) {
     next(error);
   }
@@ -334,8 +316,8 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
 const downVote = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { postId } = req.body;
-    if (!postId) {
-      return ReturnResponse(res, 400, false, 'post id not found');
+    if (!postId || !Types.ObjectId.isValid(postId)) {
+      return ReturnResponse(res, 400, false, 'Invalid post id');
     }
 
     const userId = req.user?.id;
@@ -345,67 +327,49 @@ const downVote = async (req: Request, res: Response, next: NextFunction) => {
 
     const userObjectId = new Types.ObjectId(userId);
 
-    const post = await Prompt.findById(postId);
-    if (!post) {
-      return ReturnResponse(res, 404, false, 'Post not found');
+    // 1. Toggle off
+    const removed = await Prompt.findOneAndUpdate(
+      { _id: postId, downVotedBy: userObjectId },
+      { $pull: { downVotedBy: userObjectId }, $inc: { downVote: -1 } },
+      { new: true },
+    );
+    if (removed) {
+      const data: VoteResult = { upVote: removed.upVote, downVote: removed.downVote, userVote: null };
+      return ReturnResponse(res, 200, true, 'DownVote removed', data);
     }
 
-    const alreadyDown = post.downVotedBy.includes(userObjectId);
-    const alreadyUp = post.upVotedBy.includes(userObjectId);
-
-    // remove downvote
-    if (alreadyDown) {
-      const updated = await Prompt.findByIdAndUpdate(
-        postId,
-        {
-          $pull: { downVotedBy: userId },
-          $inc: { downVote: -1 },
-        },
-        { new: true },
-      );
-
-      return ReturnResponse(res, 200, true, 'DownVote removed', {
-        upVote: updated?.upVote,
-        downVote: updated?.downVote,
-      });
-    }
-
-    //  switch up → down
-    if (alreadyUp) {
-      const updated = await Prompt.findByIdAndUpdate(
-        postId,
-        {
-          $pull: { upVotedBy: userId },
-          $addToSet: { downVotedBy: userId },
-          $inc: { upVote: -1, downVote: 1 },
-        },
-        { new: true },
-      );
-
-      return ReturnResponse(res, 200, true, 'Switched to DownVote', {
-        upVote: updated?.upVote,
-        downVote: updated?.downVote,
-      });
-    }
-
-    //  first downvote
-    const updated = await Prompt.findByIdAndUpdate(
-      postId,
+    // 2. Switch up -> down
+    const switched = await Prompt.findOneAndUpdate(
+      { _id: postId, upVotedBy: userObjectId },
       {
-        $addToSet: { downVotedBy: userId },
-        $inc: { downVote: 1 },
+        $pull: { upVotedBy: userObjectId },
+        $addToSet: { downVotedBy: userObjectId },
+        $inc: { upVote: -1, downVote: 1 },
       },
       { new: true },
     );
+    if (switched) {
+      const data: VoteResult = { upVote: switched.upVote, downVote: switched.downVote, userVote: 'down' };
+      return ReturnResponse(res, 200, true, 'Switched to DownVote', data);
+    }
 
-    return ReturnResponse(res, 200, true, 'DownVote added', {
-      upVote: updated?.upVote,
-      downVote: updated?.downVote,
-    });
+    // 3. Fresh downvote — race-safe via filter
+    const added = await Prompt.findOneAndUpdate(
+      { _id: postId, downVotedBy: { $ne: userObjectId } },
+      { $addToSet: { downVotedBy: userObjectId }, $inc: { downVote: 1 } },
+      { new: true },
+    );
+    if (!added) {
+      return ReturnResponse(res, 404, false, 'Post not found');
+    }
+
+    const data: VoteResult = { upVote: added.upVote, downVote: added.downVote, userVote: 'down' };
+    return ReturnResponse(res, 200, true, 'DownVote added', data);
   } catch (error) {
     next(error);
   }
 };
+
 
 // MY SAVED PROMPT
 
