@@ -8,6 +8,7 @@ export interface IPrompt {
   image:String,
   upVote: number;
   downVote: number;
+   
   upVotedBy: Types.ObjectId[];
   downVotedBy: Types.ObjectId[];
   visibility: boolean;

@@ -7,64 +7,51 @@ import { User } from '../users/user.model';
 import { Types } from 'mongoose';
 import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
 import { notifyUser } from '../notification/notification.service';
+import { toPromptDTO } from './prompt.dto';
 
 
 // super test and deploy
 
 // get
 
-const getAllPrompt = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const getAllPrompts = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req?.user?.id;
+    const userId = req.user?.id; // undefined if not logged in — fine, DTO handles it
 
-    const result = await Prompt.find({ 'createdBy.userId': userId });
+    const prompts = await Prompt.find({ visibility: true })
+      .sort({ createdAt: -1 })
+      .lean();
 
-    return ReturnResponse(res, 200, true, 'prompt reterive', result);
+    const data = prompts.map((p) => toPromptDTO(p, userId));
+    return ReturnResponse(res, 200, true, 'Prompts fetched', data);
   } catch (error) {
     next(error);
   }
-};
+}
 
-// GET PROMPT DETAILS
 
-const getPromptDetails = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+
+
+const getPromptDetails = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const promptId = req.params.id;
-
-    if (!promptId) {
-      return res.status(404).json({
-        success: false,
-        message: 'Please enter correct id',
-      });
+    const { id } = req.params;
+    if (!Types.ObjectId.isValid(id)) {
+      return ReturnResponse(res, 400, false, 'Invalid prompt id');
     }
 
-    const prompt = await Prompt.findById(promptId);
+    const userId = req.user?.id;
+    const prompt = await Prompt.findById(id).lean();
     if (!prompt) {
-      return res.status(404).json({
-        success: false,
-        message: 'Please enter correct id',
-      });
+      return ReturnResponse(res, 404, false, 'Prompt not found');
     }
 
-    return ReturnResponse(
-      res,
-      200,
-      true,
-      'Prompt details fetch successfully',
-      prompt,
-    );
+    const data = toPromptDTO(prompt, userId);
+    return ReturnResponse(res, 200, true, 'Prompt fetched', data);
   } catch (error) {
     next(error);
   }
 };
+
 
 const promptImageUpload = async (
   req: Request,
@@ -241,11 +228,6 @@ const deletePrompt = async (
 // inc vote
 // dec vote
 
-type VoteResult = {
-  upVote: number;
-  downVote: number;
-  userVote: 'up' | 'down' | null;
-};
 
 const upVote = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -261,18 +243,15 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
 
     const userObjectId = new Types.ObjectId(userId);
 
-    // 1. Toggle off — atomic, only matches if user currently upvoted
     const removed = await Prompt.findOneAndUpdate(
       { _id: postId, upVotedBy: userObjectId },
       { $pull: { upVotedBy: userObjectId }, $inc: { upVote: -1 } },
       { new: true },
-    );
+    ).lean();
     if (removed) {
-      const data: VoteResult = { upVote: removed.upVote, downVote: removed.downVote, userVote: null };
-      return ReturnResponse(res, 200, true, 'UpVote removed', data);
+      return ReturnResponse(res, 200, true, 'UpVote removed', toPromptDTO(removed, userId));
     }
 
-    // 2. Switch down -> up — atomic, only matches if user currently downvoted
     const switched = await Prompt.findOneAndUpdate(
       { _id: postId, downVotedBy: userObjectId },
       {
@@ -281,19 +260,16 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
         $inc: { downVote: -1, upVote: 1 },
       },
       { new: true },
-    );
+    ).lean();
     if (switched) {
-      const data: VoteResult = { upVote: switched.upVote, downVote: switched.downVote, userVote: 'up' };
-      return ReturnResponse(res, 200, true, 'Switched to UpVote', data);
+      return ReturnResponse(res, 200, true, 'Switched to UpVote', toPromptDTO(switched, userId));
     }
 
-    // 3. Fresh upvote — filter excludes users already in upVotedBy, so a
-    // concurrent duplicate request simply matches nothing (no double count)
     const added = await Prompt.findOneAndUpdate(
       { _id: postId, upVotedBy: { $ne: userObjectId } },
       { $addToSet: { upVotedBy: userObjectId }, $inc: { upVote: 1 } },
       { new: true },
-    );
+    ).lean();
     if (!added) {
       return ReturnResponse(res, 404, false, 'Post not found');
     }
@@ -306,8 +282,7 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    const data: VoteResult = { upVote: added.upVote, downVote: added.downVote, userVote: 'up' };
-    return ReturnResponse(res, 200, true, 'UpVote added', data);
+    return ReturnResponse(res, 200, true, 'UpVote added', toPromptDTO(added, userId));
   } catch (error) {
     next(error);
   }
@@ -327,18 +302,15 @@ const downVote = async (req: Request, res: Response, next: NextFunction) => {
 
     const userObjectId = new Types.ObjectId(userId);
 
-    // 1. Toggle off
     const removed = await Prompt.findOneAndUpdate(
       { _id: postId, downVotedBy: userObjectId },
       { $pull: { downVotedBy: userObjectId }, $inc: { downVote: -1 } },
       { new: true },
-    );
+    ).lean();
     if (removed) {
-      const data: VoteResult = { upVote: removed.upVote, downVote: removed.downVote, userVote: null };
-      return ReturnResponse(res, 200, true, 'DownVote removed', data);
+      return ReturnResponse(res, 200, true, 'DownVote removed', toPromptDTO(removed, userId));
     }
 
-    // 2. Switch up -> down
     const switched = await Prompt.findOneAndUpdate(
       { _id: postId, upVotedBy: userObjectId },
       {
@@ -347,29 +319,25 @@ const downVote = async (req: Request, res: Response, next: NextFunction) => {
         $inc: { upVote: -1, downVote: 1 },
       },
       { new: true },
-    );
+    ).lean();
     if (switched) {
-      const data: VoteResult = { upVote: switched.upVote, downVote: switched.downVote, userVote: 'down' };
-      return ReturnResponse(res, 200, true, 'Switched to DownVote', data);
+      return ReturnResponse(res, 200, true, 'Switched to DownVote', toPromptDTO(switched, userId));
     }
 
-    // 3. Fresh downvote — race-safe via filter
     const added = await Prompt.findOneAndUpdate(
       { _id: postId, downVotedBy: { $ne: userObjectId } },
       { $addToSet: { downVotedBy: userObjectId }, $inc: { downVote: 1 } },
       { new: true },
-    );
+    ).lean();
     if (!added) {
       return ReturnResponse(res, 404, false, 'Post not found');
     }
 
-    const data: VoteResult = { upVote: added.upVote, downVote: added.downVote, userVote: 'down' };
-    return ReturnResponse(res, 200, true, 'DownVote added', data);
+    return ReturnResponse(res, 200, true, 'DownVote added', toPromptDTO(added, userId));
   } catch (error) {
     next(error);
   }
 };
-
 
 // MY SAVED PROMPT
 
@@ -556,7 +524,7 @@ export const promptController = {
   getPromptDetails,
   updatePrompt,
   deletePrompt,
-  getAllPrompt,
+  getAllPrompts,
   upVote,
   downVote,
   mySavedPrompt,
