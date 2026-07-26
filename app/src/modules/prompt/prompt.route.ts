@@ -294,7 +294,7 @@ router.delete('/delete-prompt/:id',verifyToken, promptController.deletePrompt);
  *                   example: "Internal server error"
  */
 
-router.get('/get-prompt',verifyToken, promptController.getAllPrompts);
+router.get('/get-prompt',verifyToken, promptController.getMyPrompts);
 /**
  * @swagger
  * /upVote:

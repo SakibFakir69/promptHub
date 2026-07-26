@@ -8,26 +8,43 @@ import { Types } from 'mongoose';
 import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
 import { notifyUser } from '../notification/notification.service';
 import { toPromptDTO } from './prompt.dto';
+import mongoose from 'mongoose';
 
 
-// super test and deploy
 
-// get
 
-const getAllPrompts = async (req: Request, res: Response, next: NextFunction) => {
+const getMyPrompts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const userId = req.user?.id; // undefined if not logged in — fine, DTO handles it
+    if (!req.user?.id) {
+      return ReturnResponse(res, 401, false, "Unauthorized");
+    }
+ 
 
-    const prompts = await Prompt.find({ visibility: true })
-      .sort({ createdAt: -1 })
+    const userId = new mongoose.Types.ObjectId(req.user.id);
+
+    const prompts = await Prompt.find({
+      "createdBy.userId": userId,
+    })
+      .sort({ createdAt: -1 }) 
       .lean();
 
-    const data = prompts.map((p) => toPromptDTO(p, userId));
-    return ReturnResponse(res, 200, true, 'Prompts fetched', data);
+    const data = prompts.map((prompt) => toPromptDTO(prompt, req?.user.id));
+
+    return ReturnResponse(
+      res,
+      200,
+      true,
+      "My prompts fetched successfully",
+      data
+    );
   } catch (error) {
     next(error);
   }
-}
+};
 
 
 
@@ -524,7 +541,7 @@ export const promptController = {
   getPromptDetails,
   updatePrompt,
   deletePrompt,
-  getAllPrompts,
+ getMyPrompts,
   upVote,
   downVote,
   mySavedPrompt,
