@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
 import { ReturnResponse } from './../../helper/ReturnResponse';
 import { NextFunction, Request, Response } from "express";
+import { Types } from "mongoose"; // FIX: was missing — caused ReferenceError whenever currentUserId was truthy
 import { User } from "../users/user.model";
 import { notifyUser } from '../notification/notification.service';
 
@@ -78,7 +78,7 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
           isFollowing: currentUserId
             ? {
                 $in: [
-                  new mongoose.Types.ObjectId(currentUserId), 
+                  new Types.ObjectId(currentUserId), // FIX: mongoose.Types -> Types (now imported correctly)
                   { $ifNull: ["$followers", []] },
                 ],
               }
