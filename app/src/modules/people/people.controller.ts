@@ -160,27 +160,28 @@ const searchUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+
 const followUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id: targetUserId } = req.body;
     const currentUserId = req.user?.id;
 
     if (!targetUserId) {
-      return ReturnResponse(res, 400, false, "Target user ID is required");
+      return ReturnResponse(res, 400, false, 'Target user ID is required');
     }
 
     if (!currentUserId) {
-      return ReturnResponse(res, 401, false, "Token not valid");
+      return ReturnResponse(res, 401, false, 'Token not valid');
     }
 
     if (currentUserId === targetUserId) {
-      return ReturnResponse(res, 400, false, "You cannot follow yourself");
+      return ReturnResponse(res, 400, false, 'You cannot follow yourself');
     }
 
-    const currentUser = await User.findById(currentUserId).select("following");
+    const currentUser = await User.findById(currentUserId).select('following');
 
     if (!currentUser) {
-      return ReturnResponse(res, 404, false, "User not found");
+      return ReturnResponse(res, 404, false, 'User not found');
     }
 
     const isFollowing = currentUser.following.includes(targetUserId);
@@ -191,31 +192,30 @@ const followUser = async (req: Request, res: Response, next: NextFunction) => {
         User.findByIdAndUpdate(currentUserId, { $pull: { following: targetUserId } }),
       ]);
 
-      return ReturnResponse(res, 200, true, "Unfollowed successfully", { following: false });
+      return ReturnResponse(res, 200, true, 'Unfollowed successfully', { following: false });
     } else {
       await Promise.all([
         User.findByIdAndUpdate(targetUserId, { $push: { followers: currentUserId } }),
         User.findByIdAndUpdate(currentUserId, { $push: { following: targetUserId } }),
       ]);
-      
-      notifyUser
-        if (currentUserId !== targetUserId) {
-    await notifyUser(targetUserId, {
-      title: "🎉 New Follower",
-      body: `${req.user?.name} started following you.`,
-      data: {
-        type: "FOLLOW",
-        senderId: currentUserId,
-      },
-    });
-  }
 
-      return ReturnResponse(res, 200, true, "Followed successfully", { following: true });
+      await notifyUser(targetUserId, {
+        title: '🎉 New Follower',
+        body: `${req.user?.name} started following you.`,
+        data: {
+          type: 'FOLLOW',
+          senderId: currentUserId,
+        },
+      });
+
+      return ReturnResponse(res, 200, true, 'Followed successfully', { following: true });
     }
   } catch (error) {
     next(error);
   }
 };
+
+
 
 export const peopleController = {
   searchUser,
