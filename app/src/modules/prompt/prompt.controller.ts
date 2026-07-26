@@ -22,9 +22,11 @@ const getMyPrompts = async (
     if (!req.user?.id) {
       return ReturnResponse(res, 401, false, "Unauthorized");
     }
+
  
 
-    const userId = new mongoose.Types.ObjectId(req.user.id);
+    
+      const userId = req.user?.id;
 
     const prompts = await Prompt.find({
       "createdBy.userId": userId,
@@ -32,7 +34,7 @@ const getMyPrompts = async (
       .sort({ createdAt: -1 }) 
       .lean();
 
-    const data = prompts.map((prompt) => toPromptDTO(prompt, req?.user.id));
+    const data = prompts.map((prompt) => toPromptDTO(prompt, userId));
 
     return ReturnResponse(
       res,
