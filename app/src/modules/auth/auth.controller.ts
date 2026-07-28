@@ -90,7 +90,6 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 // password change
-
 const ResetPassword = async (
   req: Request,
   res: Response,
