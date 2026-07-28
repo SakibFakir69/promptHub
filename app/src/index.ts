@@ -31,7 +31,6 @@ import { notificationRouter } from './modules/notification/notification.route';
 // app
 const app: Application = express();
 app.set('trust proxy', 1);
-
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:5000' ,'https://prompthub-client-murex.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
