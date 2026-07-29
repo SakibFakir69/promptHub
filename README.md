@@ -61,7 +61,7 @@ Prompt Hub gives creators a home to publish AI prompts and lets users discover, 
 - People/search system with follow and unfollow support
 
 ### Real-Time & Notifications
-- Socket.IO for live updates (follows, likes, invites)
+
 - Firebase Cloud Messaging (FCM) push notifications
 - EJS-rendered transactional emails via Nodemailer
 
@@ -87,7 +87,7 @@ Prompt Hub gives creators a home to publish AI prompts and lets users discover, 
 | Framework         | Express.js                                   |
 | Database          | MongoDB (Mongoose)                           |
 | Caching / OTP     | Redis                                        |
-| Real-time         | Socket.IO                                    |
+|                                     
 | Authentication    | JWT (Access + Refresh), Passport.js (Google OAuth) |
 | Push Notifications| Firebase Cloud Messaging (FCM)               |
 | Email             | Nodemailer + EJS templates                   |
