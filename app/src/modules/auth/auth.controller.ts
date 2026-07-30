@@ -69,12 +69,10 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     }
 
 
-    // setcookies
-    /// access token
     SetCookies(res, "accessToken", accessToken, 15 * 60 * 1000);
     // refresh token
     SetCookies(res, "refreshToken", refreshToken, 7 * 24 * 60 * 60 * 1000);
-    console.log('cookies set');
+    
 
     return res.status(200).json({
       message: 'User Login Successfully',

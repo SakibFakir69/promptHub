@@ -70,9 +70,16 @@ PromptHub gives creators a home to publish AI prompts and lets users **discover,
 - **People search** — find creators, follow / unfollow
 - **Discover** — suggested people to follow
 
+<<<<<<< HEAD
 ### 🔔 Notifications & Email
 - **Firebase Cloud Messaging (FCM)** push notifications with device-token register/unregister
 - Transactional emails (OTP, verification) via **Brevo** with **EJS-rendered** templates
+=======
+### Real-Time & Notifications
+
+- Firebase Cloud Messaging (FCM) push notifications
+- EJS-rendered transactional emails via Nodemailer
+>>>>>>> a4f6fd8f39228fa74b8124021ce4e4c5b276891e
 
 ### 🛡 Security & Reliability
 - `helmet` for secure HTTP headers, strict **CORS whitelist**, and global **rate limiting**
@@ -85,6 +92,7 @@ PromptHub gives creators a home to publish AI prompts and lets users **discover,
 
 ## 🛠 Tech Stack
 
+<<<<<<< HEAD
 | Layer | Technology |
 |---|---|
 | Runtime | Node.js 22 (Alpine in Docker) |
@@ -102,6 +110,25 @@ PromptHub gives creators a home to publish AI prompts and lets users **discover,
 | Testing | Jest + ts-jest + Supertest |
 | Code Quality | ESLint 9 (flat config) + Prettier |
 | Containerization | Docker + Docker Compose |
+=======
+| Layer            | Technology                                  |
+|-------------------|----------------------------------------------|
+| Runtime           | Node.js                                      |
+| Language          | TypeScript                                   |
+| Framework         | Express.js                                   |
+| Database          | MongoDB (Mongoose)                           |
+| Caching / OTP     | Redis                                        |
+|                                     
+| Authentication    | JWT (Access + Refresh), Passport.js (Google OAuth) |
+| Push Notifications| Firebase Cloud Messaging (FCM)               |
+| Email             | Nodemailer + EJS templates                   |
+| Validation        | Zod                                          |
+| API Docs          | Swagger UI                                   |
+
+| Containerization  | Docker                                       |
+
+| Testing           | Jest                                         |
+>>>>>>> a4f6fd8f39228fa74b8124021ce4e4c5b276891e
 
 ---
 
