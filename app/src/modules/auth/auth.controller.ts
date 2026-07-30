@@ -71,9 +71,9 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 
     // setcookies
     /// access token
-    SetCookies(res, 'accessToken', accessToken, 24 * 60 * 60 * 1000);
+    SetCookies(res, "accessToken", accessToken, 15 * 60 * 1000);
     // refresh token
-    SetCookies(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000);
+    SetCookies(res, "refreshToken", refreshToken, 7 * 24 * 60 * 60 * 1000);
     console.log('cookies set');
 
     return res.status(200).json({
@@ -199,9 +199,9 @@ const logOutUser = async (req: Request, res: Response, next: NextFunction) => {
       ReturnResponse(res, 404, false, 'User Not Founded');
       return;
     }
-      const isProd = process.env.NODE_ENV === "production";
+    const isProd = process.env.NODE_ENV === "production";
 
-       res.clearCookie("accessToken", {
+    res.clearCookie("accessToken", {
       httpOnly: true,
       secure: isProd,
       sameSite: isProd ? "none" : "lax",
