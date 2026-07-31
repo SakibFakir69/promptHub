@@ -7,17 +7,18 @@
 
 import { Response } from "express";
 
-const SetCookies = (res:Response, cookieName:string , cookieValue:string, maxAge:number)=>{
+const SetCookies = (res: Response, cookieName: string, cookieValue: string, maxAge: number) => {
 
-    res.cookie(cookieName, cookieValue,{
-        httpOnly:true, 
+    const isProd = process.env.NODE_ENV === "production";
 
-        secure:true,
-        sameSite:"none",
+    res.cookie(cookieName, cookieValue, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+        path: "/",
         maxAge,
-
     });
-   
+
 }
 
 export default SetCookies;

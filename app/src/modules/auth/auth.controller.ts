@@ -72,7 +72,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     SetCookies(res, "accessToken", accessToken, 15 * 60 * 1000);
     // refresh token
     SetCookies(res, "refreshToken", refreshToken, 7 * 24 * 60 * 60 * 1000);
-    
+
 
     return res.status(200).json({
       message: 'User Login Successfully',
@@ -205,6 +205,7 @@ const logOutUser = async (req: Request, res: Response, next: NextFunction) => {
       sameSite: isProd ? "none" : "lax",
       path: "/",
     });
+
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: isProd,
