@@ -28,11 +28,14 @@ const createUser = async (payload: Partial<IUser>) => {
 const deleteUser = async (id: string) => {
   const result = await User.findByIdAndUpdate(
     id,
-    {
-      isDelete: false,
-    },
-    { upsert: true },
+    { isDelete: true },
+    { new: true }
   );
+
+  if (!result) {
+    throw new Error("User not found");
+  }
+
   return result;
 };
 
