@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { promptController } from './prompt.controller';
 import { verifyToken } from '../../middleware/verifyToken';
 import { upload } from '../../utils/multer';
-import { getMyPromptFromCached, getPromptDetailsFromCache, getTrendingFromCache } from 'app/src/config/redis/prompt/redis.prompt';
+import { getMyPromptFromCached, getPromptDetailsFromCache, getTrendingFromCache } from '../../../src/config/redis/prompt/redis.prompt';
+
 
 const router = Router();
 

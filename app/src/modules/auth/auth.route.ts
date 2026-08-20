@@ -3,7 +3,6 @@ import { authController } from "./auth.controller";
 import { verifyToken } from "../../middleware/verifyToken";
 import passport from "passport";
 import SetCookies from '../../utils/SetCookies';
-
 import { authServices } from "./auth.services";
 
 
