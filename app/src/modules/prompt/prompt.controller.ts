@@ -166,6 +166,12 @@ export const createPrompt = async (
     //  Create prompt in MongoDB
     const result = await Prompt.create(promptData);
 
+    try {
+      await redisClient.del([`prompts:user:${userId}`, 'trending:tags-categories']);
+    } catch (err) {
+      console.log('Redis del error:', err);
+    }
+
     return ReturnResponse(
       res,
       201,
@@ -219,7 +225,17 @@ const updatePrompt = async (
     if (!result) {
       return ReturnResponse(res, 404, false, 'Not find any data with this id');
     }
+    try {
+      await redisClient.del([
+        `prompt:${result._id}`,
+        `prompts:user:${userId}`,
+        'trending:tags-categories',
+      ]);
+    } catch (err) {
+      console.log('Redis del error:', err);
+    }
     // new return updated document
+
 
     return ReturnResponse(res, 200, true, 'prompt update successfully', result);
   } catch (error) {
@@ -252,6 +268,15 @@ const deletePrompt = async (
     if (!deleted) {
       return ReturnResponse(res, 404, false, 'Prompt not found');
     }
+    try {
+      await redisClient.del([
+        `prompt:${deleted._id}`,
+        `prompts:user:${userId}`,
+        'trending:tags-categories',
+      ]);
+    } catch (err) {
+      console.log('Redis del error:', err);
+    }
 
     return ReturnResponse(res, 200, true, 'Prompt deleted successfully');
   } catch (error) {
@@ -283,6 +308,7 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
       { new: true },
     ).lean();
     if (removed) {
+      await redisClient.del(`prompt:${postId}`).catch(err => console.log('Redis del error:', err));
       return ReturnResponse(res, 200, true, 'UpVote removed', toPromptDTO(removed, userId));
     }
 
@@ -296,6 +322,7 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
       { new: true },
     ).lean();
     if (switched) {
+      await redisClient.del(`prompt:${postId}`).catch(err => console.log('Redis del error:', err));
       return ReturnResponse(res, 200, true, 'Switched to UpVote', toPromptDTO(switched, userId));
     }
 
@@ -307,6 +334,8 @@ const upVote = async (req: Request, res: Response, next: NextFunction) => {
     if (!added) {
       return ReturnResponse(res, 404, false, 'Post not found');
     }
+
+    await redisClient.del(`prompt:${postId}`).catch(err => console.log('Redis del error:', err));
 
     if (added.createdBy.userId.toString() !== userId) {
       await notifyUser(added.createdBy.userId.toString(), {
@@ -342,6 +371,7 @@ const downVote = async (req: Request, res: Response, next: NextFunction) => {
       { new: true },
     ).lean();
     if (removed) {
+      await redisClient.del(`prompt:${postId}`).catch(err => console.log('Redis del error:', err));
       return ReturnResponse(res, 200, true, 'DownVote removed', toPromptDTO(removed, userId));
     }
 
@@ -355,6 +385,7 @@ const downVote = async (req: Request, res: Response, next: NextFunction) => {
       { new: true },
     ).lean();
     if (switched) {
+      await redisClient.del(`prompt:${postId}`).catch(err => console.log('Redis del error:', err));
       return ReturnResponse(res, 200, true, 'Switched to DownVote', toPromptDTO(switched, userId));
     }
 
@@ -366,6 +397,8 @@ const downVote = async (req: Request, res: Response, next: NextFunction) => {
     if (!added) {
       return ReturnResponse(res, 404, false, 'Post not found');
     }
+
+    await redisClient.del(`prompt:${postId}`).catch(err => console.log('Redis del error:', err));
 
     return ReturnResponse(res, 200, true, 'DownVote added', toPromptDTO(added, userId));
   } catch (error) {
@@ -452,7 +485,6 @@ const getSavedPrompt = async (
   }
 };
 
-// DELETE SAVED PROMPT
 
 
 

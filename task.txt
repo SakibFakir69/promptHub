@@ -1,25 +1,5 @@
 
-/// perlist
-/////  https://prompthub-2.onrender.com 
-
- /// add security 
- /// jest 
- /// fix email sending
- ///// console
-
-* data base design and make flow draw
-
-1. rate limiting
-2. supertest and jtest
-
-
-
-#dockerization this project
-
-
-
-
-
-///// feed system -> search post -> 
-
-
+1. add redis prompt ( done )
+2. add redis user [ profile ] ()
+3. add redis discover ()
+4. add redis feed ()
