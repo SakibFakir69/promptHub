@@ -9,6 +9,7 @@ import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
 import { notifyUser } from '../notification/notification.service';
 import { toPromptDTO } from './prompt.dto';
 import mongoose from 'mongoose';
+import { redisClient } from 'app/src/config/redis/redisClient';
 
 
 
@@ -23,18 +24,26 @@ const getMyPrompts = async (
       return ReturnResponse(res, 401, false, "Unauthorized");
     }
 
- 
 
-    
-      const userId = req.user?.id;
+
+    const userId = req.user?.id;
+    const cacheKey = `prompts:user:${userId}`;
+
+
 
     const prompts = await Prompt.find({
       "createdBy.userId": userId,
     })
-      .sort({ createdAt: -1 }) 
+      .sort({ createdAt: -1 })
       .lean();
 
     const data = prompts.map((prompt) => toPromptDTO(prompt, userId));
+
+    try {
+      await redisClient.setEx(cacheKey, 60 * 5, JSON.stringify(data));
+    } catch (err) {
+      console.log("Redis set error:", err);
+    }
 
     return ReturnResponse(
       res,
@@ -43,6 +52,7 @@ const getMyPrompts = async (
       "My prompts fetched successfully",
       data
     );
+
   } catch (error) {
     next(error);
   }
@@ -543,7 +553,7 @@ export const promptController = {
   getPromptDetails,
   updatePrompt,
   deletePrompt,
- getMyPrompts,
+  getMyPrompts,
   upVote,
   downVote,
   mySavedPrompt,

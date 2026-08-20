@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { promptController } from './prompt.controller';
 import { verifyToken } from '../../middleware/verifyToken';
 import { upload } from '../../utils/multer';
+import { getMyPromptFromCached } from 'app/src/config/redis/prompt/redis.prompt';
 
 const router = Router();
 
@@ -294,7 +295,8 @@ router.delete('/delete-prompt/:id',verifyToken, promptController.deletePrompt);
  *                   example: "Internal server error"
  */
 
-router.get('/get-prompt',verifyToken, promptController.getMyPrompts);
+router.get('/get-prompt',verifyToken,   getMyPromptFromCached((req) => `prompts:user:${req.user?.id}`), promptController.getMyPrompts);
+
 /**
  * @swagger
  * /upVote:
