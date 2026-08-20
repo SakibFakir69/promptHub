@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { redisClient } from "../redisClient";
 import { ReturnResponse } from "../../../helper/ReturnResponse";
-import { toPromptDTO } from "app/src/modules/prompt/prompt.dto";
+import { toPromptDTO } from "../../../modules/prompt/prompt.dto";
 
 export const getMyPromptFromCached =
   (keyBuilder: (req: Request) => string) =>
