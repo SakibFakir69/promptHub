@@ -9,7 +9,7 @@ import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
 import { notifyUser } from '../notification/notification.service';
 import { toPromptDTO } from './prompt.dto';
 import mongoose from 'mongoose';
-import { redisClient } from 'app/src/config/redis/redisClient';
+import { redisClient } from '../../../src/config/redis/redisClient';
 
 
 
