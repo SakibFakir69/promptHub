@@ -73,6 +73,11 @@ const getPromptDetails = async (req: Request, res: Response, next: NextFunction)
     if (!prompt) {
       return ReturnResponse(res, 404, false, 'Prompt not found');
     }
+    try {
+      await redisClient.setEx(`prompt:${id}`, 60 * 5, JSON.stringify(prompt));
+    } catch (err) {
+      console.log('Redis set error:', err);
+    }
 
     const data = toPromptDTO(prompt, userId);
     return ReturnResponse(res, 200, true, 'Prompt fetched', data);

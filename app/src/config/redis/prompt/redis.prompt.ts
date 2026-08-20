@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { redisClient } from "../redisClient";
 import { ReturnResponse } from "app/src/helper/ReturnResponse";
+import { toPromptDTO } from "app/src/modules/prompt/prompt.dto";
 
 export const getMyPromptFromCached =
   (keyBuilder: (req: Request) => string) =>
@@ -43,6 +44,32 @@ export const getTrendingFromCache =
       if (cached) {
         const data = JSON.parse(cached);
         return res.json({ success: true, data });
+      }
+
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+
+
+export const getPromptDetailsFromCache =
+  (keyBuilder: (req: Request) => string) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const cacheKey = keyBuilder(req);
+
+      if (!cacheKey) {
+        throw new Error("Please provide redis key for prompt details");
+      }
+
+      const cached = await redisClient.get(cacheKey);
+      if (cached) {
+        const prompt = JSON.parse(cached);
+        const userId = req.user?.id;
+        const data = toPromptDTO(prompt, userId);
+        
+        return ReturnResponse(res, 200, true, "Prompt fetched", data);
       }
 
       next();

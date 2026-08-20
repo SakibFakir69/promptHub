@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { promptController } from './prompt.controller';
 import { verifyToken } from '../../middleware/verifyToken';
 import { upload } from '../../utils/multer';
-import { getMyPromptFromCached, getTrendingFromCache } from 'app/src/config/redis/prompt/redis.prompt';
+import { getMyPromptFromCached, getPromptDetailsFromCache, getTrendingFromCache } from 'app/src/config/redis/prompt/redis.prompt';
 
 const router = Router();
 
@@ -464,7 +464,11 @@ router.post('/upVote', verifyToken, promptController.upVote);
  */
 router.post('/downVote', verifyToken, promptController.downVote);
 
-router.get('/prompt-details/:id', promptController.getPromptDetails);
+router.get(
+  '/prompt-details/:id',
+  getPromptDetailsFromCache((req) => `prompt:${req.params.id}`),
+  promptController.getPromptDetails
+);
 router.post('/save-prompt', verifyToken, promptController.mySavedPrompt);
 router.get('/save-prompt',verifyToken, promptController.getSavedPrompt)
 router.delete('/save-prompt',verifyToken, promptController.deleteSavedPrompt)
