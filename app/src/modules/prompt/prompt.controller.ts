@@ -528,18 +528,21 @@ const topTagsAndTopCategory = async (req: Request, res: Response, next: NextFunc
       ]),
     ]);
 
-    // shuffle and slice 8–10
     const shuffle = <T>(arr: T[]) => arr.sort(() => Math.random() - 0.5);
+    const randomCount = Math.floor(Math.random() * 3) + 8;
 
-    const randomCount = Math.floor(Math.random() * 3) + 8; // 8, 9, or 10
+    const data = {
+      tags: shuffle(tags).slice(0, randomCount),
+      categories: shuffle(categories).slice(0, randomCount),
+    };
 
-    res.json({
-      success: true,
-      data: {
-        tags: shuffle(tags).slice(0, randomCount),
-        categories: shuffle(categories).slice(0, randomCount),
-      },
-    });
+    try {
+      await redisClient.setEx('trending:tags-categories', 60 * 10, JSON.stringify(data));
+    } catch (err) {
+      console.log('Redis set error:', err);
+    }
+
+    res.json({ success: true, data });
   } catch (error) {
     next(error);
   }

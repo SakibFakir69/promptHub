@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { promptController } from './prompt.controller';
 import { verifyToken } from '../../middleware/verifyToken';
 import { upload } from '../../utils/multer';
-import { getMyPromptFromCached } from 'app/src/config/redis/prompt/redis.prompt';
+import { getMyPromptFromCached, getTrendingFromCache } from 'app/src/config/redis/prompt/redis.prompt';
 
 const router = Router();
 
@@ -468,5 +468,8 @@ router.get('/prompt-details/:id', promptController.getPromptDetails);
 router.post('/save-prompt', verifyToken, promptController.mySavedPrompt);
 router.get('/save-prompt',verifyToken, promptController.getSavedPrompt)
 router.delete('/save-prompt',verifyToken, promptController.deleteSavedPrompt)
-router.get('/trending',promptController.topTagsAndTopCategory)
+
+router.get('/trending', getTrendingFromCache(() => `trending:tags-categories`),promptController.topTagsAndTopCategory)
+
+
 export const promptRouter = router;
