@@ -109,6 +109,28 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 
 
 
+const sendVerifyRequest =async (req: Request, res: Response, next: NextFunction)=>{
+
+  try {
+    const {isVerify} = req.body;
+    const userId =req.user?.id;
+
+
+    if(!userId){
+      return ReturnResponse(res,401,false ,"Unauthorize user")
+    }
+    if(isVerify===true){
+      return ReturnResponse(res,200,true ,"This user already verify")
+    }
+
+   
+    
+  } catch (error) {
+    next(error)
+    
+  }
+
+}
 
 
 
@@ -117,5 +139,6 @@ export const userController = {
   createUser,
   deleteUser,
   updateUser,
+  sendVerifyRequest
 
 };

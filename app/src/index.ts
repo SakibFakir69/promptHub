@@ -64,8 +64,6 @@ const options = {
   },
  apis: ['./app/src/modules/**/*.ts']
 
-
-
 }
 
 
@@ -131,7 +129,6 @@ app.use(ErrorHandler);
 
 // Catch-all route for 404
 app.use((req:Request, res:Response)=>{
-
   res.status(404).json({
     status:false,
     message:`Route not found: ${req.originalUrl}`
