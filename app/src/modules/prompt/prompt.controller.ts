@@ -415,7 +415,7 @@ const mySavedPrompt = async (
   next: NextFunction,
 ) => {
   try {
-    const { prompt: promptId } = req.body; 
+    const {  promptId } = req.body; 
     const userId = req.user?.id;
 
     if (!userId) {
