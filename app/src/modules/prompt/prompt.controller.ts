@@ -415,14 +415,18 @@ const mySavedPrompt = async (
   next: NextFunction,
 ) => {
   try {
-    const { prompt } = req.body;
+    const { prompt: promptId } = req.body; 
     const userId = req.user?.id;
 
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+    if (!promptId) {
+      return res.status(400).json({ success: false, message: 'promptId is required' });
+    }
+
     // 1. check already saved
-    const isAlreadySaved = await SavedPrompt.findOne({
-      userId,
-      promptId: prompt?._id,
-    });
+    const isAlreadySaved = await SavedPrompt.findOne({ userId, promptId });
 
     if (isAlreadySaved) {
       return res.status(400).json({
@@ -432,12 +436,7 @@ const mySavedPrompt = async (
     }
 
     // 2. save
-    const payload = {
-      userId,
-      promptId: prompt._id,
-    };
-
-    const result = await SavedPrompt.create(payload);
+    const result = await SavedPrompt.create({ userId, promptId });
 
     return res.status(201).json({
       success: true,
@@ -445,7 +444,6 @@ const mySavedPrompt = async (
       data: result,
     });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
